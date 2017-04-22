@@ -1,0 +1,21 @@
+//Inventory Reports.menu
+caption "Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+Employee Leave Ledger           |#classPath+"/"+#servlet+"?page=*crystal lmledger_emp(xdate=From Date,xdate=To Date,xempnum=Employee Code)"
+-
+Employee Wise Leave Report(Details)           |#classPath+"/"+#servlet+"?page=*crystal leave_rep(xempnum=From Employee=0=,xempnum=To Employee=Zzz=,xyear=Year)"
+-
+Yearly Leave Report           |#classPath+"/"+#servlet+"?page=*crystal summary_leave(xempnum=From Employee=0=,xempnum=To Employee=Zzz=,xrank=Department= =tcombo=select xdiv from hrmst,xdate=From Date,xdate=To Date)"
+
+Leave Card          |#classPath+"/"+#servlet+"?page=*crystal prleavesumary(xyear=Year,xempnum=From Employee=0=,xempnum=To Employee=Zzz=,xrank=Department= 0=tcombo=select xdiv from hrmst)"
+
+Leave encashment report								|#classPath+"/"+#servlet+"?page=*crystal prlvencash(~
+														p ~
+														xrank caption(Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default("" ""),~
+														xsec caption(Section) display(combo) pick("select xcode from xcodes where xtype="'Section'" ") default("" ""),~
+														xyear caption(Year),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz"")~
+														)"
