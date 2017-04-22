@@ -1,0 +1,2 @@
+in hrreport.menu
+Bengali Auto Rep 1						    |#classPath+"/"+#servlet+"?page=hrauto1"
