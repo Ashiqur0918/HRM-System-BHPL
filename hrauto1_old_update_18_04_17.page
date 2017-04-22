@@ -1,0 +1,63 @@
+page hrauto1
+
+caption "Bengali Auto Rep 1"
+    sections form imtrn,script myscript
+
+    form imtrn      
+      layout 1
+      objects ~
+      		
+			xref,xdatefrom default(#d),xempf,xtitle,xrank,Generate,Show,Clear
+			
+			field xempf
+			caption ID
+         pick list xfemp
+         width 10
+         default "0"
+         event before
+            //set globals(xfemp)=xfemp
+         end event
+      end field
+
+      field xempt
+         pick list xtemp
+         width 10
+         default "Zzz"
+         //def #char(254)
+         event before
+            //set globals(xtemp)=xtemp
+         end event
+      end field
+	  
+	  
+			
+			field Upd_Val
+			event before
+				call updshift
+			end event
+			end field
+			
+			field Generate
+			event before
+				
+			 
+			  
+			  call updshift
+			  
+			end event
+			end field
+			
+	end form
+	
+		
+		method updshift
+		
+			set mydel = #sql("delete from cadata where xcontext='bnauto_1' and zid="+#id+" and xkey='ref' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_1','ref',0,'','"+xref+"','')"
+			set insval = #sql(mysql)
+			 
+		end method
+		
+		
+      		
+end page
