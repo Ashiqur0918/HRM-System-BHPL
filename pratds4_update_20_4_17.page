@@ -1,0 +1,248 @@
+page pratds4
+    embed onload="move_caret('one','xempnum')" 
+
+    caption "Time-Out Details for Date : "+globals(xdate)+" Shift: "+globals(xshift)
+     sections  form one,list one,text top,script myscript
+
+     text top
+        "<a href=#top title='Back to Top'><font color=blue size=+1><strong>Go Top</strong></font></a>"
+     end text
+
+     list one
+      table pratd
+        caption "Available Entries"	  
+      order xyear,xper,xday,xshift,xempnum
+      fixed xyear,xper,xday,xshift
+      navigators alpha
+      object xempnum attrib(link #servlet+"?page=pratds4&command=Show&xempnum=?"),~
+            //empname storage(varchar) equals((select xfirst from hrmst where xempnum=pratd.xempnum)),~
+            //empdesig storage(varchar) equals((select xdesig from hrmst where xempnum=pratd.xempnum)),~
+             xintime storage(varchar),xouttime storage(varchar),xlitime,xlotime,xatdstat,xdate
+
+      field empname
+        caption Employee Name
+      end field
+
+	field empdesig
+        caption Designation
+      end field
+     end list
+
+     form one
+//        caption "Time-Out Details for<br>Date: <font color=cyan>"+globals(xdate)+"</font><br>Shift: <font color=cyan>"+globals(xshift)+"</font>"
+        table pratd
+        order xyear,xper,xday,xshift,xempnum
+        fixed xyear,xper,xday,xshift
+        layout 1
+        objects Add,Update, Back, Show, Clear, Top, Previous, Next, Bottom,Manual_OT,~//Delete,~
+                 xempnum attrib(submit),xnamedum,xlitime,xlotime,xintime storage(varchar),xouttime storage(varchar),xhours caption(Total Minutes),~
+				 xdescorig display(hide),xcappaid caption(Hour and decimal minute)display(hide),~
+				 xmaxpay caption(Payable OT Hour),xsearchlen caption(Payable OT Minutes),xdesc display(hide),xfdate display(hide),xatdstat,~
+				 xrem,zemail display(hide),xemail display(hide),xrow caption(Update CNT) display(const),xdate display(hide)
+				 
+		field xlitime
+			caption Default In Time
+			attrib readonly
+			event after
+				set D_time = #sql("select xtssch from pratdt where zid='"+#id+"' and xshift='"+globals(xshift)+"'")
+				
+				//print D_time
+				set xlitime=globals(xdate)+" "+D_time
+			end event
+		end field
+		
+		field xfdate
+		 storage time
+		 //attrib readonly
+		 caption Out Time
+		 display const
+		end field
+		
+		field xdesc
+			attrib local
+			caption PCIL
+		end field
+		
+		field xdescorig
+		 caption Total Hours
+		 attrib local
+		 display const
+			event after
+				set xdescorig=xhours+xcappaid
+			end event		 
+		 
+		end field
+		
+		
+		field xatdstat
+			display ocombo
+			pick "Present, Late, Absent"
+			//pick "Present, Late, Absent,On Leave With Pay,On Leave Without Pay,Holiday"
+		end field
+		
+
+		field xlotime
+			caption Default Out Time
+			attrib readonly
+			event after
+				set D_out_time = #sql("select xtssch2 from pratdt where zid='"+#id+"' and xshift='"+globals(xshift)+"'")
+				set xlotime=globals(xdate)+" "+D_out_time
+			end event
+			
+		end field
+		
+		field Add
+			event before
+				set xdate=globals(xdate)
+				
+			end event
+		end field
+
+        field update
+          event before
+            set globals(ErrChk) = ""
+			set date=#sub(xouttime,0,10)
+			set time=#sub(xouttime,11,8)
+			
+			set datein=#sub(xintime,0,10)
+			set timein=#sub(xintime,11,8)
+			set dateint=datein+" "+timein
+			set datetm=date+" "+time
+			
+			
+			set mysql="update pratd set xouttime='"+datetm+"',xintime='"+dateint+"',xatdstat='"+xatdstat+"' where zid='"+#id+"' and xyear='"+xyear+"' and xper='"+xper+"' ~
+								and xday='"+xday+"' and xshift='"+xshift+"' and xempnum='"+xempnum+"' "
+			set upval=#sql(mysql)
+			
+			
+			
+			
+              set xemail=#user
+            end if
+     
+          end event
+     
+        end field
+		
+		field Manual_OT
+			event before
+				str mysql = "update pratd set xotflag=(select xotflag from premp where zid=pratd.zid and xempnum=pratd.xempnum)  ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' " 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			  
+			 str mysql = "update pratd set xhours=EXTRACT (epoch FROM (((to_timestamp(xouttime,'HH24 MI'))- ~
+			 (to_timestamp((select xtssch2 from pratdt where zid=pratd.zid and xshift=pratd.xshift),'HH24 MI')))))/60, xfdate='"+#time+"' ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xouttime<>'' and xouttime>xintime" 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			 
+			 str mysql = "update pratd set xcappaid=case when xhours>=45 and  xhours<60 then 1 ~
+						when xhours<45 then 0 else round((xhours/60),2) end  ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xouttime<>'' and xouttime>xintime " 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			 
+			 str mysql = "update pratd set xmaxpay=coalesce(floor(xcappaid),0)  ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xouttime<>'' and xouttime>xintime " 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			 
+			 str mysql = "update pratd set xsearchlen=coalesce(xhours-(xmaxpay*60),0)  ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xouttime>xintime and xcappaid>0 and xouttime<>'' and xmaxpay>0 " 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			 
+			 str mysql = "update pratd set xsearchlen=0 ~
+			 where zid='"+#id+"'~
+							and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+							and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xsearchlen<0 " 
+			 set updval = #sql(str,mysql)
+			 
+			 
+			 
+			 str mysql = "update pratd set xamount=coalesce((select xamount from prpaymentdt where zid=pratd.zid and xempnum=pratd.xempnum and ~
+			 xpaycode=(select xprbasic from prdef where zid="+#id+"))*2/208/60*xhours,0)  ~
+			 where zid='"+#id+"'~
+			 and xdate='"+xdate+"' and xempnum='"+xempnum+"' ~
+			 and xyear='"+xyear+"' and xper='"+xper+"' and xday='"+xday+"' and xshift='"+xshift+"' and xouttime>xintime and xmaxpay>0 and xouttime<>'' and xotflag='Yes' " 
+			 set updval = #sql(str,mysql)
+			 
+			 //print mysql+" "+updval
+			 
+			 
+				action show
+			end event
+		end field
+
+        field xempnum
+          pick list xempnum
+          event after
+            set globals(xempnum)=xempnum
+            if #command .sw. "Find"
+//              class osbcustom(clear)
+			action clear
+            end if
+          end event
+        end field
+
+        field xnamedum
+          attrib local
+          display constant
+          caption Employee Name
+          event after
+            set xnamedum=#sql(str, "select xfull from hrmst where xempnum='"+xempnum+"'")
+          end event
+        end field
+
+       
+
+
+        embed onsubmit="submitit(this)"
+
+        field back
+          embed onclick="clicked(this)"
+        end field
+
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+
+        function clicked(b)
+        {
+          detail="back"
+        }
+        function submitit(form)
+        {
+          if (detail=="back")
+          {
+            form.page.value = "praths"
+            form.searchbutton.value= "Find xyear=?&xper=?&xday=?&xshift=?"
+          }
+          //return false
+
+        }
+
+        </script>
+     end script
+
+end page
+
