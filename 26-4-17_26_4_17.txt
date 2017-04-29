@@ -1,0 +1,13 @@
+if {premp.xotflag}='Yes' and {pratd.xsearchlen}>0
+    then
+    {pratd.xmaxpay}+({pratd.xsearchlen}/100)
+   else {pratd.xmaxpay}
+
+if({%joinYear}={?year})
+then ToText ({%alE}*(13-{%joinmonth})/12)
+else ToText ({%alE})
+
+(select count(xdatedue) from lmtrnday where xempnum=hrmst."xempnum" and xcodeleave='Annual Leave' and EXTRACT(MONTH FROM xdatedue)=EXTRACT(MONTH FROM cadate."xdate"))
+
+
+(select EXTRACT(YEAR FROM xjoindate) from premp where zid=hrmst."zid" and xempnum=hrmst."xempnum")
