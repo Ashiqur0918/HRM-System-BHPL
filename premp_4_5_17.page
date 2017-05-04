@@ -1,0 +1,484 @@
+page premp
+
+     caption "Employee Detail Info for : "+xempnum+": <font color=red>"+hrmst.xfirst(xempnum)+" "+hrmst.xmiddle(xempnum)+" "+hrmst.xlast(xempnum)+"</font>"
+	 
+     layout mylayout 3 1  //columns rows
+       form emp  (1, 1) //(col,row,colspan,rowspan,width,height)
+       list payment (2, 1)
+			 list empmaster (3, 1)
+       script myscript (0, 0)
+     end layout
+     
+     list rates
+        caption "Pay Rates<br><font color=red>"+hrmst.xfull(xempnum)+"</font>"
+        table (select prrate.*,prcode.xtyperatepay from prrate,prcode where prrate.zid=prcode.zid and prrate.xcodepay=prcode.xcodepay) as tbl
+        order xempnum,xdateeff,xcodepay
+        fixed xempnum,xdateeff
+        objects  xcodepay attrib(link #servlet+"?page=prrate&command=Show&xempnum=?&xdateeff=?&xcodepay=?"), ~
+                xrate,xtyperatepay
+
+		field xrate
+		  caption Pay Rate
+		end field
+		
+		 totals count,"Total",sum
+     end list
+	 
+	 list payment_off
+        caption "Pay Rates<br><font color=red>"+hrmst.xfirst(xempnum)</font>"
+        table prpaymentdt
+        order xempnum,xpaycode
+        fixed xempnum
+		objects  xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xempnum=?&xpaycode=?"),xamount
+
+     end list
+	 
+     list payment
+      caption "Pay Rates<br><font color=red>"+hrmst.xfull(xempnum)</font>"
+		table (select *,~
+		(select xdesc from prpayhead where prpayhead.zid=prpaymentdt.zid and prpayhead.xpaycode=prpaymentdt.xpaycode) as pdesc ~
+		from prpaymentdt) as tbl	        
+      order xempnum,xpaycode
+      fixed xempnum
+      //navigator alpha
+      //objects xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xpaycode=?"),~
+	  objects xpaycode ,pdesc,xamount
+
+     totals count,"Total",sum
+
+      field pdesc
+        caption Description
+        storage varchar
+      end field
+    end list
+	 
+	 
+	 list empmaster
+		caption "Active Employee list"
+		table (select hrmst.*,xfirst as fulname,'<img style="max-width: 50px" src='||hrmst.xlink||'></img>' as xtimage,  ~
+					(select zactive from premp where zid=hrmst.zid and xempnum=hrmst.xempnum) as zactive ~
+					from hrmst ) tbl
+		order xempnum
+		select "zactive='1'"
+		row 10
+		 objects  xempnum attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?"),~
+		 xtimage,xfirst,xmiddle,xlast,xprzip,xtitle,xsec,zactive
+		 
+		 field fulname
+			storage varchar
+			caption Employee Name
+		end field
+		 field xprzip
+			caption Old ID NO
+		 end field
+
+		 field xsec
+			caption Department
+		 end field
+
+		 field xtitle
+			caption Designation
+		 end field
+		
+		field xtimage
+			storage varchar
+			caption Pic
+		end field	
+	 end list
+     
+     list emp
+        table premp
+        order xempnum
+        objects  xempnum attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?"), ~
+                xjoindate,xdateexp,xcyclepay,xgbenefit,xmodepay,zactive
+     end list
+
+     form emp
+        caption "Employee Master"
+		valid valid
+        table premp
+        order xempnum
+		////select "zactive='1'"
+        layout 2
+        objects Rates,Clear,Show,Add, Update, Delete, Top, Previous, Next, Bottom,Pay_Package,Photo_Update attrib(hide),~ //Create Pay Package,~
+				xempnum,desig,dept,xjoindate,xprobfrdate,xprobtodate,xcondate,xdateeff display(hide),xdateexp caption(Leaving Date),~
+				xcyclepay,xpsclcode,xdtwotax,xshift,xgbenefit,xmodepay,xbank,xbankto caption(Grade) display(ocombo),~
+				xpayaba,xpayname,xpayact,zactive,xotflag,xpfflag,Showdata display(hide)
+//Create_Pay_Package
+		field xempnum
+			pick list emplistactive
+			event after
+				set globals(xempnum)=xempnum
+		
+			end event
+		end field
+		
+		field xbankto
+		   pick "select xcode from xcodes where xtype='Grade'"
+		end field
+		
+		field zactive
+			default "1"
+		end field
+
+		field xbank
+			pick "select xcode from xcodes where xtype='Bank'"
+		end field
+
+		field xcyclepay
+			pick "Monthly"
+			default "Monthly"
+		end field
+		
+		field xshift
+			display text
+			width 10
+			pick list xshift
+		end field
+				
+		field xdtwotax
+			caption Gross Salary
+		end field
+		
+		field desig
+			attrib local
+			//storage varchar
+			caption Designation
+			display const			
+		end field
+		
+		field show
+			event after
+				set xempnum=#sql(str,"select xempnum from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				set desig=#sql(str,"select xtitle from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				set dept=#sql(str,"select xsec from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+			end event
+		end field
+		
+		field dept
+			attrib local
+			//storage varchar
+			caption Department
+			display const			
+		end field
+		
+		field xpsclcode
+			width 10
+			//pick "select xcode from xcodes where xtype='Section'"
+			pick list xpsclcode
+		end field
+		
+		field Photo_Update
+		  event before
+		   set globals(ErrChk)="" 
+		     //set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum+".jpg"
+			 str xempnum1 =""
+			 str mysql = "select xempnum from hrmst where xempnum>'"+xempnum1+"'  and zid="+#id+" order by xempnum "
+			 set xempnum1 = #sql(mysql)
+			 print mysql+" "+xempnum1
+			 while xempnum1 .ne. ""
+				set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum1+".jpg"
+				
+				print xlink
+				
+				str mysql = "update hrmst set xlink='"+xlink+"' where xempnum='"+xempnum1+"' and zid="+#id+" "
+				set updval = #sql(mysql)
+				str mysql = "select xempnum from hrmst where xempnum>'"+xempnum1+"'  and zid="+#id+"  order by xempnum"
+				set xempnum1 = #sql(mysql)
+			 end while
+		  end event
+		end field
+		
+//Pay pakage
+		//field Create_Pay_Package
+		field Pay_Package
+			event before
+				set globals(ErrChk)=""
+
+				if globals(ErrChk) .ne. "1"
+					if xempnum .ne. globals(xempnum)
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Wrong Employee</font>"
+					end if
+				end if
+			
+
+				if globals(ErrChk) .ne. "1"
+					set xdtwotax = #sql(decimal,"select xdtwotax from premp where xempnum='"+globals(xempnum)+"'")
+					if xdtwotax <= 0.0
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Gross Salary not entered</font>"
+					end if
+				end if
+
+    			if globals(ErrChk) .ne. "1"
+              		set basic_code = #sql("select xprbasic from prdef where zid='"+#id+"' and xprbasicapp='Yes'")
+              		if #result .eq. "true"
+    					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+basic_code+"'")
+    					if #result .eq. "false"
+    						set globals(ErrChk) = "1"
+    						error "<font color=red>Basic Code ("+basic_code +") not found in Payment Head Table</font>"
+    					end if
+              		end if
+    			end if
+
+				
+
+    	        if globals(ErrChk) .ne. "1"
+              		set hrent_code = #sql("select xprhrent from prdef where zid='"+#id+"' and xprhrentapp='Yes'")
+              		if #result .eq. "true"
+    					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+hrent_code+"'")
+    					if #result .eq. "false"
+    						set globals(ErrChk) = "1"
+    						error "<font color=red>House Rent Code ("+hrent_code +") not found in Payment Head Table</font>"
+    					end if
+              		end if
+              	end if
+
+
+    	        if globals(ErrChk) .ne. "1"
+              		//set med_code = #sql("select xprsusp from prdef where zid='"+#id+"' and xprsuspapp='Yes'")
+					set med_code = "003"
+              		if #result .eq. "true"
+    					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+med_code+"'")
+    					if #result .eq. "false"
+    						set globals(ErrChk) = "1"
+    						error "<font color=red>Medical Code ("+med_code +") not found in Payment Head Table</font>"
+    					end if
+              		end if
+              	end if
+				
+
+				
+    	        if globals(ErrChk) .ne. "1"
+              		set food_code = "005"
+    					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+food_code+"'")
+    					if #result .eq. "false"
+    						set globals(ErrChk) = "1"
+    						error "<font color=red>Food Code ("+food_code +") not found in Payment Head Table</font>"
+    					end if
+              	end if
+				
+    	        if globals(ErrChk) .ne. "1"
+              		set conv_code = "004"
+    					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+conv_code+"'")
+    					if #result .eq. "false"
+    						set globals(ErrChk) = "1"
+    						error "<font color=red>Conveyance Code ("+conv_code +") not found in Payment Head Table</font>"
+    					end if
+              	end if
+				
+
+
+			    if globals(ErrChk) .ne. "1"
+				    //str mysql="delete from prpaymentdt where zid='"+#id+"' and xemp='"+globals(xemp)+"' and (xpaycode='"+basic_code+"' or xpaycode='"+hrent_code+"' or  xpaycode='"+med_code+"')"
+ 	                str mysql="delete from prpaymentdt where zid='"+#id+"' and xempnum='"+globals(xempnum)+"' and xpaycode<>'060'"
+				    set delrec=#sql(str,mysql)
+			    end if
+		//error "MMM "+xdtwotax+" basic_code; "+basic_code+" hrent_code; "+hrent_code+" med_code; "+med_code+" food_code; "+food_code	+" conv_code; "+conv_code	
+		
+				if globals(ErrChk) .ne. "1"
+				//1016
+					decimal basic = 0.00
+					decimal hrent = 0.00
+					decimal medical = 0.00
+					//decimal foodal = 0.00
+					decimal convyal = 0.00
+
+                    compute medical=xdtwotax*.1
+					set medical= #round(medical,0)
+					//set foodal=0.00+650
+					
+					compute convyal=xdtwotax*.15
+					set convyal= #round(convyal,0)
+				
+                    compute basic=xdtwotax*.60
+					set basic = #round(basic,0)
+
+                    //set hrent=0.00+basic*0.4
+					//off basic coz one (1) cent
+					compute hrent=0.00+xdtwotax-(basic+medical+convyal)
+					//compute hrent=xdtwotax*.15
+					set hrent = #round(hrent,0)
+                    
+                    if basic > 0.00
+                    
+    					set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+    					set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+basic_code+"','"+basic+"','"+#user+"','')"
+    					set tmpstr =#sql(myqry)
+						
+						set xdesc=#sql("select xdesc from prpayhead where zid="+#id+" and xpaycode='"+basic_code+"'")
+						print xdesc+" : "+basic
+						
+					    set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+					    set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+hrent_code+"','"+hrent+"','"+#user+"','')"
+					    set tmpstr =#sql(myqry)
+						
+						set xdesc=#sql("select xdesc from prpayhead where zid="+#id+" and xpaycode='"+hrent_code+"'")
+						print xdesc+" : "+hrent								
+						
+                        set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+					    set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+med_code+"','"+medical+"','"+#user+"','')"
+					    set tmpstr =#sql(myqry)
+						
+						set xdesc=#sql("select xdesc from prpayhead where zid="+#id+" and xpaycode='"+med_code+"'")
+						print xdesc+" : "+medical
+			
+					    //set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+					    //set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+food_code+"','"+foodal+"','"+#user+"','')"
+					    //set tmpstr =#sql(myqry)
+						//
+						//set xdesc=#sql("select xdesc from prpayhead where zid="+#id+" and xpaycode='"+food_code+"'")
+						//print xdesc+" : "+foodal					
+
+					    set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+					    set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+conv_code+"','"+convyal+"','"+#user+"','')"
+					    set tmpstr =#sql(myqry)
+						
+						set xdesc=#sql("select xdesc from prpayhead where zid="+#id+" and xpaycode='"+conv_code+"'")
+						print xdesc+" : "+convyal												
+                    end if
+				end if
+			end event
+		end field		
+
+
+//		
+				
+		field Create Pay Package_off-13June16
+			event before
+				set globals(ErrChk)=""
+
+				if globals(ErrChk) .ne. "1"
+					if xempnum .ne. globals(xempnum)
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Wrong Employee</font>"
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set xdtwotax = #sql(decimal,"select xdtwotax from premp where xempnum='"+globals(xempnum)+"'")
+					if xdtwotax <= 0.0
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Gross Salary not entered</font>"
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set basic_code = #sql("select xprbasic from prdef where zid='"+#id+"' and xprbasicapp='Yes'")
+					if #result .eq. "true"
+						set chkcode = #sql(str,"select xpaycode from prpayhead where zid='"+#id+"' and xpaycode='"+basic_code+"'")
+						if #result .eq. "false"
+							set globals(ErrChk) = "1"
+							error "<font color=red size=+1>Basic Code ("+basic_code +") not found in Payment Head Table</font>"
+						end if
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set hrent_code = #sql("select xprhrent from prdef where zid='"+#id+"' and xprhrentapp='Yes'")
+					if #result .eq. "true"
+						set chkcode = #sql(str,"select xpaycode from prpayhead where zid='"+#id+"' and xpaycode='"+hrent_code+"'")
+						if #result .eq. "false"
+							set globals(ErrChk) = "1"
+							error "<font color=red size=+1>House Rent Code ("+hrent_code +") not found in Payment Head Table</font>"
+						end if
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set conv_code = #sql("select xprconv from prdef where zid='"+#id+"' and xprconvapp='Yes'")
+					if #result .eq. "true"
+						set chkcode = #sql(str,"select xpaycode from prpayhead where zid='"+#id+"' and xpaycode='"+conv_code+"'")
+						if #result .eq. "false"
+							set globals(ErrChk) = "1"
+							error "<font color=red size=+1>Conveyance Allowance Code ("+conv_code +") not found in Payment Head Table</font>"
+						end if
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set med_code = #sql("select xprmed from prdef where zid='"+#id+"' and xprmedapp='Yes'")
+					if #result .eq. "true"
+						set chkcode = #sql(str,"select xpaycode from prpayhead where zid='"+#id+"' and xpaycode='"+med_code+"'")
+						if #result .eq. "false"
+							set globals(ErrChk) = "1"
+							error "<font color=red size=+1>Medical Allowance Code ("+med_code +") not found in Payment Head Table</font>"
+						end if
+					end if
+				end if
+
+				if globals(ErrChk) .ne. "1"
+					set globals(xpaycode)=""
+					set gross_amt = #sql(decimal,"select xdtwotax from premp where zid='"+#id+"' and xempnum='"+globals(xempnum)+"'")
+					set xempcat = #sql(str,"select xjstat from hrmst where zid='"+#id+"' and xempnum='"+globals(xempnum)+"'")
+					set mysql = "select xpaycode from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode>'"+globals(xpaycode)+"' order by zid,xcat"
+					set globals(xpaycode) = #sql(str,mysql)
+					
+					while #result .eq. "true" .and. globals(xpaycode) .ne. ""                
+						set amt_percent=#sql(decimal,"select xpercent from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode='"+globals(xpaycode)+"'")
+						compute amt = 0.00+(gross_amt*amt_percent)/100
+						set paycode=#sql(decimal,"select xpaycode from prpaymentdt where zid='"+#id+"' and xempnum='"+globals(xempnum)+"' and xpaycode='"+globals(xpaycode)+"'")
+						if #result .ne. "true"
+							set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+							set myqry = myqry + " values('"+#id+"','"+globals(xempnum)+"','"+globals(xpaycode)+"','"+amt+"','"+#user+"','')"
+							set tmpstr =#sql(myqry)
+						else
+							str mysql = "update prpaymentdt set xamount='"+amt+"' where zid='"+#id+"' and xpaycode='"+globals(xpaycode)+"' and xempnum='"+globals(xempnum)+"'"
+							set tmpstr = #sql(str,mysql)
+						end if
+						//print globals(xpaycode)+" "+globals(xempnum)
+						set mysql = "select xpaycode from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode>'"+globals(xpaycode)+"' order by zid,xcat"
+						set globals(xpaycode) = #sql(str,mysql)
+					end while
+				end if
+			end event
+		end field
+				
+		embed onsubmit="submitit(this)"
+		field Rates
+			embed onclick="clicked(this)"
+		end field
+
+		field Return
+			embed onclick="clickit(this)"
+		end field		
+		
+     end form
+
+    script myscript
+        <script language="javascript" type="text/javascript">
+        var button
+		var detail
+        function clicked(b){
+          button=b.value		  
+        }
+		
+		function clickit(b){
+		  detail=b.value
+        }
+		
+        function submitit(form){
+          if (button=="Rates"){
+            form.page.value = "prpaymentdt"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+		  if (detail=="Return")
+          {
+            form.page.value = "prpaymenthd"
+            form.searchbutton.value= "Find xempnum=?"
+          }		  
+        }
+
+        </script>
+    end script
+	 
+	valid valid
+		config
+				set desig=#sql(str,"select xtitle from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				set dept=#sql(str,"select xsec from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+		end config
+	end valid
+
+end page
