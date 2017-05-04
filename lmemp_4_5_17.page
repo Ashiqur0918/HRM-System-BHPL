@@ -1,0 +1,37 @@
+page lmemp
+
+caption "Employee Leave Master"
+    sections form lmemp,script myscript
+	sidebar list lmemp
+
+    form imtrn      
+      layout 2
+	  table lmemp
+	  order xempnum
+      objects ~
+      		
+			xempnum,xgent,xdateeff,xdateexp,~
+          zactive
+			
+			
+      		
+	end form
+
+list lmemp
+	caption "Employee Leave Master"
+	table (select *, (select xfull from hrmst where zid=lmemp.zid and xempnum=lmemp.xempnum) as Employee_Name from lmemp) tbl
+	order xempnum
+    rows 10
+        
+    objects xempnum attrib(link #servlet+"?page=lmemp&command=show&xempnum=?"),Employee_Name,xgent,xdateeff,xdateexp,zactive
+	
+		
+	field Employee_Name
+		storage varchar
+	end field
+
+
+		
+end list
+
+end page
