@@ -1,0 +1,1 @@
+select *,(select xcodeleave from lmtrnday where xdatedue= pratd.xdate and xempnum=pratd.xempnum)  from pratd where   (select xcodeleave from lmtrnday where xdatedue= pratd.xdate and xempnum=pratd.xempnum)>''
