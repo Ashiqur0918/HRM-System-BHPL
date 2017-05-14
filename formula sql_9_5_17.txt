@@ -1,0 +1,35 @@
+dept_wise_sal
+
+WhilePrintingRecords;
+numbervar srno;
+srno := srno + 1;
+
+(select xjoindate from premp where zid=hrmst."zid" and xempnum=hrmst."xempnum")
+
+select * from pratd where xempnum='BHL-000126' and xdate between '2017-04-01' and '2017-04-30'
+
+formula
+absentCalc
+{#absent}-{%absentLeave}
+
+sql
+absentLeave
+(select count(DISTINCT pratd.xatdstat) from pratd,lmtrnday  where pratd.xempnum=hrmst."xempnum" and pratd.xatdstat='Absent' and lmtrnday.xstatusleave='3-Sanctioned' and lmtrnday.xdatedue=pratd.xdate)
+leave
+(select count(xdatedue) from lmtrnday where xempnum=hrmst."xempnum" and xstatusleave='3-Sanctioned' and xcodeleave like '%Leave%' and xdatedue=pratd."xdate" )
+
+
+test aql
+select count(DISTINCT pratd.xatdstat) from pratd,lmtrnday  where pratd.xempnum='BHL-000126' and pratd.xatdstat='Absent' and lmtrnday.xstatusleave='3-Sanctioned' and lmtrnday.xdatedue=pratd.xdate and (lmtrnday.xdatedue between '2017-04-01' and '2017-04-30')
+Distinct count(pratd.xatdstat)
+select * from pratd where xempnum='BHL-000126' and xatdstat='Absent'
+
+select pratd.xatdstat,lmtrnday.xempnum,lmtrnday.xstatusleave,lmtrnday.xdatedue from lmtrnday,pratd where lmtrnday.xempnum='BHL-000126' and lmtrnday.xstatusleave='3-Sanctioned' and lmtrnday.xdatedue=pratd.xdate and pratd.xatdstat='Absent' and (lmtrnday.xdatedue between '2017-04-01' and '2017-04-30')
+
+select xempnum,xrank,xdiv from hrmst where xrank<>xdiv order by xempnum
+
+
+select count(xdatedue) from lmtrnday where xempnum=(select xempnum from hrmst where xrank='Human Resources') and xstatusleave='3-Sanctioned' and xcodeleave like '%Leave%' 
+and xdatedue=pratd."xdate" 
+
+select * from hrmst where xempnum='BHL-000126'
