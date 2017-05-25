@@ -1,0 +1,38 @@
+hrautobanglaShowCauseLetter
+
+banglaAutoShowCauseLetter
+
+bnauto_ShowCause
+
+select sum(xpayamt) from prloanview where xempnum='BHL-000091'
+
+banglaAutoShowCauseLetterSuspend
+
+hrautoShowCauseLetterSuspend
+
+bnauto_ShowCauseSus
+
+(select xvalue from cadata where xcontext='bnauto_ShowCauseSus' and xkey='designation')
+
+banglaAutoInqueryLetter
+
+hrautoInqueryLetter
+
+prpay ..... salary date
+prmsg--------who get salary name list,absent,leave,ot,
+prtrndt....... vary amount , month wise, 
+practrndt ...... calculation 
+
+
+dDate   xh110
+
+bnauto_Inquery
+
+(select xvalue from cadata where xcontext='bnauto_Inquery' and xkey='ppv') 
+
+
+banglaAutoDismissalLetter
+
+hrautoDismissalLetter
+
+bnauto_Dismissal
