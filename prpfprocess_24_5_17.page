@@ -1,0 +1,148 @@
+page prpfprocess
+
+	embed onload = "move_caret('one','xdate')"
+
+	caption "P.F. Process"
+	section form one, method getPSamt, method getESamt, method getTRamt, method getADVamt
+
+	form one
+	layout 1
+	object  Process,Show,~
+		  xdate
+
+	field xdate
+		caption  Pay Date
+		display ocombo
+		pick "select xdatepay from prpay"
+	end field
+
+	field Process
+	
+		event before
+			  set globals(ErrChk) = ""
+				print "Check ! ! !"
+			  str startdate = ""
+			  str xdatepay = xdate
+			  set payyr = #sub(xdate,0,4)
+			  set paypr = #sub(xdate,5,2)
+			  str payyrpr = ""+payyr+""+paypr
+			  int offday = 0
+			  
+			  
+			  
+			if globals(ErrChk) .ne. "1"
+			
+				set xprpfapp=#sql("select xprpfapp from prdef where zid='"+#id+"'")
+				
+				if xprpfapp .ne. "Yes"
+					set globals(ErrChk)="1"
+					error "Provident Fund Applicable Status :"+xprpfapp
+				else
+				
+					set xprpf=#sql("select xprpf from prdef where zid='"+#id+"'")
+					set pf_code = #sql(str,"select xpaycode from prpayhead where xpaycode='"+xprpf+"'")
+		//error "pf_code"+pf_code
+					if #result .ne. "true"
+						set globals(ErrChk) = "1"
+						error "PF Code ("+xprpf +") not found in Payment Head Table"
+					end if 
+
+					
+					set xpfempcont=#sql("select xpfempcont from prdef where zid='"+#id+"'")
+					if xpfempcont==0
+						set globals(ErrChk)="1"
+						error "Employee Contribution(P.F.) Not Found"
+					end if
+					
+					set xpfcomcont=#sql("select xpfcomcont from prdef where zid='"+#id+"'")
+	//error "xpfcomcont"+xpfcomcont
+					if xpfcomcont==0
+						set globals(ErrChk)="1"
+						error "Company Contribution(P.F.) Not Found"
+					end if
+					
+				end if
+			end if
+			
+			print "Check ! ! !"
+
+			if globals(ErrChk) .ne. "1"
+				set xprbasicapp=#sql("select xprbasicapp from prdef where zid='"+#id+"'")
+				if xprbasicapp .ne. "Yes"
+					set globals(ErrChk)="1"
+					error "Basic Salary Applicable Status :"+xprbasicapp
+				else 
+					set xprbasic=#sql(str,"select xprbasic from prdef where zid='"+#id+"'")
+					set basic_code = #sql(str,"select xpaycode from prpayhead where xpaycode='"+xprbasic+"'")
+		//error #result+"basic_code"+basic_code			
+					if #result .ne. "true"
+						set globals(ErrChk) = "1"
+						error "Basic Code ("+xprbasic +") not found in Payment Head Table"
+					end if 
+				end if
+			end if
+			  
+			  
+			if globals(ErrChk) .ne. "1"
+
+				int i = 0
+				int count=0
+				str clist="xempnum"
+				str mysql = "select "+clist+" from premp where zid='"+#id+"' and zactive='1'"
+				set count = #sqlfill(mysql)
+				
+				//error count+"-"+mysql
+
+				if count>0
+					while i<count
+						array get(i,clist)
+						set pflag = #sql(str,"select xpflag from prmsg where xdatepay='"+xdate+"' and xempnum='"+xempnum+"'")
+//error pflag+"pflag"+xempnum+"pflag"+pflag
+//print "Check ! ! !plag"+pflag
+						//if pflag .eq. "1"
+						
+							set mysql="select xamount from practrndt where xdatepay='"+xdate+"' and xempnum='"+xempnum+"' and xpaycode='"+basic_code+"'"
+							set basic_amt = #sql(decimal,mysql)
+		//error "test"+basic_amt
+							set mysql="select xamount from practrndt where xdatepay='"+xdate+"' and xempnum='"+xempnum+"' and xpaycode='"+pf_code+"'"
+							set pf_amt = #sql(decimal,mysql)
+		//error basic_amt+"-"+pf_amt
+							if basic_amt != 0.0 .and. pf_amt != 0.0
+								compute comp_cont = (basic_amt*xpfcomcont)/100
+		//error "comp_cont"+comp_cont
+								set totamt= 0.0+pf_amt+comp_cont
+								
+                                str mysql = "delete from prpf where xempnum='"+xempnum+"' and xdate='"+xdate+"'"
+                                set tmpstr = #sql(str,mysql)
+
+								set myqry = "insert into prpf (zid,xempnum,xdate,xtypetrn,xdesc,xsign,xpfempcont,xpfcomcont,~
+									xtotamt,xremark,zemail,xemail)"
+								set myqry = myqry + " values('"+#id+"','"+xempnum+"','"+xdate+"','AD','Addition',"1",~
+									"+pf_amt+","+comp_cont+","+totamt+",'','"+#user+"','')"
+									print myqry
+								set tmpstr = #sql(myqry)	
+
+								if #result .ne. "true"
+									set globals(ErrChk)="1"
+									error "Error Creating Insert Data In PF"
+								end if
+								
+							end if
+						//end if
+						set i=0+i+1
+					end while
+				end if
+			end if
+			
+			if globals(ErrChk) .ne. "1"
+				print "<font color=green size=+1> PF Process Successfully Complete"
+			else
+				print "<font color=red size=+1>Error Creating In PF Process"
+			end if
+			
+		end event
+	end field
+
+	end form
+
+end page
