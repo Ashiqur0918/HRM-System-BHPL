@@ -1,0 +1,9 @@
+select * from pratd where xempnum='BHL-000176' order by xdate
+
+select Count(Distinct ztime) from pratd where xatdstat='Absent'
+
+select distinct count(pratd.xatdstat) from pratd, hrmst where hrmst.xrank='Sales' and pratd.xatdstat='Absent'
+
+select distinct hrmst.xempnum from pratd, hrmst where hrmst.xrank='Sales' and pratd.xatdstat='Absent' order by hrmst.xempnum
+
+select * from pratd where xempnum='BHL-000097' and xper=5 order by xdate
