@@ -1,0 +1,53 @@
+     list lmstatus
+        //caption "LEAVE STATUS: "+xyear+" <font color=red>"+hrmst.xfirst(xempnum)+" "+hrmst.xlast(xempnum)+"</font> ("+xempnum+") as of &nbsp;<font color=red>"+#dformat(xdate)+"</font>"
+        caption "LEAVE STATUS: "+xyear+" <font color=red>"+hrmst.xfull(xempnum)+"</font> ("+xempnum+") as of &nbsp;<font color=red>"+#dformat(xdate)+"</font>"
+        table lmstatus
+        order xyear,xempnum,xcodeleave
+        //select " xitem='"+xitem+"'"
+        fixed xyear,xempnum
+        rows 100 f
+        objects ~ 
+        ~//xcodeleave,xgent,xdaysob,xdaysexp,xdayscf,xdaysenc,xdayscr,xdayscan,xdaysreq,xdaysapp,~
+        xcodeleave,xgent,xdaysob,xdaysenc,xdayscr,xdayscan,xdaysreq,xdaysapp,~
+        xlimitcash,xlimitcf,xlimitres,~
+        xdaysearned attrib(local),xdaysaccum attrib(local),xdaysavail attrib(local),~
+        xleavedue attrib(hide),xnumofper attrib(hide),xwhendue attrib(hide),xtypeyear attrib(hide),xcodeat attrib(hide)
+
+        //totals "Totals",,sum,sum,sum,sum,sum,sum,sum,sum,sum,sum,sum,sum,sum,sum
+        field xcodeleave
+        
+          event after
+            //call lmcalcList
+            //set xavail=accum
+      
+              //TODO-reverse the date order
+            console "globals-xdate="+globals(xdate)
+            str date=globals(xdate)
+            str sep=#sub(date,4,1)
+            //TODO:remove bug in dateformat
+            console "sep="+sep      
+            if sep .ne. "-"
+              str date=#sub(date,6,4)+"-"+#sub(date,3,2)+"-"+#sub(date,0,2)
+            end if
+            //console "date="+date      
+           
+            //str dateeff=xdateeff
+            str typeyear=xtypeyear
+            str whendue=xwhendue
+            double leavedue=xleavedue
+            double numofper=xnumofper
+            str codeleave=xcodeleave
+            //set date=#date
+            #include lmcalc.include
+
+            set xdaysearned=earned
+            comp xdaysob=xdaysob+bf
+            comp xdaysaccum=earned+xdaysob-xdaysenc+xdayscr-xdaysreq-xdaysapp
+            comp xdaysavail=xdaysaccum-xlimitres
+          
+          end event
+        
+        end field
+        
+     end list
+
