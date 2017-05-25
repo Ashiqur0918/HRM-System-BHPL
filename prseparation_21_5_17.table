@@ -1,0 +1,13 @@
+product ERP on the Net
+
+table prseparation
+  caption "Pay Roll Separation"
+  columns ztime,zutime,zid,xempnum,xamt,xsign,xdate,xdesc,xlong,xpaycode
+
+
+  primary key zid, xempnum,xdesc
+  foreign key
+        zid references zbusiness.zid
+        zid,xempnum references hrmst.zid,xempnum
+  end foreign key
+end table
