@@ -1,0 +1,52 @@
+//hrreports.menu  Employee Management Report Menu
+caption "Reports" page 3
+//-------------------------------------------------------------------
+option                           		|action
+//-------------------------------------------------------------------
+//-Standard Reports
+//Job Status Wise Employee List			|#classPath+"/"+#servlet+"?page=*crystal premplist_statuswise(xjstat=From Status,xjstat=To Status)"
+//Shortlisted CV List			            |#classPath+"/"+#servlet+"?page=*crystal emp_cv(xdiv=From SBU==text=list xsbu,xdiv=TO SBU==text=list xsbu)"
+//Employee CV 			             	|#classPath+"/"+#servlet+"?page=*crystal prempinfo_pic(xempnum=From Employee=0)"
+//Designation Wise Employee List			|#classPath+"/"+#servlet+"?page=*crystal premplist_desigwise(xtitle=From Designation==text=list xdesig,xtitle=To Designation==text=list xdesig)"
+//Section Wise Employee List				|#classPath+"/"+#servlet+"?page=*crystal premplist_dept(xsec=From Section,xsec=To Section)"
+//Religion Wise Employee List             |#classPath+"/"+#servlet+"?page=*crystal premplist_religionwise(xreligion=From Religion=,xreligion=To Religion=)"
+//Gender Wise Employee List              	|#classPath+"/"+#servlet+"?page=*crystal premplist_genderwise(xsex=From Gender=,xsex=To Gender=)"
+//Employee Job Duration					|#classPath+"/"+#servlet+"?page=*crystal premplist_jobduration(xdate)"
+////Join Date Wise Employee List			|#classPath+"/"+#servlet+"?page=*crystal premplist_joindatewise(xdate=From Date,xdate=To Date)"
+//Employee wise Status List			    |#classPath+"/"+#servlet+"?page=*crystal premplist_active(xempnum=From Employee=0,xempnum=To Employee=Zzz,xdesc=Status=All=combo=""All,,Active,,Inactive"")"
+////Employee Count						    |#classPath+"/"+#servlet+"?page=*crystal hrempcount(xdept=From Department,xdept=To Department,xsec=From Section,xsec=To Section,xempnum=From Employee=0,xempnum=To Employee=Zzz,xplace=From Location==ocombo=code Location,xplace=To Location==ocombo=code Location,xjstat=From Category,xjstat=To Category,xkin=From Sex==ocombo=""Male,,Female,,Other"",xkin=To Sex==ocombo=""Male,,Female,,Other"")"
+//-Customized Reports
+//Employee Count						    |#classPath+"/"+#servlet+"?page=*crystal hrempcount(xdept=From Department= =,xdept=To Department=Zzz=,xsec=From Section= =,xsec=To Section=Zzz=,xempnum=From Employee=0=,xempnum=To Employee=Zzz=,xplace=From Location= =ocombo=code Location=,xplace=To Location=Zzz=tcombo=code Location,xjstat=From Category= =,xjstat=To Category=Zzz=,xkin=From Sex= =ocombo=""Male,,Female,,Other"",xkin=To Sex=Zzz=tcombo=""Male,,Female,,Other,,Zzz"")"
+//Division Wise Employee List				|#classPath+"/"+#servlet+"?page=*crystal hrempdiv(xdate=From Date,xdate=To Date)"
+//Employee Details Report					|#classPath+"/"+#servlet+"?page=*crystal hrmstd(xdept=From Department= =,xdept=To Department=Zzz=,xsec=From Section= =,xsec=To Section=Zzz=)"
+//Level wise total employee list			|#classPath+"/"+#servlet+"?page=*crystal hremplistlvl(xlevel=From Management Level=0==code Management Level,xlevel=To Management Level=Zz==code Management Level,xhrc1=From Salary Rank=0=combo=code Rank,xhrc1=To Salary Rank=Zz=combo=code Rank,xtitle=From Designation=0=text=list xdesig,xtitle=To Designation=Zz=text=list xdesig)"
+//Supervisor wise employee list			|#classPath+"/"+#servlet+"?page=*crystal hrsuper(xempnum=From Supervisor=0,xempnum=To Supervisor=Zzz,xdept=From Department=0,xdept=To Department=Zz)"
+-English
+Appoinment Letter Permanent              |#classPath+"/"+#servlet+"?page=*crystal Appoinment_Letter_Permanent(xh101=Ref,xempnum=Employee Number,xh101=Basic Salary Per Anum,xh101=Notice Duration,xdate=Join Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Appointment Letter Contractual                      |#classPath+"/"+#servlet+"?page=*crystal Employment_Contract(xh101=Ref,xempnum=Employee Number,xh101=Notice Duration,xh101=Job Location,xh101=Paid Amount,xh101=Termination Period(Month),xdate=Effect/Join Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Extension of Probation Period            |#classPath+"/"+#servlet+"?page=*crystal Extension_of_Probation_Period(xempnum=Employee Number,xh101=Extension Duration ,xdate=Extension Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Extension of Probation Period Further    |#classPath+"/"+#servlet+"?page=*crystal Extension_of_Probation_Period_Further(xempnum=Employee Number,xdate=Letter Date,xdate=Supposed to end Probation Date,zmessage=Notice,xh101=Extension Duration ,xdate=New Extension Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Employment Certificate                   |#classPath+"/"+#servlet+"?page=*crystal  Employment_Certificate(xempnum=Employee Number, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Experience Certificate Resigned                 |#classPath+"/"+#servlet+"?page=*crystal Experience_Certificate_resigned(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Letter of Advice               			 |#classPath+"/"+#servlet+"?page=*crystal LetterofAdvice(xempnum=Employee Number, xdate=Reply Date,xdate=Issue Date,zmessage=Notice,xh101=Attitude,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Letter of Advice (Attendence Purpose)     |#classPath+"/"+#servlet+"?page=*crystal LetterofAdviceLeavePurpose(xempnum=Employee Number, zmessage=Notice,zmessage=Consideration,xh101=Concern,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Show Cause for Attendence                |#classPath+"/"+#servlet+"?page=*crystal show_case_for_attendence(xempnum=Employee Number, xdate=Notice Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Show Cause                               |#classPath+"/"+#servlet+"?page=*crystal show_cause(xempnum=Employee Number, zmessage=Notice,xh101=Sign Holder Name,xh101=Sign Holder Position)"                
+Suspention Pending Inquiry               |#classPath+"/"+#servlet+"?page=*crystal suspention_pending_inquiry(xempnum=Employee Number, zmessage=Notice,znote=Notice Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Warning Letter                           |#classPath+"/"+#servlet+"?page=*crystal Warning_Letter(xempnum=Employee Number,xdate=Explanation Date,xdate=Charge-Sheet Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Experience Certificate                   |#classPath+"/"+#servlet+"?page=*crystal Experience_Certificate(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Resignation Acceptance                   |#classPath+"/"+#servlet+"?page=*crystal Resignation_acceptance(xempnum=Employee Number,xdate=Letter Date,xdate=Effected Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Termination                              |#classPath+"/"+#servlet+"?page=*crystal Termination(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Salary Certificate                       |#classPath+"/"+#servlet+"?page=*crystal Salary_Certificate(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Employees Clearance  					|#classPath+"/"+#servlet+"?page=*crystal Employess_clearment(xempnum=Employee Number)"
+Acknowledgement 					   	|#classPath+"/"+#servlet+"?page=*crystal achknowledgement(xempnum=Employee Number,xh101=Cheque Number,xdate=Cheque Date)"
+
+
+-Bangla
+Bengali Auto Letter  								|#classPath+"/"+#servlet+"?page=hrauto1"
+Bengali Auto Letter 2								|#classPath+"/"+#servlet+"?page=hrauto2bangla"
+Bengali Auto Letter 3								|#classPath+"/"+#servlet+"?page=hrauto3bangla"
+Bengali Auto Advice Letter								|#classPath+"/"+#servlet+"?page=hrautobanglaAdvice"
+
+//-------------------------------------------------------------------
+
