@@ -1,0 +1,61 @@
+//hr.menu
+caption "Human Resource Data" page
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+-Employee DataBase
+Employee Recruitment               |#classPath+"/"+#servlet+"?menu=hrrec"                   |common
+//Employee Recruitment CV               |#classPath+"/"+#servlet+"?page=hrmstcv1"                   |common
+//Employee Recruitment Master               |#classPath+"/"+#servlet+"?page=hrrecmst"                   |common
+//Orientation And Induction               |#classPath+"/"+#servlet+"?page=hrorienh"                   |common
+Master Maintenance               |#classPath+"/"+#servlet+"?page=hrmst&nexttab=Employees"                   |common
+Employment Information             |#classPath+"/"+#servlet+"?page=premp&command=clear"
+Manpower Planning               |#classPath+"/"+#servlet+"?menu=hrmp"                |common
+//Travel Planning               |#classPath+"/"+#servlet+"?page=hrtplanh"                   |common
+//Travel Management               |#classPath+"/"+#servlet+"?menu=hrtplan"                   |common
+//Competency Mapping               |#classPath+"/"+#servlet+"?page=hrcompetmaph"                   |common
+-Increment
+Increment                       				|#classPath+"/"+#servlet+"?page=princremhed&mode=hr"
+Increment For Management                       				|#classPath+"/"+#servlet+"?page=princremhedm"
+//Training and Development              			|#classPath+"/"+#servlet+"?page=hrtrinhed&command=clear"
+-Auto Generate Letter
+//Internal Department Transfer Order 			           			|#classPath+"/"+#servlet+"?page=prautorpt&command=clear"
+///Promotion 			          				 			|#classPath+"/"+#servlet+"?page=prautorptpro&command=clear"
+//Promotion And Yearly Increment 			           			|#classPath+"/"+#servlet+"?page=prautorptproinc&command=clear"
+//Yearly Increment 			           			|#classPath+"/"+#servlet+"?page=prautyinc&command=clear"
+//Office Circular 			           			|#classPath+"/"+#servlet+"?page=prcloseday&command=clear"
+//Bank Letter                        |#classPath+"/"+#servlet+"?page=*crystal pr_salary amount transfer(xdate=Date,xremarks=TO,xnote=Subject,xpayact=Account No,xrem=From)"
+Appointment Letter 			           			|#classPath+"/"+#servlet+"?page=prautocv&command=clear"
+Appoinment Letter Permanent              |#classPath+"/"+#servlet+"?page=*crystal Appoinment_Letter_Permanent(xh101=Ref,xempnum=Employee Number,xh101=Basic Salary Per Anum,xh101=Notice Duration,xdate=Join Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Extension of Probation Period            |#classPath+"/"+#servlet+"?page=*crystal Extension_of_Probation_Period(xempnum=Employee Number,xh101=Extension Duration ,xdate=Extension Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Extension of Probation Period Further    |#classPath+"/"+#servlet+"?page=*crystal Extension_of_Probation_Period_Further(xempnum=Employee Number,xdate=Letter Date,xdate=Supposed to end Probation Date,zmessage=Notice,xh101=Extension Duration ,xdate=New Extension Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Employment Certificate                   |#classPath+"/"+#servlet+"?page=*crystal  Employment_Certificate(xempnum=Employee Number, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Letter of Advice               			 |#classPath+"/"+#servlet+"?page=*crystal LetterofAdvice(xempnum=Employee Number, xdate=Reply Date,xdate=Issue Date,zmessage=Notice,xh101=Attitude,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Letter of Advice(Attendence Purpose)     |#classPath+"/"+#servlet+"?page=*crystal LetterofAdviceLeavePurpose(xempnum=Employee Number, zmessage=Notice,zmessage=Consideration,xh101=Concern,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Show Cause for Attendence                |#classPath+"/"+#servlet+"?page=*crystal show_case_for_attendence(xempnum=Employee Number, xdate=Notice Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Show Cause                               |#classPath+"/"+#servlet+"?page=*crystal show_cause(xempnum=Employee Number, zmessage=Notice,xh101=Sign Holder Name,xh101=Sign Holder Position)"                
+Suspention Pending Inquiry               |#classPath+"/"+#servlet+"?page=*crystal suspention_pending_inquiry(xempnum=Employee Number, zmessage=Notice,znote=Notice Date,xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Warning Letter                           |#classPath+"/"+#servlet+"?page=*crystal Warning_Letter(xempnum=Employee Number,xdate=Explanation Date,xdate=Charge-Sheet Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Experience Certificate                   |#classPath+"/"+#servlet+"?page=*crystal Experience_Certificate(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Experience Certificate Resigned                 |#classPath+"/"+#servlet+"?page=*crystal Experience_Certificate_resigned(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Resignation Acceptance                   |#classPath+"/"+#servlet+"?page=*crystal Resignation_acceptance(xempnum=Employee Number,xdate=Letter Date,xdate=Effected Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Termination                              |#classPath+"/"+#servlet+"?page=*crystal Termination(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Appointment Letter Contractual                      |#classPath+"/"+#servlet+"?page=*crystal Employment_Contract(xh101=Ref,xempnum=Employee Number,xh101=Notice Duration,zmessage=Job Location,xh101=Paid Amount,xh101=Termination Period(Month),xdate=Effect/Join Date, xh101=Sign Holder Name,xh101=Sign Holder Position)"
+Salary Certificate                       |#classPath+"/"+#servlet+"?page=*crystal Salary_Certificate(xempnum=Employee Number,xh101=Sign Holder Name,xh101=Sign Holder Position)" 
+Acknowledgement 					   	|#classPath+"/"+#servlet+"?page=*crystal achknowledgement(xempnum=Employee Number,xh101=Cheque Number,xdate=Cheque Date)"
+Employees Clearance  					|#classPath+"/"+#servlet+"?page=*crystal Employess_clearment(xempnum=Employee Number)"
+Bangla Test 							 |#classPath+"/"+#servlet+"?page=*crystal bng(xh101=Bangla Writing)"
+English Test								 |#classPath+"/"+#servlet+"?page=*crystal englishTest(xh101=English Word)"
+Bengali Auto Letter  								|#classPath+"/"+#servlet+"?page=hrauto1"
+Bengali Auto Letter 2								|#classPath+"/"+#servlet+"?page=hrauto2bangla"
+Bengali Auto Letter 3								|#classPath+"/"+#servlet+"?page=hrauto3bangla"
+Bengali Auto Advice Letter								|#classPath+"/"+#servlet+"?page=hrautobanglaAdvice"
+-General Setup
+//Setup                            |#classPath+"/"+#servlet+"?menu=hrcodes"                |common
+Settings                         |#classPath+"/"+#servlet+"?page=casetup&module=HR"
+-Reports
+Reports                          |#classPath+"/"+#servlet+"?menu=hrreport"                   |common
+
+//-New Reports 
+//New Reports                          |#classPath+"/"+#servlet+"?menu=prreportsn"                   |common
+
