@@ -1,0 +1,5 @@
+WhilePrintingRecords;  
+numbervar srno;  
+srno := srno + 1;
+
+select count(xempnum) from hrmst where xtitle='Executive'
