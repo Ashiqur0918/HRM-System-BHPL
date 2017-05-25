@@ -1,0 +1,35 @@
+//Employee Other Details Menu
+//---------------------------------------------------------------------------------------
+caption "Payroll" page
+option                 					|action                                      |modules|models
+//---------------------------------------------------------------------------------------
+Transaction Entry       				|#classPath+"/"+#servlet+"?page=prpay"               |
+Actual Query            				|#classPath+"/"+#servlet+"?page=pracc"               |
+PF Standing 							|#classPath+"/"+#servlet+"?page=prpfhed"        |
+
+-Process		
+Payroll Process-Trial Run   			|#classPath+"/"+#servlet+"?page=prprocess"           |
+Payroll Process-Final Run   			|#classPath+"/"+#servlet+"?page=prprocessf"          |
+//Section Wise Overtime Process   		|#classPath+"/"+#servlet+"?page=protprocesssec"      |
+//Section Wise Attendance Bonus Process   |#classPath+"/"+#servlet+"?page=pratdbonprcoesssec"  |
+Section Wise Night Allowance Process    |#classPath+"/"+#servlet+"?page=protpronight"        |
+Food Bill Process    					|#classPath+"/"+#servlet+"?page=hrfoodprcss"        |
+Performance Bonus   			|#classPath+"/"+#servlet+"?page=prpbns"    
+Profit Sharing	    					|#classPath+"/"+#servlet+"?page=hrpps"        |
+PF Process								|#classPath+"/"+#servlet+"?page=prpfprocess"        |
+
+//Section Wise Heat Allowance Process     |#classPath+"/"+#servlet+"?page=prrheatproce"        |
+-Allowance setup
+Monthly Per Unit Food Cost		 		|#classPath+"/"+#servlet+"?page=hrfoodrate"           |
+//Holiday Allowance setup          		|#classPath+"/"+#servlet+"?page=prhol"           
+Night Allowance Setup			 		|#classPath+"/"+#servlet+"?page=prronight"           |
+//Heat Allowance Setup			 		|#classPath+"/"+#servlet+"?page=prrheat"           	 |
+Loans/Adavances         				|#classPath+"/"+#servlet+"?page=pradvh"              |	
+//Final Settlement         		 		|#classPath+"/"+#servlet+"?page=prjobendhed"         |
+//Bonus Process        			 		|#classPath+"/"+#servlet+"?page=prbonprocess"        |  
+////Bonus Policy        				|#classPath+"/"+#servlet+"?page=prbonpol"            |
+//Adjustment Process      				|#classPath+"/"+#servlet+"?page=pradjprocess"        |
+//Section Wise Overtime Process(B)   		|#classPath+"/"+#servlet+"?page=protprocesssecbuy"   | 
+Separation						 		|#classPath+"/"+#servlet+"?page=prseparation"        |
+
+//---------------------------------------------------------------------------------------
