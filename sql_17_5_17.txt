@@ -1,0 +1,5 @@
+select * from premp where xdateexp<>'2999-12-31' order by xempnum
+
+select max(xdate) from pratd where xempnum='BHL-000128'
+
+(select xname from hrfamily where xrelation='Father' and zid=hrmst."zid" and xempnum=hrmst."xempnum")
