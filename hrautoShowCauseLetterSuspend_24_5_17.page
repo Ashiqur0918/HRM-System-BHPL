@@ -1,0 +1,184 @@
+page hrautoShowCauseLetterSuspend
+
+caption "Bangla Report Show Cause Letter Suspend <br>"+header
+    sections form imtrn,script myscript
+	
+	valid myvalid
+		config
+			
+			call updshift
+			set header = "<table><tr><td>"
+            
+			set header = header+"<a href='"+#report(banglaAutoShowCauseLetterSuspend.rpt)+"&promptonrefresh=y&prompt0="+#id+"' target='_new' class='bt' >Print Report</a>"
+			
+			set header = header+"</td></tr></table>"
+			
+			//end if
+			if myaction .ne. "Clear"
+				//print header
+			end if
+		end config
+	end valid
+
+    form imtrn      
+	valid myvalid
+      layout 1
+      objects ~
+      		
+			xref,xh101 caption("Letter Date"),xh102 caption("Name"),xh103 caption("ID No:"),xh104 caption("Designation"),xh105 caption("Divition"),xh106 caption("Father Name"),xh107 caption("Present Vill"),xh108 caption("Present PO"),xh109 caption("Present Thana"),xh201 caption("Present Dist"),xh202 caption("Permanent Vill"),xh203 caption("Permanent PO"),xh204 caption("Permanent Thana"),xh205 caption("Permanent Dist"),xh209 caption("Salutation"),xh206 caption("Notice Date"),zmessage caption("Notice"),xh207 caption("Signature Holder Name"),xh208 caption("Signature Holder Position"),xh110 caption("4th Copy"),Generate,Show,Clear
+		
+		field zmessage
+			len 5000
+		end field
+	//		field xempf
+	//		caption ID
+    //     pick list xfemp
+    //     width 10
+    //     default "0"
+    //     event before
+    //        //set globals(xfemp)=xfemp
+    //     end event
+    //  end field
+
+   //  field xempt
+   //     pick list xtemp
+   //     width 10
+   //     default "Zzz"
+   //     //def #char(254)
+   //     event before
+   //        //set globals(xtemp)=xtemp
+   //     end event
+   //  end field
+	//  
+	  
+			
+			field Upd_Val
+			event before
+				call updshift
+			end event
+			end field
+			
+			field Generate
+			event before
+				
+			 
+			  
+			  call updshift
+			  
+			end event
+			end field
+			
+	end form
+	
+		
+		method updshift
+			//ref
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='ref' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','ref',0,'','"+xref+"','')"
+			set insval = #sql(mysql)
+			
+			//today date
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='tDate' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','tDate',0,'','"+xh101+"','')"
+			set insval = #sql(mysql)
+			
+			//name
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='name' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','name',0,'','"+xh102+"','')"
+			set insval = #sql(mysql)
+			
+			//id
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='id' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','id',0,'','"+xh103+"','')"
+			set insval = #sql(mysql)
+			
+			//designation
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='designation' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','designation',0,'','"+xh104+"','')"
+			set insval = #sql(mysql)
+			
+			//division
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='division' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','division',0,'','"+xh105+"','')"
+			set insval = #sql(mysql)
+			
+			//father name
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='father_name' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','father_name',0,'','"+xh106+"','')"
+			set insval = #sql(mysql)
+			
+			//present add vill
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='pv' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','pv',0,'','"+xh107+"','')"
+			set insval = #sql(mysql)
+			
+			//present add post
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='pp' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','pp',0,'','"+xh108+"','')"
+			set insval = #sql(mysql)
+			
+			//presentt add thana
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='pt' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','pt',0,'','"+xh109+"','')"
+			set insval = #sql(mysql)
+			
+			//present add dist
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='pd' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','pd',0,'','"+xh201+"','')"
+			set insval = #sql(mysql)
+			
+			//permanent add vill
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='ppv' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','ppv',0,'','"+xh202+"','')"
+			set insval = #sql(mysql)
+			
+			//permanent add post
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='ppp' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','ppp',0,'','"+xh203+"','')"
+			set insval = #sql(mysql)
+			
+			//permanent add thana
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='ppt' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','ppt',0,'','"+xh204+"','')"
+			set insval = #sql(mysql)
+			
+			//permanent add dist
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='ppd' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','ppd',0,'','"+xh205+"','')"
+			set insval = #sql(mysql)
+			
+			//salu
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='salu' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','salu',0,'','"+xh209+"','')"
+			set insval = #sql(mysql)
+			
+			//notice date
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='nd' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','nd',0,'','"+xh206+"','')"
+			set insval = #sql(mysql)
+			
+			//message
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='message' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','message',0,'','"+zmessage+"','')"
+			set insval = #sql(mysql)
+			
+			//sign_holder
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='sign_holder' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','sign_holder',0,'','"+xh207+"','')"
+			set insval = #sql(mysql)
+			
+			//sign_holder_pos
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='sign_holder_pos' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','sign_holder_pos',0,'','"+xh208+"','')"
+			set insval = #sql(mysql)
+			
+			//4th Copy 
+			set mydel = #sql("delete from cadata where xcontext='bnauto_ShowCauseSus' and zid="+#id+" and xkey='Copy' ")
+			str mysql = "insert into cadata(ztime,zid,xcontext,xkey,xrow,xname,xvalue,xcodealt) values('"+#time+"',"+#id+",'bnauto_ShowCauseSus','Copy',0,'','"+xh110+"','')"
+			set insval = #sql(mysql)
+			
+		end method
+		
+		
+      		
+end page
