@@ -1,0 +1,84 @@
+page prseparation
+	
+	caption "Pay Roll Separation"
+	section form separation,list sub
+	
+	valid myvalid
+		config
+			
+			set globals(xempnum)=xempnum
+			set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+			set myamt =0.0+#sql(mysql)
+			
+			set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+			set myyr =0.0+#sql(mysql1)/365
+			
+			set mynobasic=#round(myyr,0)
+			set mygamt=0.0+mynobasic*myamt
+			//if myyr>1
+			//	set mynobasic=1
+			//end if
+			//if myyr>=1.5
+			//	set mynobasic=2
+			//end if
+			//if myyr>=2.5
+			//	set mynobasic=3
+			//end if
+			//if myyr>=3
+			//	set mynobasic=myyr		
+			//end if
+			//#round(mynobasic,2)
+			//print "inside conf"+myamt+" "+myyr+" ---- "+mygamt
+		end config
+	end valid
+	
+	form separation
+		valid myvalid
+		table premp
+		order xempnum
+		objects xempnum,xjoindate display(cons),xdateexp,zactive,Process,Show,Update
+		
+		field Process
+			event after
+			
+			buffer prseparation
+			set prseparation.xempnum=xempnum
+			//print "Done ! !"
+			set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+			set myamt =0.0+#sql(mysql)
+			
+			set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+			set myyr =0.0+#sql(mysql1)/365
+			
+			set mynobasic=#round(myyr,0)
+			if myyr>1
+				set mygamt=0.0+mynobasic*myamt
+				
+			else 
+				set mygamt=0.0
+			end if	
+			set prseparation.xamt=0.0+mygamt
+			
+			set prseparation.xsign=1
+			set prseparation.xdate=xdateexp
+			set prseparation.xdesc="Gratuity"
+			
+			insert prseparation
+			
+			//print "Done ! !"
+			end event
+		end field
+	end form
+	
+	list sub
+		
+		caption "Pay Roll Separation Code"
+		table prseparation
+        order xempnum,xdesc
+        fixed xempnum
+		//objects  xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xempnum=?&xpaycode=?"),xamount
+		objects xempnum,xamt,xsign,xdate,xdesc
+		
+	end list
+
+end page
