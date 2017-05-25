@@ -1,0 +1,4 @@
+//(select count(xdatedue) from lmtrnday where xempnum=hrmst."xempnum" and xstatusleave='3-Sanctioned' and xcodeleave like '%Leave%' and xdatedue=pratd."xdate" )
+
+
+select xempnum,xdate,xatdstat from pratd where xempnum='BHL-000003' and xdate between '2017-05-01' and '2017-05-23' order by xdate
