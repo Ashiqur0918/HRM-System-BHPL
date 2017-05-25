@@ -1,0 +1,3 @@
+select xpfflag from pratd where xempnum='BHL-000010' and xper=4
+select xrelation from hrmst where xempnum='BHL-000021'
+select xcodealt from xcodes where xtype='Per Unit Food Cost'
