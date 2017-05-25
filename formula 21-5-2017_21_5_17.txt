@@ -1,0 +1,32 @@
+banglaComplainWithdraw
+
+hrautobanglaComplainWithdraw
+
+Complain
+
+
+select * from pratd where xempnum='BHL-000093' and xdate between '2017-05-01' and '2017-05-20'
+
+hrautobanglaWarningLetter
+
+banglaAutoWarningLetter
+
+Warning
+
+delete from pratd where xdate='2017-05-18' and xempnum='BHL-000093'
+
+prseparation
+
+select * from pratdummy where xdate='2017-05-18' 
+
+select * from pratd where xdate='2017-05-18' and xempnum='BHL-000093'
+
+select * from pratd where xatdstat like '%Leave%'
+
+
+select * from hrmst where xempnum='BHL-000004'
+
+select xamount from prpaymentdt where xempnum='BHL-000001' and xpaycode='001'
+
+select xdateexp-xjoindate from premp where xempnum='BHL-000001'
+
