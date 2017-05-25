@@ -1,0 +1,386 @@
+//*** further Modify by Monir Munna as on 16 July 2015 for PCIL 
+page prtxtupdnsm
+
+    caption "All Section Wise Attendance Posting (In For Team)"
+    sections form imtrn,script myscript
+
+    form imtrn      
+      layout 1
+      objects ~
+      		//xdatefrom default(#d),xplace caption(Location),xfsec,xtsec,xempf,xempt,Process,Show
+			xdatefrom default(#d),xempf,xempt,Process,Show
+      		
+       field xdatefrom
+            caption Date
+       end field
+	   
+		field xplace
+			display ocombo
+			default "Factory"
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Location'"
+		end field
+		
+		field xfsec
+			display ocombo
+			default "0"
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Section'"
+		end field
+		
+		field xtsec
+			display ocombo
+			default "Zzz"
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Section'"
+		end field
+		
+		
+      field xempf
+         pick list xfemp
+         width 10
+         default "0"
+         event before
+            //set globals(xfemp)=xfemp
+         end event
+      end field
+
+      field xempt
+         pick list xtemp
+         width 10
+         default "Zzz"
+         //def #char(254)
+         event before
+            //set globals(xtemp)=xtemp
+         end event
+      end field
+		
+	   
+	   
+		field xdiv
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='unit'"
+		end field
+	   
+	   
+		field process
+			event before
+				//print "DDDDDDDDDDDDDDDDDD"
+				set globals(ErrChk) = ""   
+				set globals(xempnum) = xempf
+				//set globals(xsec) = xfsec
+				
+			//  if globals(ErrChk) .ne. "1"
+			//	if xfsec .eq. ""
+			//		set globals(ErrChk) = "1"
+			//		error "From Section Not Defined"
+			//	end if
+			//  end if
+			//  
+			//  if globals(ErrChk) .ne. "1"
+			//	if xtsec .eq. ""
+			//		set globals(ErrChk) = "1"
+			//		error "To Section Not Defined"
+			//	end if
+			//  end if           
+			  
+			  if globals(ErrChk) .ne. "1"
+				if xempf .eq. ""
+					set globals(ErrChk) = "1"
+					error "From Employee Code Not Defined"
+				end if
+			  end if
+			  
+			  if globals(ErrChk) .ne. "1"
+				if xempt .eq. ""
+					set globals(ErrChk) = "1"
+					error "To Employee Code Not Defined"
+				end if
+			  end if           
+			  
+
+				set In_time = ""
+				set Out_time = ""
+				set stat = ""
+				set D_time = ""
+				set P_time = ""		  
+				int i = 0
+				int count=0
+				str clist="xempnum"
+					
+				str mysql = "select "+clist+" from pratdummy where zid='"+#id+"' and xdate='"+xdatefrom+"' and xempnum in(select ~
+							xid from hrmst where zid='"+#id+"' and xempnum>='"+globals(xempnum)+"' and xempnum<='"+xempt+"')"
+				set count = #sqlfill(mysql)
+			//--	
+				//str mysql = "select "+clist+" from pratdummy where zid='"+#id+"'  and xdate='"+xdatefrom+"' and xempnum in(select ~
+				//			xid from hrmst where zid='"+#id+"' and xplace='"+xplace+"' and xsec>='"+globals(xsec)+"' and xsec<='"+xtsec+"' and xempnum>='"+globals(xempnum)+"' ~
+				//						and xempnum<='"+xempt+"')"
+				//set count = #sqlfill(mysql)
+			
+				//str mysql = "select "+clist+" from pratdummy where zid='"+#id+"'  and xdate='"+xdatefrom+"' " //" and xlocation='"+xplace+"'" //No need location and location table name devicelocation
+				//set count = #sqlfill(mysql)
+			//--
+			
+				//print #result+" > "+ count+" < "+mysql
+
+				if count>0
+					while i<count
+						array get(i,clist)
+						
+						//set emp_code = #sql(str,"select xempnum from hrmst where zid='"+#id+"' and xid='"+xempnum+"' and xplace='"+xplace+"' and ~
+						set emp_code = #sql(str,"select xempnum from hrmst where zid="+#id+" and xid='"+xempnum+"' and ~
+										xempnum=(select xempnum from premp where zid='"+#id+"' and xempnum=hrmst.xempnum and zactive='1')")
+						set rostersft=#sql("select xshift from prroster where zid='"+#id+"' and xempnum='"+emp_code+"' and xdate='"+xdatefrom+"'")
+						//print   xempnum+" ; "+emp_code+" ; "+rostersft
+						
+						if rostersft .ne. ""
+							set shift=rostersft
+						else 
+							set empshift=#sql(str,"select xshift from premp where zid='"+#id+"' and  xempnum='"+emp_code+"'")
+							set shift=empshift
+						end if
+						//error empshift+" M;N "+emp_code
+						
+						if shift .ne. ""
+							set tprop=""
+							set xprops = #sql("select xprops from xcodes where zid='"+#id+"' and xtype ='Shift' and xcode='"+shift+"'")
+							set tprop = #prop(xprops,"In_Time")
+							if tprop .eq. ""
+								set globals(ErrChk)="1"
+								error "In Time not found in Property List for This Shift ; Shift Code : "+shift+" ; Emp Code : "+emp_code
+							end if						
+						//error tprop
+						
+							set chkdate = #sql("select xdate from prath where zid ='"+#id+"' and xdate='"+xdatefrom+"' and xshift='"+shift+"' ")
+							if #result .ne. "true" 
+								set mysql = "insert into prath (zid,xyear,xper,xday,xdate,xshift,xatdrem,zemail,xemail)"
+								set mysql = mysql + " values('"+#id+"','"+#sub(xdatefrom,0,4)+"','"+#sub(xdatefrom,5,2)+"','"+#sub(xdatefrom,8,2)+"',~
+													'"+xdatefrom+"','"+shift+"','','"+#user+"','')"
+								set insdata =#sql(mysql)								
+
+								if #result .ne. "true"
+									set globals(ErrChk)="1"
+									error "Error Creating In Attendence Process Details."
+								end if
+							end if
+						end if
+						
+	 //print In_Time+" mmmmm "+tprop
+						set d_in_time = #sql("select xtssch from pratdt where zid='"+#id+"' and xshift='"+shift+"'")
+						set d_out_time = #sql("select xtssch2 from pratdt where zid='"+#id+"' and xshift='"+shift+"'")
+
+
+						
+						//if shift .eq. "C"
+						//	set In_time = #sql("select max(xdesc) from pratdummy where xdate='"+xdatefrom+"' and xempnum='"+xempnum+"'")
+						//else
+						//	set In_time = #sql("select min(xdesc) from pratdummy where xdate='"+xdatefrom+"' and xempnum='"+xempnum+"'")
+						//end if
+						//set In_time = #sql("select xdesc from pratdummy where xdate='"+xdatefrom+"' and xdesc >'"+tprop+"' and xempnum='"+xempnum+"' order by xdesc")
+						
+						set txt_in_time = #sql("select xdesc from pratdummy where xdate='"+xdatefrom+"' and xdesc >'"+tprop+"' and xempnum='"+xempnum+"' order by xdesc")
+						//set In_time=#sub(txt_in_time,11,8)
+						set In_time=txt_in_time
+						
+						//set In_time=txt_in_time 
+						//print In_time+" time "+xempnum+" "+shift
+
+						
+						set offdate=#sql("select xempnum from praholemp  where zid='"+#id+"' and xdatefromreq<='"+xdatefrom+"' and xdatetoreq>='"+xdatefrom+"' ~
+												and xempnum='"+emp_code+"' and xname=(select ~
+											xname from cadate where zid=praholemp.zid and xdate='"+xdatefrom+"')")
+						
+						if #result .eq. "true"
+							set stat="Holiday"
+						end if
+						
+									
+						
+						if In_time .eq. ""
+							set stat = "Absent"
+						else if In_time .le. d_in_time
+							set stat = "Present"
+						else if In_time .gt. d_in_time
+							set stat = "Late"
+						end if
+						
+						//set In_time=xdatefrom+" "+In_time
+						set In_time=In_time
+						
+						set xlitime=xdatefrom+" "+d_in_time
+						set xlotime=xdatefrom+" "+d_out_time
+						//set out_time=xdatefrom+" "+"00:00:00"
+						set out_time="00:00:00"
+						
+				//		print stat
+
+						set chkrec = #sql("select xempnum from pratd where zid ='"+#id+"' and xdate='"+xdatefrom+"' and xshift='"+shift+"' and xempnum='"+emp_code+"' ")        
+			
+						if #result .ne. "true"
+							set mysql = "insert into pratd (ztime,zid,xyear,xper,xday,xdate,xshift,xempnum,~
+										xintime,xouttime,xlotime,xlitime,xatdstat,xpflag,zemail,xemail,xrem,xrow,xhours,xcappaid,xmaxpay,xfdate)"
+							set mysql = mysql + " values('"+#time+"','"+#id+"','"+#sub(xdatefrom,0,4)+"','"+#sub(xdatefrom,5,2)+"','"+#sub(xdatefrom,8,2)+"',~
+											'"+xdatefrom+"','"+shift+"','"+emp_code+"','"+In_time+"','"+out_time+"','"+xlotime+"','"+xlitime+"','"+stat+"','','"+#user+"',~
+											'','','0','0','0','0','"+#max+"')"
+							set insdata =#sql(mysql)							
+//print #result+" "+"Insert"+" "+mysql
+							if #result .ne. "true"
+							end if
+							//errror "MMM"
+						else
+							str mysql = "update pratd set xintime='"+In_time+"',xatdstat='"+stat+"' where zid='"+#id+"' and xdate='"+xdatefrom+"' and xshift='"+shift+"' and xempnum='"+emp_code+"'"
+							set updval = #sql(str,mysql)
+							action show
+							//print #result+" "+stat
+						end if
+						set i=0+i+1
+					end while
+				end if
+				
+			//	error "rerrere"
+				set mysql = "insert into prath (zid,xyear,xper,xday,xdate,xshift,xatdrem,zemail,xemail)"
+					set mysql = mysql + " select '"+#id+"','"+#sub(xdatefrom,0,4)+"','"+#sub(xdatefrom,5,2)+"','"+#sub(xdatefrom,8,2)+"',~
+												'"+xdatefrom+"',xshift,'','"+#user+"','' from (select xshift from premp where zid='"+#id+"' and ~
+							xempnum not in (select xempnum from pratd where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"') group by xshift) tbl ~
+							where xshift not in (select xshift from prath where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"')"
+					set insdata =#sql(mysql)
+								
+					//print #result +" header inserted "+mysql		
+								
+				set mysql = "insert into pratd (ztime,zid,xyear,xper,xday,xdate,xshift,xempnum,~
+							xintime,xouttime,xlotime,xlitime,xatdstat,xpflag,zemail,xemail,xrem,xhours,xcappaid,xrow)"
+				set mysql = mysql + " select '"+#time+"','"+#id+"','"+#sub(xdatefrom,0,4)+"','"+#sub(xdatefrom,5,2)+"','"+#sub(xdatefrom,8,2)+"','"+xdatefrom+"',coalesce((select case when (select max(xshift) from ~
+								prroster where zid='"+#id+"' and xempnum=hrmst.xempnum and xdate='"+xdatefrom+"')<>'' then (select max(xshift) from ~
+								prroster where zid='"+#id+"'  and xempnum=hrmst.xempnum and xdate='"+xdatefrom+"') else (select max(xshift) from ~
+								premp where zid='"+#id+"' and  xempnum=hrmst.xempnum) end),'') , ~
+								xempnum,'"+#max+"','"+#max+"','"+#time+"','"+#time+"','Not-Punched','','"+#user+"','','','0','0','0' from hrmst where zid='"+#id+"' ~
+								and xempnum in (select xempnum from premp where zid='"+#id+"' and xempnum=hrmst.xempnum and zactive='1') and ~
+								xempnum not in (select xempnum from pratd where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' )"
+				set insdata =#sql(mysql)
+				
+				//print #result +""+ mysql
+				// off as on 08 July 15
+				set updsql="update pratd set xatdstat=(select xcodeleave from lmtrnday where zid=pratd.zid and xempnum=pratd.xempnum and xdatedue=pratd.xdate) where zid='"+#id+"' and ~
+				xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' and (select xcodeleave from lmtrnday where zid=pratd.zid and xempnum=pratd.xempnum and xdatedue=pratd.xdate)<>''"
+				set updsql1=#sql(str,updsql)
+				
+				//set updsql="update pratd set xatdstat=(select xleave from prleave  where zid="+#id+" and xempnum='"+emp_code+"' and xfdate<='"+xdatefrom+"' and xtdate>='"+xdatefrom+"' and xrem='Leave With Pay') ~
+				//where zid="+#id+" and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+				//			//and xempnum = '"+emp_code+"'"
+				//			and xempnum in (select xempnum from prleave  where zid='"+#id+"' and xfdate<='"+xdatefrom+"' and xtdate>='"+xdatefrom+"' and xrem='Leave With Pay')"
+				//	//print updsql		
+				//set updsql1=#sql(str,updsql)	
+				
+				//set updsql="update pratd set xatdstat='On Leave Without Pay' where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+				//			and xempnum in (select xempnum from prleave  where zid='"+#id+"' and xfdate<='"+xdatefrom+"' and xtdate>='"+xdatefrom+"' and xrem='Leave Without Pay')"
+				//set updsql1=#sql(str,updsql)
+
+
+				set updsql41="update pratd set xatdstat='Holiday' where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+								and xdate in (select xdate from cadate where zid='"+#id+"' and xdate='"+xdatefrom+"'  and xremark='Holiday') ~
+								and xatdstat='Not-Punched' "
+				set upval=#sql(str,updsql41)
+	
+				set updsql4="update pratd set xatdstat='Absent' where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+							and xatdstat='Not-Punched'"
+				set updsqab=#sql(str,updsql4)
+				
+				
+				set updsql5="update pratd set xatdstat='Present' where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+							and xatdstat='On Leave'"
+				set updsqlpre=#sql(str,updsql5)
+				
+				set updsql6="update pratd set xatdstat='Holiday',xrem='Day Off' where zid='"+#id+"' and xyear='"+#sub(xdatefrom,0,4)+"' and xper='"+#sub(xdatefrom,5,2)+"' and xday='"+#sub(xdatefrom,8,2)+"' ~
+							and xempnum in (select xempnum from praholemp  where zid='"+#id+"' and xdatefromreq<='"+xdatefrom+"' and xdatetoreq>='"+xdatefrom+"' and xname=(select ~
+							xname from cadate where zid=praholemp.zid and xdate='"+xdatefrom+"'))"
+				set updsqla=#sql(str,updsql6)
+				//print #result+" "+updsql6
+				
+				int iab = 0
+				int countab=0
+				str clistab="xempnum"
+
+				str mysql = "select "+clistab+" from pratd where zid='"+#id+"'  and xdate='"+xdatefrom+"' and xatdstat='Holiday' and xempnum>='"+globals(xempnum)+"' ~
+										and xempnum<='"+xempt+"'   order by xempnum"
+				set countab = #sqlfill(mysql)
+
+//print #result+" "+ countab+" "+mysql
+				if countab>0
+					while iab<countab
+						//print "inside while"
+						array get(iab,clistab)	
+								set mysql="select xempnum from praholemp  where zid='"+#id+"' and xdatefromreq<='"+xdatefrom+"' ~
+											and xdatetoreq>='"+xdatefrom+"' and xempnum='"+xempnum+"'"
+								set offdate=#sql(mysql)
+								
+							if #result .eq. "true"
+							
+								set mysqlname="select xname from praholemp  where zid='"+#id+"' and xdatefromreq<='"+xdatefrom+"' ~
+											and xdatetoreq>='"+xdatefrom+"' and xempnum='"+xempnum+"'"
+								set offname=#sql(mysqlname)
+								
+								set xname=#sql("select xname from cadate where zid='"+#id+"' and xdate='"+xdatefrom+"'")
+								
+								if offname .ne. xname
+									set rostersft=#sql("select xshift from prroster where zid='"+#id+"' and xempnum='"+xempnum+"' and xdate='"+xdatefrom+"'")
+									print xname+" "+offname
+									if rostersft .ne. ""
+										set shift=rostersft
+									else 
+										set empshift=#sql(str,"select xshift from premp where zid='"+#id+"' and  xempnum='"+xempnum+"'")
+										set shift=empshift
+									end if
+
+									if shift .eq. "C"
+										set In_time = #sql("select max(xdesc) from pratdummy where xdate='"+xdatefrom+"' and xempnum='"+xempnum+"'")
+									else
+										set In_time = #sql("select min(xdesc) from pratdummy where xdate='"+xdatefrom+"' and xempnum='"+xempnum+"'")
+									end if
+									
+									if In_time .eq. "" .or. In_time .eq. "null"
+										
+										str mysql = "update pratd set xatdstat='Absent' where zid='"+#id+"' and xdate='"+xdatefrom+"' and xshift='"+shift+"' and xempnum='"+xempnum+"'"
+										set updval = #sql(str,mysql)
+									
+										
+									end if
+								end if
+								
+							end if
+
+						set iab=0+iab+1
+					end while
+				end if
+				
+					set chk_sp_day=#sql("select xremark from cadate where zid='"+#id+"' and xdate='"+xdatefrom+"'")
+						if chk_sp_day .eq. "Special Holiday"
+							str mysql = "update pratd set xatdstat='Holiday',xrem='Special Holiday' where zid='"+#id+"' and xdate='"+xdatefrom+"'"
+							set updval = #sql(str,mysql)
+							
+						end if 
+				//print xatdstat+" MMM"
+				print "Attendance Posting (In) Completed Successfully"
+			end event
+		end field
+
+      embed onsubmit="submitit(this)"
+    end form
+
+    script myscript
+
+        <script language=javascript type="text/javascript">
+        var detail
+
+        function clicked(b){
+          detail="clicked"
+        }
+        function submitit(form){
+          if (detail=="clicked"){
+            form.page.value = "imtrn"
+          }
+        }
+         function keeplastkey(){
+        document.imtrn.xtempstr1.value=document.imtrn.xitem.value
+        document.imtrn.xtempstr2.value=document.imtrn.xwh.value
+        }
+        </script>
+    end script
+
+end page
+//insert into pratdummy (zid,xempnum,xref,xdesc,xstatusjv) values ('602001','EMP-000004','2013-04-09','05:00:00','1')
