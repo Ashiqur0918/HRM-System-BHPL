@@ -1,0 +1,160 @@
+page praccmsg
+
+	caption header
+	 sidebar list two
+     sections form one, list one, script myscript, text top
+
+     text top
+        "<a href=#top title='Back to Top'><font color=blue size=+1><strong>Go Top</strong></font></a>"
+     end text
+
+     list one
+		caption "List of Employee"
+		table (select *,~
+			(select xfull from hrmst where zid=prmsg.zid and xempnum=prmsg.xempnum) as tmpname, ~
+			(select xtitle from hrmst where zid=prmsg.zid and xempnum=prmsg.xempnum) as tmpdesig, ~
+			(select xdiv from hrmst where zid=prmsg.zid and xempnum=prmsg.xempnum) as tmpdept ~
+			from prmsg) as tbl		
+        order xdatepay,xempnum
+        fixed xdatepay
+        rows 20
+        objects xempnum attrib(link #servlet+"?page=praccmsg&command=Show&xdatepay=?&xempnum=?"),~
+                tmpname,tmpdesig,tmpdept
+
+
+        field tmpname
+          storage varchar
+          caption Employee Name
+        end field
+
+        field tmpdept
+          storage varchar
+          caption Department
+        end field
+
+        field tmpcat
+          storage varchar
+          caption Category
+        end field
+
+        field tmpdesig
+          storage varchar
+          caption Title
+        end field
+     end list
+	 
+	list two
+        caption "Amount Details for "Emloyee Code: ""+xempnum+"   Name:"+name
+		table (select *,~
+			(select xdesc from prpayhead ~
+			where zid=practrndt.zid and xpaycode=practrndt.xpaycode) as tmpdesc ~
+			from practrndt) as tbl
+        order xdatepay,xempnum,xpaycode
+        fixed xdatepay,xempnum
+        rows 20        
+        objects xpaycode,tmpdesc,xamount
+
+        field xpaycode
+         width 10
+         end field
+
+        field xamount
+         caption Amount
+        end field
+
+        field xlong
+         caption Description
+        end field
+
+        field tmpdesc
+          storage varchar
+          caption Description
+        end field
+     end list	
+
+     form one
+		valid valid
+        table prmsg
+        order xempnum
+        fixed xdatepay
+        layout 1
+        objects  Show, Detail, Return,Clear, Top, Previous, Next, Bottom,~
+                 xempnum,xdumname,xadvflag display(constant),xdayab display(const),~
+                 xdaylv display(const),xratev,~
+                 xpflag display(constant)
+
+          field xempnum
+            Pick list xempnum
+            width 10
+            event after
+              set globals(xempnum)=xempnum
+            end event
+          end field
+
+          field xratev
+            caption Leave Day (w/o Pay)
+            display const
+          end field
+
+
+          field xresth
+            colums 3
+          end field
+
+          field xdumname
+            attrib local
+            display constant
+            caption Employee Name
+            event after
+              set xdumname=#sql(str,"select xname from hrmst where xempnum='"+xempnum+"'")
+            end event
+          end field
+
+          embed onsubmit="submitit(this)"
+
+          field Return
+           embed onclick="clicked(this)"
+          end field
+
+          field Detail
+            embed onclick="Detail(this)"
+          end field
+
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+          var detail=" "
+
+          function clicked(b){
+            detail="Back"
+          }
+
+          function Detail(b){
+            detail="Detail"
+          }
+
+          function submitit(form){
+            if (detail=="Back"){
+              form.page.value = "pracc"
+              form.searchbutton.value="Find xdatepay=?"
+              //return false
+            }
+            if (detail=="Detail"){
+              form.page.value = "practrndt"
+              form.searchbutton.value="Find xdatepay=?&xempnum=?"
+            }
+          }
+
+        </script>
+     end script
+
+	 valid valid
+		config
+			set header = "<span class=bl><font size=+1>Payment Date <a href=/da/"+#servlet+"?page=pracc&command=Show&xdatepay="+xdatepay+">" +xdatepay+ "</a></span>"
+			set name=#sql("select xfirst from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+		end config
+	 end valid
+	 
+end page
