@@ -1,0 +1,245 @@
+page eessleave
+     caption header+"<br>"+details
+
+     layout mylayout 2 2  //columns rows
+       list lmstatus  (1, 1, 2) //(col,row,colspan,rowspan,width,height)
+       form trn  (1, 2) //(col,row,colspan,rowspan,width,height)
+       list trn (2, 2)
+       script myscript (0, 0)
+     end layout
+     
+     
+     
+     list trn
+        
+        caption xempnum
+        table lmtrn
+        order xempnum,xdate,xcodeleave,xtrnleave desc
+        
+        fixed xempnum
+        objects  xdate,xcodeleave,xtrnleave attrib(link #servlet+"?page="+page+"&command=Show&xempnum="+xempnum+"&xdate=?&xcodeleave=?&xtrnleave=?"), ~
+                xdaysreq,xstatusleave//,xapproved
+
+                field xrate
+                  caption Pay Rate
+                end field
+
+     end list
+     
+     form trn
+        command Clear
+        valid valid
+        caption "Leave"
+        table lmtrn
+        order xempnum,xdate,xcodeleave,xtrnleave desc
+        
+        fixed xempnum
+        
+        return #servlet
+        layout 2
+        objects ~
+                ~
+                Clear,Apply,Update,Delete,Show,~//Add, Top, Previous, Next, Bottom,~
+                ~//xempnum attrib(hide),~
+                xcodeleave attrib(mandatory) display(text),~
+                xdaysreq,xdatefromreq ,xdatetoreq attrib(submit),~
+                xpurpose columns(3),xnote columns(3) width(50),~
+                xtrnleave display(const),xdate display(const),xsign display(const),~
+                xdateto display(const),xdateapply display(const),~
+                xdateapd display(const),xstatusleave display(const),xrecommendedby display(const),~
+                xapprovedby display(const),xcancelreqby display(const),~
+                xcancelledby display(const),xposted display(const),xcarried display(const)//,~
+                //xrecommended display(const),xapproved display(const),xdenied display(const)
+				
+				field xpurpose
+			display ocombo
+			pick "Family affair,Personal,Others,Sickness"
+		end field
+		
+                
+field xdatefromreq
+  default #date
+end field
+field xdate
+  default #date
+end field
+        field xcodeleave
+          display combo
+          picklist "select xcodeleave from lmstatus where xempnum='"+xempnum+"'"
+        end field
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        function clicked(b){
+
+          button=b.value
+        }
+        function submitit(form){
+          if (button=="Return"){
+            form.page.value = "lmemp"
+            form.searchbutton.value = "Find xempnum=?&xdateeff=?"
+            //return false
+          }
+        }
+
+        </script>
+        
+    end script
+    valid valid
+    preconfig
+      set xempnum=hrmst.xempnum(" xemail='"+#user+"'")
+      set globals(xempnum)=xempnum
+    end preconfig
+      config
+        set mode="Apply"
+
+
+        set xdate=xdatefromreq
+
+
+
+
+
+
+        
+        set globals(xempnum)=xempnum
+        set globals(mode)=mode
+        set globals(xempnum)=xempnum
+        set globals(xdate)=xdate
+        set globals(xcodeleave)=xcodeleave
+        set globals(xtrnleave)=xtrnleave
+        set globals(xgent)=lmemp.xgent(xempnum)
+        
+//year        
+        if xdate .eq. ""
+          set xdate=#date
+        end if
+
+//print "xdate="+xdate
+            str sep=#sub(xdate,4,1)
+            if sep .ne. "-"
+              set xdate=#sub(xdate,6,4)+"-"+#sub(xdate,3,2)+"-"+#sub(xdate,0,2)
+            end if
+
+      str gent=lmemp.xgent(xempnum)
+      console "gent="+gent
+      int xyear=lmyear.xyear(" xdateeff <= '"+xdate+"' and xdateexp >= '"+xdate+"' and xgent = '"+gent+"'")
+
+            //set xyear=#sub(xdate,0,4)
+            set globals(xyear)=xyear
+//print "xyear="+xyear
+//year end        
+        
+        int days=#days(xdatetoreq)-#days(xdatefromreq)+1
+		  set xdaysreq=0+ days
+        
+        call lmcalc
+        
+        str header=mode+" Leave"
+        if xempnum .ne. ""
+          set header=header+" for <font color=red>"+hrmst.xfirst(xempnum)+" "+hrmst.xmiddle(xempnum)+" "+hrmst.xlast(xempnum)+"</font> ("+xempnum+")"
+        end if
+        
+        set globals(header)=header
+        if xstatusleave .ne. #status("xstatusleave",1)
+          set #fields(Update.display)="disabled"
+        end if
+        
+      end config
+      
+      after Add
+      //after Apply
+	  set empleavedoc=xempnum+"|"+#sub(xdate,0,10)+"|"+xcodeleave+"|"+xtrnleave
+	  set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Leave Type','"+empleavedoc+"','0','1','','','"+xlvtype+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xlvtype+"' where zid='"+#id+"' and xcontext='Employee Leave Type' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+        if #result .eq. "true"
+          str source=xempnum
+          str target=""
+          call lmroute
+          set target=hrmst.xemail("xempnum='"+target+"'")
+    
+          buffer lmtrn=#form
+          set lmtrn.xrecommendedby=target        
+          update lmtrn(xdate,xempnum,xcodeleave,xtrnleave)
+
+          str msg
+          text "lmapply.email","string msg"
+          mail from=#sysuser;;to=target;;sub="Leave Application by "+hrmst.xfull(xempnum)+" ("+xempnum+")" ;;message=msg
+		   print "target="+target
+		   print msg+" :msg"
+        end if
+      end after
+      
+      
+      before Apply
+        //#include lmadd.include
+        //buffer lmtrn=#form
+        //insert lmtrn
+        set #command="Add"
+        #include lmadd.include
+      end before
+      after Clear
+        set xdatefromreq=#date
+        set xdate=#date
+//console "a:"+xdate
+//        call lmcalc
+      end after
+
+    end valid
+
+
+    method lmcalc
+
+    if xcodeleave .ne. ""
+    
+      double avail=20
+      buffer lmemp=lmemp(xempnum)
+      set xgent=lmemp.xgent
+      buffer lmform=lmform(xgent,xcodeleave)
+      buffer lmstatus=lmstatus(xempnum,xcodeleave)
+      str dateeff=lmemp.xdateeff
+      str typeyear=lmform.xtypeyear
+      str whendue=lmform.xwhendue
+      double leavedue=lmform.xleavedue
+      double numofper=lmform.xnumofper
+      set date=xdate
+      set codeleave=xcodeleave
+      //set date=#date
+console "blm:"+date+"="+xcodeleave      
+      #include lmcalc.include
+console "alm:bf="+bf+"*earned="+earned      
+            set xdaysearned=earned
+            comp xdaysob=lmstatus.xdaysob+bf
+            //comp xdaysaccum=earned+xdaysob-xdaysexp-xdayscf-xdaysenc+xdayscr+xdayscan-xdaysreq-xdaysapp
+            comp xdaysaccum=earned+xdaysob-lmstatus.xdaysenc+lmstatus.xdayscr+lmstatus.xdayscan-lmstatus.xdaysreq-lmstatus.xdaysapp
+            comp xdaysavail=xdaysaccum-lmstatus.xlimitres
+
+            set xdaysearned=#round(xdaysearned,2)
+            set xdaysaccum=#round(xdaysaccum,2)
+            set xdaysavail=#round(xdaysavail,2)
+
+      //set xdaysearned=earned
+      //comp xdaysaccum=earned+lmstatus.xdaysob-lmstatus.xdaysexp-lmstatus.xdayscf-lmstatus.xdaysenc+lmstatus.xdayscr+lmstatus.xdayscan-lmstatus.xdaysreq-lmstatus.xdaysapp
+      //comp xdaysavail=xdaysaccum-lmform.xlimitres
+
+      str details =  "<table width=100%><tr class=bl>~
+        <td bgcolor=#dddddd><font color=green>Leave Code: </font></td><td bgcolor=#ccccff>"+xcodeleave+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Days Earned: </font></td><td bgcolor=#ccccff>"+xdaysearned+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Accumulated: </font></td><td bgcolor=#ccccff>"+xdaysaccum+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Available: </font></td><td bgcolor=#ccccff>"+xdaysavail+"</td> ~
+        </tr></table>"
+    
+    end if    
+    end method
+    
+    
+    
+end page
