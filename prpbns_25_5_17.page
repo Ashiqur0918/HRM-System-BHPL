@@ -1,0 +1,58 @@
+page prpbns
+	caption "Performance Bonus"
+	sections form prpbns
+	sidebar list prpbns
+	form prpbns
+		table prpbns
+		order xempnum,xdate
+		objects Add,Update,Delete,Next,Previous,Clear,Show,~
+		xempnum,xgrade,xpercent,xamt,xdate,xfdate,xtdate,zemail,xemail display(hide)
+		
+		field xgrade
+			caption Achieved Grade
+			pick code Performance Grade 
+			attrib submit
+			display ocombo
+			
+			event after
+				call zn
+			end event
+			event before
+				set zemail=#user
+			end event
+			
+		end field
+		
+		field Add
+			event before
+			call zn
+			end event
+		end field
+		field Update
+			event before
+			call zn
+			end event
+		end field
+		field xpercent
+			len 10.2
+			wid 20
+		end field
+		field zemail
+		caption "Added By"
+			display constant
+		end field
+		
+	end form
+	method zn
+		set xpercent=0.0+xcodes.xcodealt("xcode='"+xgrade+"' and xtype='Performance Grade'")
+				set grossSal=0.0+premp.xdtwotax(xempnum)
+				
+				compute xamt=grossSal*2*xpercent/100
+	end method
+	list prpbns
+	Caption "Performance Bonus"
+	table prpbns
+		order xempnum,xdate
+		objects xempnum attrib(link #servlet+"?page=prpbns&command=show&xempnum=?&xdate=?"),xgrade,xpercent,xamt,xdate,xfdate,xtdate
+	end list
+end page
