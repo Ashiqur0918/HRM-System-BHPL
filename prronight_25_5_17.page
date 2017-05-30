@@ -1,0 +1,118 @@
+page prronight
+
+    
+
+     caption "Allowance Rate Setup"
+     sections  form one, list one, script myscript
+
+
+     list one
+        table prronight
+        caption "Available Entries"
+        order xgemp,xpaycode,xint01
+        rows 20
+        navigators
+        objects xdesc,xgemp,xpaycode attrib(link #servlet+"?page=prronight&command=Show&xpaycode=?&xgemp=?"),~
+				xrate,xint01 caption(No. Of Approved Leave),xint02 caption(Parameter 2)
+				
+				field xdesc
+			//display const
+			caption "Allowance Type"
+			
+		end field
+				
+                
+		field xrate
+			caption Allowance Rate
+		end field
+
+     end list
+
+
+     form one
+        caption "Attendance Entry Header"
+        table prronight
+		order xgemp,xpaycode,xint01
+
+        layout 1
+        objects Add, Show,Update, Clear,Delete,Previous, Next,~
+                xdesc,xgemp,xpaycode,xrate,zemail display(const),xemail display(const),xint01 caption(No. Of Approved Leave),xint02 caption(Parameter 2)
+				
+		field xdesc
+			//display const
+			caption "Allowance Type"
+			display ocombo
+			pick "Night,Attendance"
+		end field
+
+
+		field xrate
+			caption Allowance Rate
+		end field
+		
+		field xgemp
+			display ocombo
+			pick code Designation
+		end field
+		
+		field xpaycode
+			display text
+			pick list xpaycode
+		end field
+
+		
+
+		field add
+			event before
+				set globals(ErrChk)=""
+
+				if globals(ErrChk) .ne. "1"
+					set zemail=#user
+					set xemail=""
+				end if
+			end event
+		end field
+
+		field update
+			event before
+				set globals(ErrChk)=""
+
+				if globals(ErrChk) .ne. "1"
+					set xemail=#user				
+				end if
+
+			end event
+		end field
+
+        embed onsubmit="submitit(this)"
+
+
+     end form
+
+
+     script myscript
+        <script language="javascript" type="text/javascript">
+
+        var detail=""
+
+        function clicked(b){
+          detail = "show_detail"
+        }
+
+        function cont(form){
+          detail = "cont"
+          //window.alert("in fcont:"+document.one.xattype.value)
+        }
+
+        function submitit(form){
+          if (detail == "cont"){
+          }
+          //return false
+
+        }
+
+        </script>
+     end script
+
+end page
+
