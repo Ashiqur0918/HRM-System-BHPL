@@ -1,0 +1,30 @@
+pr_tax_deduc
+
+WhilePrintingRecords;  
+numbervar srno;  
+srno := srno + 1;
+
+pr_lunch_deduc
+
+pr_mobile_deduc
+
+pr_emi_deduc
+
+practrndt
+
+select * from pratd where xempnum='BHL-000051' and xdate between '2017-04-01' and '2017-04-30'
+
+select * from prronight
+
+select * from practrndt order by xempnum
+practrndt
+where xpaycode='071'
+select * from prtax
+
+select * from prpay 
+
+select * from prmsg order by xempnum
+
+select * from prpayhead
+
+select * from prpayheaddt
