@@ -1,0 +1,19 @@
+//lmapply.email
+
+Hi,
+
+""+hrmst.xfull(xempnum)+" ("+xempnum+")"
+"has applied for "+xcodeleave+" Leave for "+xdaysreq+" day(s) from "+#format(xdatefromreq,date)+" to "+#format(xdatetoreq,date)+"."
+
+Please take appropriate action.
+
+To log in, use the URL:
+
+""+#url+#context+"/"+#servlet+"?site=ERP&id="+#id
+
+
+
+Regards.
+""+zbusiness.xshort()+" Automated Leave Routing Service"
+""+zbusiness.zorg()
+""+zbusiness.xcity()
