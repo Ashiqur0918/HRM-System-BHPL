@@ -1,0 +1,299 @@
+page protpronight
+
+    caption "Night Allowance Process"
+    section form one, method getPSamt, method getESamt, method getTRamt, method getADVamt
+
+    form one
+      layout 1
+      object  Process,Show, ~
+              xyear default(#cyear),xper default(#cper),xempf,xempt
+
+        
+		field xpaydate
+			attrib suffix "<b><font color=red size=2>LAST DATE OF MONTH </font></b>"
+		end field 
+		
+      field xempf
+         pick list xfemp
+         width 10
+         default "0"
+         event before
+            //set globals(xfemp)=xfemp
+         end event
+      end field
+	  
+	  field xsec
+		caption Section
+		display ocombo
+		pick "select xcode from xcodes where zid='"+#id+"' and xtype='Section'"
+	  end field
+	  
+
+      field xempt
+         pick list xtemp
+         width 10
+         default "z"
+         //def #char(254)
+         event before
+            //set globals(xtemp)=xtemp
+         end event
+      end field
+
+      field Process
+        event before
+          set globals(ErrChk) = ""
+         set globals(dbase_days) = 0.0D
+
+          int prvper = 0+xper-1
+		  call lastday
+
+          str startdate = ""
+          if xper<10
+            str payyrpr = ""+xyear+"0"+xper	
+          else
+            str payyrpr = ""+xyear+""+xper
+          end if
+
+          int offday = 0
+          set payday = #days(xdatepay)-#days(prvdate)+1
+		  //error payday+" "+xdatepay+" "+prvdate
+
+          if xper .eq. "01"
+          	set mth = "January"
+          else if xper .eq. "02"
+          	set mth = "February"
+          else if xper .eq. "03"
+          	set mth = "March"
+          else if xper .eq. "04"
+          	set mth = "April"
+          else if xper .eq. "05"
+          	set mth = "May"
+          else if xper .eq. "06"
+          	set mth = "June"
+          else if xper .eq. "07"
+          	set mth = "July"
+          else if xper .eq. "08"
+          	set mth = "August"
+          else if xper .eq. "09"
+          	set mth = "September"
+          else if xper .eq. "10"
+          	set mth = "October"
+          else if xper .eq. "11"
+          	set mth = "November"
+          else if xper .eq. "12"
+          	set mth = "December"
+          end if
+
+          if globals(ErrChk) .ne. "1"
+			set flagpr=#sql(str,"select xpflag from prmsg where zid='"+#id+"' and xdatepay='"+xdatepay+"'")
+	
+			if #result .eq. "true" .and. flagpr .eq. "1"
+				set globals(ErrChk) = "1"
+				error "<font color=red size=++>Final Process Completed Already</font>"
+			end if
+			
+          end if
+
+          if globals(ErrChk) .ne. "1"
+			set dbase="Month"
+	          if dbase .eq. "Month"
+                    set chekday=0+chkday
+                    if xper .eq. "01" .or. xper .eq. "1"
+                        set prev_per=0+12
+                        set prev_yr=0+xyear-1
+                    else
+                        set prev_per=0+xper-1
+                        set prev_yr=0+xyear
+                    end if
+                    set startdate = prev_yr+"-"+prev_per+"-"+chekday			
+    	            set globals(dbase_days) = #days(xdatepay)-#days(startdate)    	            
+	          else if dbase .eq. "Annual"
+	            set startdate = payyr+"-01-01"
+	            str tmpdate = payyr+"-12-31"
+	            set globals(dbase_days) = #days(tmpdate)-#days(startdate)
+	          end if
+	      end if
+		  
+		  
+          if globals(ErrChk) .ne. "1"
+            str mysql = "select xdatepay from prpay where zid='"+#id+"' and xdatepay='"+xdatepay+"' "
+
+            set xdatepay = #sql(str,mysql)
+            if #result .ne. "true"
+                set globals(ErrChk) = "1"
+                error "<font color=red size=+1>Pay date not found in Transaction Entry</font>"
+            end if
+          end if
+
+			if globals(ErrChk) .ne. "1"			
+          		set basic_code = #sql("select xprbasic from prdef where zid='"+#id+"' and xprbasicapp='Yes'")				
+          		if #result .eq. "true"
+					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+basic_code+"'")
+					if #result .eq. "false"
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Basic Code ("+basic_code +") not found in Payment Head Table</font>"
+					end if
+          		end if
+			end if
+
+	        if globals(ErrChk) .ne. "1"
+          		set ovt_code = #sql("select xprot from prdef where zid='"+#id+"'")
+          		if #result .eq. "true"
+					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+ovt_code+"'")
+					if #result .eq. "false"
+						set globals(ErrChk) = "1"
+						error "<font color=red size=+1>Overtime Code ("+ovt_code +") not found in Payment Head Table</font>"
+					end if
+          		end if
+          	end if
+
+          	if globals(ErrChk) .ne. "1"
+          		set holyday_code = #sql("select xprholy from prdef where zid='"+#id+"' and xprholyapp='Yes'")
+          		if #result .eq. "true"
+					set chkcode = #sql(str,"select xpaycode from prpayhead where xpaycode='"+holyday_code+"'")
+					if #result .eq. "false"
+						set globals(ErrChk) = "1"
+						error "<font color=red>Overtime Code ("+holyday_code +") not found in Payment Head Table</font>"
+					end if
+          		end if
+          	end if
+			
+			if globals(ErrChk) .ne. "1"
+				set globals(xempnum) = xempf
+				
+				int i = 0
+				int count=0
+				str clist="xempnum"
+				//str mysql = "select "+clist+" from premp where zid='"+#id+"'  and zactive='1' and xempnum>='"+globals(xempnum)+"' ~
+				//						and xempnum<='"+xempt+"' and xempnum in(select xempnum from hrmst where zid='"+#id+"' ~
+				//						and xsec='"+xsec+"')"
+										
+				str mysql = "select "+clist+" from premp where zid='"+#id+"'  and zactive='1' and xempnum>='"+globals(xempnum)+"' ~
+										and xempnum<='"+xempt+"'"
+										
+										
+				set count = #sqlfill(mysql)
+				
+				//print mysql
+				if count>0
+					while i<count
+						array get(i,clist)	
+						
+						
+						
+							set mysql="select count(xatdstat) from pratd where zid='"+#id+"' and xyear='"+xyear+"' and xper='"+xper+"' and xempnum='"+xempnum+"' and xshift='Night' and xatdstat<>'Holiday'"
+							set couday=#sql(mysql)
+							
+							//print mysql+couday
+							set xgemp=#sql("select xtitle from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+							set nightcode=prronight.xpaycode("zid='"+#id+"' and xgemp='"+xgemp+"' and xdesc='Night'")
+							set rate=prronight.xrate("zid='"+#id+"' and xgemp='"+xgemp+"' and xdesc='Night'")
+							//print xgemp +" "+nightcode+" "+rate
+							
+							if couday>0
+								compute rate=0.0+couday*rate
+							else 
+								set rate=0
+							end if
+							set mysql = "delete from prtrndt where zid='"+#id+"' and xdatepay='"+xdatepay+"' and xempnum='"+xempnum+"' and xpaycode='"+nightcode+"'"
+							set mysql = #sql(mysql)	
+							set zactive=#sql("select zactive from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+
+							set chkrec = #sql("select xdatepay from prpay where xdatepay='"+xdatepay+"'")
+							if #result .ne. "true"
+								set myqry = "insert into prpay (zid,xdatepay,xremarks,zemail,xemail,xyear,xper)"
+								set myqry = myqry + " values('"+#id+"','"+xdatepay+"','','"+#user+"','','"+xyear+"','"+xper+"')"
+								set tmpstr = #sql(myqry)
+							end if
+							
+							
+			
+							set chkrec = #sql("select xdatepay from prmsg where xdatepay='"+xdatepay+"' and xempnum='"+xempnum+"'")
+							if #result .ne. "true"
+								set myqry = "insert into prmsg (zid,xdatepay,xempnum,xremarks,xdayab,xdaylv,xnhour,~
+									xgvothour,xnoothour,xresth,xpflag,xadvflag,zemail,xemail,xratev,xday,xdate,~
+									xdaysuspend,xdaysuspenq,xsuspendf,xsuspenqf,xdayspay,xref,xheatday,xnightday,zactive)"
+								set myqry = myqry + " values('"+#id+"','"+xdatepay+"','"+xempnum+"','',"0","0","0",~
+									"0","0","0",'','','"+#user+"','',"0","0",'"+#date+"',"0","0","0","0","0",'',"0",'"+couday+"','"+zactive+"')"
+								set tmpstr = #sql(myqry)	
+								//print #result +" "+myqry
+							else
+								set mysql="update prmsg set xnightday='"+couday+"',zactive='"+zactive+"' where xdatepay='"+xdatepay+"' and xempnum='"+xempnum+"'"
+								set upval=#sql(mysql)
+								///print #result +" "+mysql
+							end if
+
+							set otamttot=0.0+rate
+							//print chkotamtho+" "+otamttot
+							if otamttot>0.0
+								set myqry = "insert into prtrndt (ztime,zutime,zid,xdatepay,xempnum,xpaycode,xamount,zemail,xemail,xtype,xoption,~
+												xdateeff)"
+								set myqry = myqry + " values('"+#time+"','"+#time+"','"+#id+"','"+xdatepay+"','"+xempnum+"','"+nightcode+"','"+otamttot+"',~
+									'"+#user+"','','','','"+#date+"')"	
+								set tmpstr =#sql(myqry)
+
+							end if 												
+						
+						
+						set i=0+i+1
+					end while						
+				end if
+			
+			
+
+            if globals(ErrChk) .ne. "1"
+              print "<font color=blue size=+1><strong>Night Allowance Processing Completed</font>"
+            end if
+          end if
+        end event
+      end field
+
+   end form
+   
+
+     method lastday
+	  	int day = 0
+	  	set salcal = prdef.xprsalcalc("zid='"+#id+"'")
+	  	if #result .ne. "true"
+	  		set globals(ErrChk) = "1"
+	  		error "Payroll Default not defined"
+	  	end if
+
+	  	if globals(ErrChk) .ne. "1"
+			if salcal .eq. "Last Day"
+				if xper .eq. "01" .or. xper .eq. "03" .or. xper .eq. "05" .or. xper .eq. "07" .or. xper .eq. "08" .or. xper .eq. "10" .or. xper .eq. "12"
+					int day = 31
+				else if xper .eq. "1" .or. xper .eq. "3" .or. xper .eq. "5" .or. xper .eq. "7" .or. xper .eq. "8" .or. xper .eq. "10" .or. xper .eq. "12"
+					int day = 31
+				end if
+				if xper .eq. "04" .or. xper .eq. "06" .or. xper .eq. "09" .or. xper .eq. "11"
+					int day = 30
+				else if xper .eq. "4" .or. xper .eq. "6" .or. xper .eq. "9" .or. xper .eq. "11"
+					int day = 30
+				end if
+				if xper .eq. "02"
+					int day = 28
+				else if xper .eq. "2"
+					int day = 28
+				end if
+	          	set prvdate = xyear+"-"+xper+"-01"
+			else if salcal .eq. "Custom"
+	      		set chkday = prdef.xperend("zid='"+#id+"'")
+	      		if chkday == 0 .or. #result .eq. "false"
+      				set globals(ErrChk) = "1"
+      				error "Period ending date not defined in Setup table"
+	      		else
+					int day = prdef.xperend("zid='"+#id+"'")
+		          	int prvday = 0+prdef.xperend("zid='"+#id+"'")+1
+	      		end if
+	      		set prvdate = xyear+"-"+prvper+"-"+prvday
+			end if
+
+          	set tmpdate = xyear+"-"+xper+"-"+day
+
+          	set temp = #days(tmpdate)
+          	set xdatepay=tmpdate//#longtodate(temp)
+
+		end if
+     end method
+	 end page
