@@ -1,0 +1,15 @@
+select xempnum,xintime,xatdstat from pratd where xatdstat is null order by xdate
+
+update pratd set xatdstat='Absent' where xatdstat  is null
+
+select xempnum,xintime,xatdstat from pratd where xintime='2999-12-31'
+
+select xdatedue,xempnum,xcodeleave,xstatusleave from lmtrnday where xdatedue between '2017-05-18' and '2017-05-21' order by xempnum
+
+(select coalesce(xrate) from prronight where zid=hrmst."zid" and xgemp=hrmst."xtitle" and xpaycode='009')
+
+select count(xdatedue) from lmtrnday where xempnum='BHL-000065'
+
+select * from prronight
+
+select coalesce(xrate) from prronight where xgemp='Line Associate' and xpaycode='018'
