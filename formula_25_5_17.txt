@@ -1,0 +1,9 @@
+grde_wise_performance_bonus
+
+
+select * from prpbns
+select * from catrnps
+
+select sum(xamt) from prpbns where xgrade='A+'
+
+select * from xcodes where xtype='Performance Grade'
