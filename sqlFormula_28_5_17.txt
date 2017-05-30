@@ -1,0 +1,43 @@
+
+select xdatepay from prpay
+
+select * from prpay
+
+select xdatepay from prpay
+
+select xprpfapp from prdef
+
+select * from prseparation order by xempnum
+
+select * from prronight
+
+select * from pratd
+
+select count(xdate) from pratd where xempnum='BHL-000065' and xatdstat like 'Absent' 
+
+
+
+
+
+
+select Distinct xhrc1 from hrmst
+
+
+
+
+select * from pratd where xempnum='BHL-000088' and xper=5 order by xdate
+
+select * from prronight
+
+select * from xcodes
+select * from premp
+
+select * from prpay
+
+select * from prpaymentdt order by xempnum
+
+select * from hrmst where xhrc1='7'
+
+select sum(xamount) from prpaymentdt where xempnum='BHL-000001'
+
+select * from prrate
