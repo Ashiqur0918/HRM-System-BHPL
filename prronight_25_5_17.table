@@ -1,0 +1,13 @@
+product ERP on the Net
+
+table prronight
+  caption "Night Allowance  Setup"
+  columns ztime,zutime,zid,xgemp,xpaycode,xrate,xint01,xint02,xdesc,zemail,xemail
+
+  primary key zid,xgemp,xpaycode,xint01
+
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+
+end table
