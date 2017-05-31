@@ -1,0 +1,23 @@
+select * from prpfstatus where xempnum='BHL-000126'
+
+select xprpfapp from prdef
+
+select * from prpf where xempnum='BHL-000126'
+
+pr_emp_pf
+
+select xjoindate from premp where xempnum='BHL-000001'
+
+select xcondate from premp where xempnum='BHL-000001'
+
+01680733578
+
+pr_dept_wise_prpbns
+
+select * from prpbns
+
+select * from  prpayhead
+
+select max(xamount) from practrndt where xpaycode='100' and xempnum='BHL-000088'
+
+select xamount from practrndt where xpaycode='100' and xempnum='BHL-000088'
