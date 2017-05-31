@@ -1,0 +1,33 @@
+gratuity_probition_monthly
+
+practrndt
+
+pr_sal_cheque
+
+select * from pratd where xdate ='2017-05-29' and xempnum='BHL-000126'
+
+select * from lmtrnday where xdatedue ='2017-05-29' and xempnum='BHL-000126' 
+
+    WhilePrintingRecords;  
+    numbervar srno;  
+    srno := srno + 1;  
+
+select xempnum from hrmst where xdiv like '%Fina%' order by xempnum
+
+select * from xcodes where xcode like '%alary%'
+
+select * from prseparation
+
+select * from prpayhead
+
+select * from xcodes where xtype='Department' 
+
+select * from xcodes where xtype='Section'
+
+select * from practrndt where xpaycode='100'
+
+select * from lmtrnday where xempnum='BHL-000126' and xstatusleave='3-Sanctioned'
+
+
+pr_sal_monthly
+
