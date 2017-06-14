@@ -1,0 +1,19 @@
+select * from pratd where xdate='2017-05-30' and xintime='2999-12-31' order by xempnum
+
+select xempnum,xrank from hrmst order by xempnum
+
+select * from practrndt where xpaycode='100' order by xempnum
+
+pr_sal_three_month
+
+Month ({practrndt.xdatepay})=Month ({@2ndLastMonth})
+
+"Non Management"
+
+select * from xcodes where xtype='Department'
+
+Month ({practrndt.xdatepay})=Month ({@3rdLastMonth})
+
+Month ({practrndt.xdatepay})=Month ({@lastMonth})
+
+"Non Management"
