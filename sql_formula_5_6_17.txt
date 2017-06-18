@@ -1,0 +1,22 @@
+pr_ppf_sharing
+
+WhilePrintingRecords;  
+numbervar srno;  
+srno := srno + 1;
+
+pr_s2b_emp_sal
+
+
+{practrndt.xpaycode}<>"100"
+
+pr_sal_monthly
+
+select * from practrndt where xpaycode='100'
+
+select * from premp order by xempnum
+
+select * from hrmst order by xempnum
+
+select * from prpayhead
+
+select * from xcodes where xtype='Increment Type'
