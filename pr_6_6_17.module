@@ -1,0 +1,14 @@
+//pr.module
+module PR
+  caption "Payroll"
+  description ""
+
+  codes Benefit Group, Mode of Payment, Bank, Performance Grade,Increment Type
+     //transactions Leave Number (table:lmtrn:xleavenum;default:LV--)
+     
+  parameters ~
+    xdecimals alt(prdef.xdecimal()), xtrnvou alt(prdef.xtrnvou()),xsysnot 
+    
+  //include prsetsch,premp,prrate,prform,prcode,prtable,prtax   
+end module
+
