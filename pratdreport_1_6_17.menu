@@ -1,0 +1,163 @@
+//Attendance Sub Menu
+//---------------------------------------------------------------------------------------
+caption "Attendance Report" page
+option                  |action                                          |modules|models
+//---------------------------------------------------------------------------------------
+-Standard Reports
+Daily Attendance Sheet  							|#classPath+"/"+#servlet+"?page=*crystal pratdb(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+Daily Attendance Sheet_In Time							|#classPath+"/"+#servlet+"?page=*crystal pratdb_in(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+//Daily Attendance Sheet (All)							|#classPath+"/"+#servlet+"?page=*crystal pratdbn(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+
+Daily Attendance Sheet (All)							|#classPath+"/"+#servlet+"?page=*crystal pratdbn(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"
+
+
+Daily Attendance Sheet (with Extra OT)					|#classPath+"/"+#servlet+"?page=*crystal pratdbne(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"														
+
+Monthly Extra OT Sheet					               |#classPath+"/"+#servlet+"?page=*crystal prextraot_mth(~
+														p ~
+														xdate caption(From Date),~
+														xdate caption(To Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"														
+Daily Attendance Summary Report					     |#classPath+"/"+#servlet+"?page=*crystal pratdball(~
+														p ~
+														xdate caption(Date),~
+														xper caption(Period),~
+														xyear caption(Year),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""),~
+														)"
+
+
+
+//Daily Present Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbn2(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+Daily Present Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbnp(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"
+Daily Late Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbnl(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"
+//Daily Late Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbn3(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+//Daily Absent Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbn1(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+Daily Absent Sheet							|#classPath+"/"+#servlet+"?page=*crystal pratdbna(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xsec caption(From Section) default(0),~
+														xsec caption(To Section) default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+														xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"
+
+Monthly Attendance Sheet (New)							|#classPath+"/"+#servlet+"?page=*crystal pratdbmnth(xdate=From Date=#d,xdate=To Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+
+//Section Wise Daily Attendance Sheet 				|#classPath+"/"+#servlet+"?page=*crystal pratdb_sec(xdate=Date=#d,xsec=Section, xempnum=From Employee=0,xempnum=To Employee=z)"
+//Section & Shift Wise Daily Attendance Sheet			|#classPath+"/"+#servlet+"?page=*crystal pratdb_secsh(xdate=Date=#d,xsec=Section,xshift=Shift Code==text=list xshift, xempnum=From Employee=0,xempnum=To Employee=z)"
+//Shift Wise Attendance Sheet 						|#classPath+"/"+#servlet+"?page=*crystal pratdb_shift(xdate=Date=#d,xshift=Shift Code==text=list xshift,xempnum=From Employee=0,xempnum=To Employee=z)"
+
+Employee Wise Attendance    						|#classPath+"/"+#servlet+"?page=*crystal pratdb_emp(xempnum=Employee Code=0,xdate=From Date=#d,xdate=To Date=#d)"
+
+//Employee Wise & StatusWise Attendance Sheet  		|#classPath+"/"+#servlet+"?page=*crystal pratdb_status(xshift=Shift Code==text=list xshift,xdate=From Date=#d,xatdstat=Attendance Status==text=list attendance,xempnum=From Employee,xempnum=To Employee)"
+//Section &Status Wise Attendance              		|#classPath+"/"+#servlet+"?page=*crystal pratdb_status1(xsec=Section=,xdate=From Date=#d,xatdstat=Attendance Status==text=list attendance,xempnum=From Employee,xempnum=To Employee)"
+//Date & Employee Wise Shift Roster     				|#classPath+"/"+#servlet+"?page=*crystal prrosterdateemp(xempnum=Employee Code=0,xempnum=To Employee Code=z,xdate=From Date=#d,xdate=To Date=#d)"
+
+- Customized Reports
+Job Card (Employee Wise)    							|#classPath+"/"+#servlet+"?page=*crystal pratdb_card(xempnum=Employee Code= ,xdate=From Date=#d,xdate=To Date=#d)"
+Department Wise Attendance (Daily)						|#classPath+"/"+#servlet+"?page=*crystal pratddept(~
+														p ~
+														xdate caption(From Date),~
+														xdate caption(To Date),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default("" 0""),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+Attendance Record (Daily) 								|#classPath+"/"+#servlet+"?page=*crystal pratdbnew(~
+														p ~
+														xdate caption(Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xtitle caption(From Designation) display(combo) pick("select xcode from xcodes where xtype="'Designation'" ") default("" 0""),~
+														xtitle caption(To Designation) display(combo) pick("select xcode from xcodes where xtype="'Designation'" ") default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default("" 0""),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+														xsec caption(From Section) default("" ""),~
+														xsec caption(To Section) default(""Zzz""))"
+														
+Departments Wise Night Allowance Report					|#classPath+"/"+#servlet+"?page=*crystal prempnights(~
+														p ~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xrank caption(Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" "),~
+														xdate caption(From Date),~
+														xdate caption(To Date)~
+														)"
+														
+Departments Wise Attendance Allowance Report					|#classPath+"/"+#servlet+"?page=*crystal prempattallow(~
+														p ~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xrank caption(Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" "),~
+														xdate caption(From Date),~
+														xdate caption(To Date)~
+														)"
+														
+Department wise Over Time								|#classPath+"/"+#servlet+"?page=*crystal prdeptot(~
+														p ~
+														xdate caption(From Date),~
+														xdate caption(To Date),~
+														xempnum caption(From Employee) default(0),~
+														xempnum caption(To Employee) default(""Zzz""),~
+														xtitle caption(From Designation) display(combo) pick("select xcode from xcodes where xtype="'Designation'" ") default(""0 ""),~
+														xtitle caption(To Designation) display(combo) pick("select xcode from xcodes where xtype="'Designation'" ") default(""Zzz""),~
+														xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default("" 0""),~
+														xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+														
+Holiday Calender Report   						|#classPath+"/"+#servlet+"?page=*crystal prholiday(xdate=From Date=#d,xdate=To Date=#d)"
