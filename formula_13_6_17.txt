@@ -1,0 +1,7 @@
+select * from practrndt where xpaycode='020'
+xdatepay = '2017-04-30' and xpaycode='050' order by xempnum
+
+select * from hrpps
+
+select * from prlfat
+delete from prlfat
