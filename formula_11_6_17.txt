@@ -1,0 +1,14 @@
+    WhilePrintingRecords;  
+    numbervar srno;  
+    srno := srno + 1;  
+
+
+Month ({hrpps.xdate})=Month ({?fdate})
+
+pr_fest_bns_full
+
+caption "<font size="5">Festival Bonus</font><br><font color=red>Don't Run Multiple Festival Bonus in a Same Date"
+
+select * from hrpps order by xempnum
+select * from premp
+select xjoindate-'2017-12-31' from premp where xempnum='BHL-000178'
