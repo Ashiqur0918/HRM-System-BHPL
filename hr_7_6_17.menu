@@ -1,0 +1,41 @@
+//hr.menu
+caption "Human Resource Database" page
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+-Planning & Recruitment
+Manpower Planning               |#classPath+"/"+#servlet+"?menu=hrmp"                |common
+Employee Recruitment               |#classPath+"/"+#servlet+"?menu=hrrec"                   |common
+
+-Employee DataBase
+//Employee Recruitment CV               |#classPath+"/"+#servlet+"?page=hrmstcv1"                   |common
+//Employee Recruitment Master               |#classPath+"/"+#servlet+"?page=hrrecmst"                   |common
+//Orientation And Induction               |#classPath+"/"+#servlet+"?page=hrorienh"                   |common
+Master Maintenance               |#classPath+"/"+#servlet+"?page=hrmst&nexttab=Employees"                   |common
+Employment Information             |#classPath+"/"+#servlet+"?page=premp&command=clear"
+//Travel Planning               |#classPath+"/"+#servlet+"?page=hrtplanh"                   |common
+//Travel Management               |#classPath+"/"+#servlet+"?menu=hrtplan"                   |common
+//Competency Mapping               |#classPath+"/"+#servlet+"?page=hrcompetmaph"                   |common
+-Increment
+//Increment                       				|#classPath+"/"+#servlet+"?page=princremhed&mode=hr"
+Increment                        				|#classPath+"/"+#servlet+"?page=princremhedm"
+//Training and Development              			|#classPath+"/"+#servlet+"?page=hrtrinhed&command=clear"
+-Auto Generated Letter
+//Internal Department Transfer Order 			           			|#classPath+"/"+#servlet+"?page=prautorpt&command=clear"
+///Promotion 			          				 			|#classPath+"/"+#servlet+"?page=prautorptpro&command=clear"
+//Promotion And Yearly Increment 			           			|#classPath+"/"+#servlet+"?page=prautorptproinc&command=clear"
+//Yearly Increment 			           			|#classPath+"/"+#servlet+"?page=prautyinc&command=clear"
+//Office Circular 			           			|#classPath+"/"+#servlet+"?page=prcloseday&command=clear"
+//Bank Letter                        |#classPath+"/"+#servlet+"?page=*crystal pr_salary amount transfer(xdate=Date,xremarks=TO,xnote=Subject,xpayact=Account No,xrem=From)"
+//Appointment Letter 			           			|#classPath+"/"+#servlet+"?page=prautocv&command=clear"
+Reports 											|#classPath+"/"+#servlet+"?menu=autogenreport"                   |common
+
+-General Setup
+//Setup                            |#classPath+"/"+#servlet+"?menu=hrcodes"                |common
+Settings                         |#classPath+"/"+#servlet+"?page=casetup&module=HR"
+-Reports
+Reports                          |#classPath+"/"+#servlet+"?menu=hrreport"                   |common
+
+//-New Reports 
+//New Reports                          |#classPath+"/"+#servlet+"?menu=prreportsn"                   |common
+
