@@ -1,0 +1,124 @@
+
+
+page hrpps
+
+    caption "Profit Share"
+    sections form hrpps,script myscript
+	sidebar list hrpps
+
+    list hrpps
+		caption "Employes List"
+     table (select *,(select xfull from hrmst where zid=hrpps.zid and xempnum=hrpps.xempnum) as xfull from hrpps) tbl
+	 order xrow,xempnum
+	 fixed xrow
+	 objects xrow,xdate,xempnum,xfull,xmaxpay,xfdate,xtdate,xamount
+	end list	
+		 
+	 valid fvalid
+		config 
+			
+			set select = " Location='"+xplace+"' and xdate='"+xdate+"'"
+			if xrow>0
+			set mymaxpay = 0.00+#sql("select xmaxpay from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mydate = #sql("select xdate from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mycont = 0+#sql("select count(*) from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mydate = #sub(mydate,8,2)+"/"+#sub(mydate,5,2)+"/"+#sub(mydate,0,4)
+			
+			print "<h3 style="color:black">Total Profit Amount: "+mymaxpay+" <br>Distribution Date: "+mydate+"<br>Total No. Employee: "+mycont+"</h3>"
+			end if
+		end config
+		
+		before updval
+			
+			
+			str cond="name .sw. "+#char(34)+"xotflag__"+#char(34)+"
+			int ns = #names("xordnum", cond)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,9,10)
+				str value = #evalx(nam)
+				//str value = #rtrim(value)
+				
+				
+				//print " "+myline+" "+value+" "+mysql+k
+				
+				str mysql = "update pratd set xotflag='"+value+"' where xdate='"+xdate+"' and xempnum='"+myline+"'"
+				set updval = #sql(mysql)
+					//print mysql+" "+updval
+				
+				set j=j+1
+			end while
+		end before
+		
+		
+	 end valid
+	 
+
+    form hrpps
+	valid fvalid
+		layout 1
+		objects ~
+      		
+			xrow,xdate default(#d),xmaxpay caption(Total Amount),xfdate,xtdate,xrem,Clear,Refresh,Distribute
+			
+			field xplace
+			caption Location
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Location'" 
+			attrib submit
+
+		end field
+		field xrow
+		caption Transaction ID
+		attrib submit
+		display ocombo
+		pick "select xrow from hrpps where xotflag='Profit Share'"
+		end field
+		
+		field Distribute
+			event before
+				//print "DDDD"
+				set mymaxrow = 0+#sql("select max(xrow) from hrpps")
+				set mymaxrow = 0+mymaxrow+1
+				str mysql = "select count(*) from premp where zid='"+#id+"' and current_date-xjoindate>270 and ~
+				(select xjstat from hrmst where zid=premp.zid and xempnum=premp.xempnum)='Permanent'"
+				set totempcont = 0+#sql(mysql)
+				compute xamount = xmaxpay/totempcont
+				//print mysql+"totemp: "+totempcont+" "+xamount
+				set myqry = "insert into hrpps (ztime,zid,xyear,xper,xdate,xempnum,xpflag,zemail,xrem,xhours,xmaxpay,xfdate,xtdate,xrow,xamount,xotflag) ~
+				select '"+#time+"','"+#id+"',0,0,'"+xdate+"',xempnum,'','"+#user+"','"+xrem+"',0,'"+xmaxpay+"','"+xfdate+"','"+xtdate+"','"+mymaxrow+"', ~
+				"+xamount+",'Profit Share' from premp where zid='"+#id+"' and current_date-xjoindate>270 and ~
+				(select xjstat from hrmst where zid=premp.zid and xempnum=premp.xempnum)='Permanent'"
+				set insval = #sql(myqry)
+				//print myqry+" "+insval
+			end event
+		end field
+
+		
+      embed onsubmit="submitit(this)"
+    end form
+
+    script myscript
+
+        <script language=javascript type="text/javascript">
+        var detail
+
+        function clicked(b){
+          detail="clicked"
+        }
+        function submitit(form){
+          if (detail=="clicked"){
+            form.page.value = "imtrn"
+          }
+        }
+        function keeplastkey(){
+        document.imtrn.xtempstr1.value=document.imtrn.xitem.value
+        document.imtrn.xtempstr2.value=document.imtrn.xwh.value
+        }
+        </script>
+    end script
+
+
+end page
