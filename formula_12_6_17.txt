@@ -1,0 +1,4 @@
+if ({practrndt.xpaycode}='001')
+then {practrndt.xamount}
+
+select * from prpayhead
