@@ -1,0 +1,25 @@
+WhilePrintingRecords;  
+numbervar srno;  
+srno := srno + 1;
+
+
+pr_pf_dept
+
+select * from prpfstatus
+
+select * from prpf
+
+pr_dept_wise_other_allowance
+
+select * from practrndt where xpaycode='010'
+
+pr_final_settelment
+
+
+pr_fest_bns
+
+select * from hrpps order by xempnum
+
+select * from hrmst where xtitle='Advisor'
+
+select * from hrpps where xotflag='Festival Bonus' order by xempnum
