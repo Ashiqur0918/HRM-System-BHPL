@@ -1,0 +1,19 @@
+select * from hrpps where xempnum='BHL-000034'
+
+if (Month ({premp.xjoindate})=Month ({?fDate}) and Year ({premp.xjoindate})=Year ({?fDate}))
+then {#RTotal13}-{#RTotal25}
+else {#RTotal13}
+
+
+if {premp.xotflag}='Yes' and {pratd.xsearchlen}>0
+    then
+    {pratd.xmaxpay}+({pratd.xsearchlen}/100)
+   else {pratd.xmaxpay}
+
+select * from practrndt where xpaycode='066'
+
+select * from pratd where xempnum='BHL-000005' and xatdstat='Absent' and xdate between '2017-03-01' and '2017-03-31'
+
+select xdayab from prmsg where xempnum='BHL-000005' and xdatepay='2017-03-31'
+
+select xdate,xmaxpay+xsearchlen from pratd where xempnum='BHL-000005' and xdate between '2017-03-01' and '2017-03-31'
