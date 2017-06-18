@@ -1,0 +1,15 @@
+1LastYear
+
+Year (CurrentDate)-2
+
+1lastyearAmount
+
+if (Year ({premp.xjoindate})>{@1LastYear} and {hrmst.xempnum}={princrement.xempnum})
+then 0
+else if(Year ({princrement.xdate})={@1LastYear} and {hrmst.xempnum}={princrement.xempnum})
+    then {princrement.xtotamt}
+    else {premp.xdtwotax}
+
+select * from princrement 
+
+select * from premp order by xempnum
