@@ -1,0 +1,12 @@
+table prlfat
+  caption "Leave Fare Assistance"
+  columns ztime,zutime,zid,xempnum,xyear,xper,xdate,xdatepay,xamount,xtotamt,zemail,xemail,xrem,xdesc	
+
+  primary key zid,xempnum,xyear
+
+  foreign key
+        zid references zbusiness.zid
+        zid,xempnum,xyear references prlfat.zid,xempnum,xyear
+  end foreign key
+
+end table
