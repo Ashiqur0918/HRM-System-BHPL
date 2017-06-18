@@ -1,0 +1,154 @@
+
+
+page prbonus
+
+    caption "<font size="5">Festival Bonus</font><br><font color=red>Don't Run Multiple Festival Bonus Process in a Same Date"
+	 
+    sections form hrpps,script myscript
+	sidebar list hrpps
+
+    list hrpps
+		caption "Employes List"
+     table (select *,(select xfull from hrmst where zid=hrpps.zid and xempnum=hrpps.xempnum) as xfull from hrpps) tbl
+	 order xrow,xempnum
+	 fixed xrow
+	 objects xrow,xdate,xempnum,xfull,xamount caption(Bonus Amount)
+	 
+	 field xrow
+		caption Transaction ID
+		
+		end field
+	end list	
+		 
+	 valid fvalid
+		config 
+			
+			set select = " Location='"+xplace+"' and xdate='"+xdate+"'"
+			if xrow>0
+			set mymaxpay = 0.00+#sql("select xmaxpay from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set myrem = 0.00+#sql("select xrem from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mydate = #sql("select xdate from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mycont = 0+#sql("select count(*) from hrpps where zid="+#id+" and xrow="+xrow+"")
+			set mydate = #sub(mydate,8,2)+"/"+#sub(mydate,5,2)+"/"+#sub(mydate,0,4)
+			
+			print "<h4>Bonus Pay Date: "+mydate+"</h4>"+myrem
+			
+			
+			end if
+			//print #sub(xdate,0,4)
+		end config
+		
+		before updval
+			
+			
+			str cond="name .sw. "+#char(34)+"xotflag__"+#char(34)+"
+			int ns = #names("xordnum", cond)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,9,10)
+				str value = #evalx(nam)
+				//str value = #rtrim(value)
+				
+				
+				//print " "+myline+" "+value+" "+mysql+k
+				
+				str mysql = "update pratd set xotflag='"+value+"' where xdate='"+xdate+"' and xempnum='"+myline+"'"
+				set updval = #sql(mysql)
+					//print mysql+" "+updval
+				
+				set j=j+1
+			end while
+		end before
+		
+		
+	 end valid
+	 
+
+    form hrpps
+	valid fvalid
+		layout 1
+		objects ~
+      		
+			xdate default(#d),xrow,xrem,Clear,Refresh,Process
+			
+			
+		field xrow
+		caption Transaction ID
+		attrib submit
+		display ocombo
+		pick "select xrow from hrpps where xotflag='Festival Bonus'"
+		end field
+		
+		field Process
+			event before
+				print "DDDD"
+				set mymaxrow = 0+#sql("select max(xrow) from hrpps")
+				set mymaxrow = 0+mymaxrow+1
+				set xfdate = #d
+				set xtdate = #d
+				set xyear = #sub(xdate,0,4)
+			
+				set myqry = "insert into hrpps (ztime,zid,xyear,xper,xdate,xempnum,xpflag,zemail,xrem,xhours,xmaxpay,xfdate,xtdate,xrow,xamount,xotflag) ~
+				select '"+#time+"','"+#id+"',0,0,'"+xdate+"',xempnum,'','"+#user+"','"+xrem+"',0,0,'"+xfdate+"','"+xtdate+"','"+mymaxrow+"', ~
+				(select xamount from prpaymentdt where zid=premp.zid and xempnum=premp.xempnum and xpaycode='001'),~
+				'Festival Bonus' from premp where zid='"+#id+"' and ~
+				(select zactive from hrmst where zid=premp.zid and xempnum=premp.xempnum)='1'"
+				set insval = #sql(myqry)
+				//print myqry+" "+insval
+				
+				set xempnum=""
+				str mysql = "select xempnum from hrpps where xrow='"+mymaxrow+"' and xempnum>'"+xempnum+"' order by xempnum"
+				set xempnum=#sql(mysql)
+				while xempnum .ne. ""
+					set mysql = "select extract  (year from xjoindate) from premp where  xempnum='"+xempnum+"' "
+					set joinyear = 0+#sql(mysql)
+					if joinyear>=xyear
+					set fdyear = "01-01-"+xyear
+					set mysql = "select  '"+fdyear+"'-xjoindate from premp where  xempnum='"+xempnum+"' "
+					set joindiff = 0+#sql(mysql)
+					print mysql+" "+joindiff
+					if joindiff<0
+						set joinshort = 0+365+joindiff
+						set bonpayday = 0+365-joinshort
+						set myamount = 0.0+hrpps.xamount("xrow='"+mymaxrow+"' and xempnum='"+xempnum+"'")
+						set bonpay  = 0.0+myamount/365*joinshort
+						set mysql = "update hrpps set xamount = "+bonpay+" where zid = "+#id+" and xrow='"+mymaxrow+"' and xempnum='"+xempnum+"'"
+						set updval =#sql(mysql)
+						print mysql+" "+updval
+					end if
+					end if
+				
+				str mysql = "select xempnum from hrpps where xrow='"+mymaxrow+"' and xempnum>'"+xempnum+"' order by xempnum"
+				set xempnum=#sql(mysql)
+				end while
+			end event
+		end field
+
+		
+      embed onsubmit="submitit(this)"
+    end form
+
+    script myscript
+
+        <script language=javascript type="text/javascript">
+        var detail
+
+        function clicked(b){
+          detail="clicked"
+        }
+        function submitit(form){
+          if (detail=="clicked"){
+            form.page.value = "imtrn"
+          }
+        }
+        function keeplastkey(){
+        document.imtrn.xtempstr1.value=document.imtrn.xitem.value
+        document.imtrn.xtempstr2.value=document.imtrn.xwh.value
+        }
+        </script>
+    end script
+
+
+end page
