@@ -1,0 +1,1982 @@
+page hrmst
+    caption "<table cellspacing=1 width=100%><tr class=bl>~
+            <td bgcolor=#dddddd><font color=gray>"+switch+" Employee No:</font></td><td bgcolor=#ccccff><font color=green>"+xempnum+"</font></td>~
+            <td bgcolor=#dddddd align=right><font color=gray>Name:</font></td><td bgcolor=#ccccff><font color=green>"+xsalute+" "+xfirst+" "+xmiddle+" "+xlast+"</font></td>~
+            <td bgcolor=#dddddd align=right><font color=gray>Country:</font></td><td bgcolor=#ccccff><font color=green>"+xcountry+"</font></td>~
+            <td bgcolor=#dddddd align=right><font color=gray>Status:</font></td><td bgcolor=#ccccff><font color=green>"+xjstat+"</font></td>~
+            ~//<td bgcolor=#dddddd align=right><font color=gray>Rank:</font></td><td bgcolor=#ccccff><font color=green>"+xrank+"</font></td>~
+            ~//<td bgcolor=#dddddd align=right><font color=gray>Vessel:</font></td><td bgcolor=#ccccff><font color=green>"+xvessel+"</font></td>~
+            <td bgcolor=#dddddd align=right><font color=gray>~
+	    //<a href='"+#report(emp_card_pfg.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xempnum+"&prompt2="+xempnum+"' target='_new'>Print</a>~
+	    </font></td>~ 
+            </tr></table>"
+    
+    
+
+
+
+     layout mylayout 1 1 2 //columns rows  tabrows
+       //group hrmst,hrbook,hrlic,hrcert,hrservice,hrfamily,hrwage,hrendor,hrtrain,hrvisa,hrmedical,hrvess,hrselect,hrdocs,hralert,,hrimage,hremp (1,1)
+       group hrmst,hredu,hrwork,hrfamily,hrref,docs,hrimage,hrtrain,hremp (1,1)//hrvisa,hrmedical,hralert,hrtest,hrtrain,
+       //group hrmst,hredu,hrwork,hrfamily,hrtest,hrtrain,hrvisa,hrmedical,hrref,hrselect,hralert,hrimage,,hremp (1,1)
+       script myscript, ~
+       method save,search ~
+       (0,0)
+     end layout
+
+	#include cadocs.include
+
+     group hrdocs 2 2 "Documents" //columns rows caption select
+       //form hrdocs,list hrdocs  (1, 1)//(col,row,colspan,rowspan,width,height)
+       //text hrdocs  (1, 2)//(col,row,colspan,rowspan,width,height)
+       form hrdocs  (1, 1,2)//(col,row,colspan,rowspan,width,height)
+       text xdocs  (1, 2)//(col,row,colspan,rowspan,width,height)
+       list xdocs  (2, 2)//(col,row,colspan,rowspan,width,height)
+       keys "Top"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+
+     
+     group hrwork 2 1 "Work" //columns rows caption select
+       form hrwork,list hrwork  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hredu 2 1 "Education" //columns rows caption select
+       form hredu,list hredu  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrtest 2 1 "Testimonials" //columns rows caption select
+       form hrtest,list hrtest  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrref 2 1 "References" //columns rows caption select
+       form hrref,list hrref  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     
+     
+     
+     group hrimage 2 1 "Image Upload" //columns rows caption select
+       form hrimage  (1, 1)//(col,row,colspan,rowspan,width,height)
+       text hrmst (2,1)
+			 keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrmst 2 1 "General" //columns rows caption select
+       form hrmst  (1, 1)//(col,row,colspan,rowspan,width,height)
+       text hrmst  (2, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       //access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrbook 2 1 "Book" //columns rows caption select
+       form hrbook,list hrbook  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrlic 2 1 "Licence" //columns rows caption select
+       form hrlic,list hrlic  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrcert 2 1 "Certificates" //columns rows caption select
+       form hrcert,list hrcert  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+     group hrservice 2 1 "Service" //columns rows caption select
+       form hrservice,list hrservice  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     
+     group hrfamily 2 1 "Family" //columns rows caption select
+       form hrfamily,list hrfamily  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrwage 2 1 "Wages" //columns rows caption select
+       form hrwage,list hrwage  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrendor 2 1 "Endorsements" //columns rows caption select
+       form hrendor,list hrendor  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+     group hrtrain 2 1 "Training" //columns rows caption select
+       form hrtrain,list hrtrain  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+     group hrvisa 2 1 "Visas" //columns rows caption select
+       form hrvisa,list hrvisa  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+     group hrmedical 2 1 "Medical" //columns rows caption select
+       form hrmedical,list hrmedical  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+     group hrvess 2 1 "Vessel" //columns rows caption select
+       form hrvess,list hrvess  (1, 1)//(col,row,colspan,rowspan,width,height)
+       keys "Find xempnum=?"
+       access " xempnum .ne. "+#char(34)+#char(34)
+     end group
+
+     group hremp 2 1 "Employees" //columns rows caption select
+       form hremp,list hremp  (1, 1)//(col,row,colspan,rowspan,width,height)
+     end group
+     group hralert 2 1 "Alerts" //columns rows caption select
+       form hralert,list hralert  (1, 1)//(col,row,colspan,rowspan,width,height)
+     end group
+
+
+
+     group hrselect 2 2 "Select" //columns rows caption select
+       form hrselect  (1, 1, 2)//(col,row,colspan,rowspan,width,height)
+       list hrunselect  (1, 2)//(col,row,colspan,rowspan,width,height)
+       list hrselect  (2, 2)//(col,row,colspan,rowspan,width,height)
+     end group
+
+     text hrdocs
+        //"<p><b>"+xdoc+"</b><br>"
+        //"<table border=1 width=100%><tr><td><iframe  border=0 src="+xlink+"  height=700 width=max></iframe></td></tr></table>"
+        "<iframe  border=0 src="+xlink+"  height=700 width=800></iframe>"
+
+     end text
+
+     list hrdocsOLD
+        caption "<p class=bl>Documents for <font color=red > "+xempnum+"</font><br>"
+        table hrdocs
+        order xempnum,xdoc
+        fixed xempnum
+        rows 50
+        objects  xdoc  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xdoc=?"), ~
+                xlink attrib(url)//,zactive
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+     end list
+
+		 
+     form hrvisa
+        caption "Visas"
+        table hrvisa
+        order xempnum,xrow
+        fixed xempnum
+        layout 4
+        objects ~
+                Clear,Show, ~
+                Add,Update, Delete, Top, Previous, Next, Bottom,~
+                xrow,xcountry,xdocnum,xdate,xplace,xexpiry,xrem columns(3) width (60) height(2)
+
+
+
+     end form
+		 
+		 
+		 
+		 
+		 form hrselect
+		 	caption "Select"
+			layout 5
+			objects Show,Select,Undo,xselect,xcountry,xvessel,xrank,xjstat
+			
+			field Select
+				event after
+					//Print "Selected "+xempnum
+					set t=#sql(varchar,"update hrmst set xselect='Yes' where xempnum='"+xempnum+"'")
+				end event
+			end field
+			field Undo
+				event after
+					//Print "Unselected "+xempnum
+					set t=#sql(varchar,"update hrmst set xselect='No' where xempnum='"+xempnum+"'")
+				end event
+			end field
+			
+			  field xcountry
+					display multi
+					height 5
+          default ""
+				end field
+				field xvessel
+					display multi
+					height 5
+				end field
+				
+				field xrank
+			display multi
+					height 5
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Department' "
+		end field
+		
+		field xdiv
+			display multi
+					height 5
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Division'"
+		end field
+		
+		
+		
+				
+				field xjstat
+					display multi
+					height 5
+				end field
+				
+				field Show
+					event before
+						call search
+						if s .ne. ""
+							if xselect .eq. "Yes"
+
+								str temp=#list(hrselect.select)
+console "tempsel="+temp
+								if temp .ne. ""
+									//set temp=#sub(temp,1,
+									set s= temp+" and "+s
+								end if
+								set #list(hrselect.select)=#char(34)+s+#char(34)
+console "mylist="+#list(hrselect.select)
+							else
+								str temp=#list(hrunselect.select)
+console "tempun="+temp
+								if temp .ne. ""
+									set s= temp+" and "+s
+								end if
+								set #list(hrunselect.select)=#char(34)+s+#char(34)
+console "mylist="+#list(hrunselect.select)
+							
+							end if
+						end if
+						
+					end event
+				end field
+			
+			end form
+     
+		 list hrselect
+        caption "Selected"
+        table hrmst
+        order xempnum
+				select " (xselect = 'Yes') "
+				//   fixed xjstat
+        //select "xid<>''"
+       // navigators alpha //,group xrank "select xcode from xcodes where xtype = 'Rank'"
+        //navigators alpha,group xacc "select xacc from glmst" // where xtype = 'Country'"
+        rows 10
+        objects  xempnum attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Undo&xempnum=?"),xfirst,xmiddle,xlast,xcountry,xvessel,xrank,xjstat,xgemp,xdiv,xsec
+
+        //headers none
+     end list
+
+		 list hrunselect
+        caption "Not Selected"
+        table hrmst
+        order xempnum
+				select " (xselect <> 'Yes') "
+     //   fixed xjstat
+        //select "xid<>''"
+       // navigators alpha //,group xrank "select xcode from xcodes where xtype = 'Rank'"
+        //navigators alpha,group xacc "select xacc from glmst" // where xtype = 'Country'"
+        rows 10
+        objects  xempnum attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Select&xempnum=?"),xfirst,xmiddle,xlast,xcountry,xvessel,xrank,xjstat,xgemp,xdiv,xsec
+
+        //headers none
+     end list
+		 
+		 
+		 
+		 
+
+		 form hremp
+		 	caption "Employees"
+			layout 5
+			objects Show,xgemp,xrank,xsec,xjstat//xvessel,xjstat,xcountry,xdiv,
+		 
+				field xgemp
+					display multi
+					height 5
+				end field
+				
+				field xdiv
+					display multi
+					height 5
+				end field
+				field xsec
+					//caption Department	
+					display multi
+					height 5
+				end field
+				field xrank
+					caption Department	
+					display multi
+					height 5
+					pick "select xcode from xcodes where zid='"+#id+"' and xtype='Department' "
+				end field
+		
+			field xdiv
+				display multi
+					height 5
+				pick "select xcode from xcodes where zid='"+#id+"' and xtype='Division'"
+			end field
+		
+
+      
+        field xcountry
+					display multi
+					height 5
+          default ""
+				end field
+				field xvessel
+					display multi
+					height 5
+				end field
+				field xrank
+					display multi
+					height 5
+				end field
+				field xjstat
+					display multi
+					height 5
+				end field
+			
+				field Show
+					event before
+						call search
+						if s .ne. ""
+							set #list(hremp.select)=#char(34)+s+#char(34)
+						end if
+console "mylist="+#list(hremp.select)
+						
+					end event
+				end field
+			
+			
+			end form
+     
+		 list hremp
+        caption "Employee List"
+		table (select * ,(select zactive from premp where zid=hrmst.zid and xempnum=hrmst.xempnum) ~
+				as zactive from hrmst) as tbl
+
+        order xempnum
+		//select "zactive='1'"
+        rows 10
+        //objects  xempnum attrib(link #servlet+"?page="+page+"&nexttab=General&command=Show&xempnum=?"),xfull caption(Full Name),xfirst,xmiddle,xlast,xprzip,xtitle,xjstat,xsec
+		objects  xempnum attrib(link #servlet+"?page="+page+"&nexttab=General&command=Show&xempnum=?"),xfull caption(Full Name),xprzip,xtitle,xjstat,xrank,xsec
+
+	
+			field xprzip
+				caption Old ID
+			end field
+			
+			field xtitle
+				caption Designation
+			end field
+
+			field xrank
+				caption Department
+			end field
+     end list
+
+		 form hralert
+		 	caption "Alerts"
+			layout 5
+			objects Show,xcountry,xvessel,xrank,xjstat
+		 
+        field xcountry
+					display multi
+					height 5
+          default ""
+				end field
+				field xvessel
+					display multi
+					height 5
+				end field
+				field xrank
+					display multi
+					height 5
+				end field
+				field xjstat
+					display multi
+					height 5
+				end field
+
+
+			
+				field Show
+					event before
+						call search
+						if s .ne. ""
+
+								str temp=#list(hralert.select)
+								if temp .ne. ""
+									//set temp=#sub(temp,1,
+									set s= temp+" and "+s
+								end if
+								set #list(hralert.select)=#char(34)+s+#char(34)
+						end if
+						
+					end event
+				end field
+			
+			
+			end form
+     
+		 list hralert
+        caption "Available on "+#date
+        table hrmst
+        order xempnum
+				select " xavdate <= '"+#date+"'" 
+				
+				//   fixed xjstat
+        //select "xid<>''"
+       // navigators alpha //,group xrank "select xcode from xcodes where xtype = 'Rank'"
+        //navigators alpha,group xacc "select xacc from glmst" // where xtype = 'Country'"
+        rows 10
+        objects  xempnum attrib(link #servlet+"?page="+page+"&nexttab=General&command=Show&xempnum=?"),xfirst,xmiddle,xlast,xcountry,xvessel,xrank,xjstat,xavdate,xgemp,xdiv,xsec
+
+        //headers none
+     end list
+		 
+		 
+		 
+     text hrmst
+//        "<p><b>xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx</b><br>"
+//        "<object border=1 data=""uploads/x100510/rtng000008.GIF"" type=""text/plain"" height=300 width=250 ></object>"
+//        "<object border=1 data='uploads/x100510/"+xempnum+".GIF' type=""text/plain"" height=500 width=400 ></object>"
+        // "<iframe border=0 src='"+xlink+"' height='520' width='380' ></iframe>"
+			"<img border=0 src='"+imgtemp+"' height='100' width='100' >"
+//         "<iframe border=0 src='docs/"+#dir(#id)+"/"+xempnum+".GIF' height='520' width='380' ></iframe>"
+
+				end text
+				
+			form hrimage
+				valid validpg
+				caption "Image Upload"
+				table hrmst
+				order xempnum
+				objects *Upload,Upload_pic attrib(hidden),Show,Top,Previous,Next,Bottom,~
+              xcountry display(hide), ~
+              xjstat display(hide), ~
+              xrank display(hide), ~
+              xvessel display(hide), ~
+              xslaute display(hide), ~
+              xfirst display(hide), ~
+              xmiddle display(hide), ~
+              xlast display(hide), ~
+				xempnum attrib(search),~
+				xfile,xlink width(40)
+				
+				field xfile
+					attrib local
+				end field 
+				field xlink
+					default "docs"+#sep+""+#dir(#id)+#sep+xempnum+"_Portrait.gif"
+					//attrib local
+					event after
+						if xlink .eq. ""
+							set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum+"_Portrait.gif"
+						end if
+						//call save
+					end event
+				end field
+				
+				//field *Upload
+					//embed onclick="clicked(this);"
+
+					//event before
+						//print "xlink="=xlink
+					//end event
+				//end field
+        //embed onsubmit="return submitit(this);"
+
+        //field *Upload 
+		//	//caption Upload File
+        //    //event before
+        //    //end event
+		//	
+		//	//event after
+		//	//set newlink = "c:\tomcat\webapps\da\"+xlink
+		//	//set delpic = #sql("delete from prmstpic where xempnum='"+xempnum+"'")
+		//	//set mysql="Insert prmstpic (zid,xempnum, EmpPhoto) Select '"+#id+"','"+xempnum+"', BulkColumn from Openrowset( Bulk '"+newlink+"',Single_Blob) as EmployeePicture"
+		//	//set inspick = #sql(mysql)
+		//	//print #app+" "+mysql+" "+inspick
+		//	//end event
+        //end field
+		
+		
+		//field Upload_pic  
+        //    event before
+        //    end event
+		//	event after
+		//	//print "Hello"
+		//	set newlink = "c:\tomcat\webapps\da\"+xlink
+		//	set delpic = #sql("delete from prmstpic where xempnum='"+xempnum+"'")
+		//	set mysql="Insert prmstpic (zid,xempnum, EmpPhoto) Select '"+#id+"','"+xempnum+"', BulkColumn from Openrowset( Bulk '"+newlink+"',Single_Blob) as EmployeePicture"
+		//	print mysql
+		//	set inspick = #sql(mysql)
+		//	print #result
+		//	//print #app+" "+mysql+" "+inspick
+		//	end event
+        //end field
+		
+		
+			end form
+
+
+
+
+		form hrmst
+		valid valid
+        caption "General"
+		table hrmst
+        order xempnum
+        // select "xempnum<>'' and zactive='1'"
+        layout 2
+        objects Clear,Show,Add, Update, Delete, Top, Previous, Next, Bottom,Portal Access,~
+			xpassword attrib(hide),~
+            xempnum display(trn Employee Number) attrib(search),xsalute,~
+			xfirst,xmiddle,xlast, xfull caption(Full Name) width(20), xtitle caption(Designation),xlevel caption(Management Level) attrib(mandatory),~
+			xhrc1,xhrc2,~
+			 xdiv display(ocombo),xrank caption(Department),~
+			xsec caption(Section) display(ocombo),~
+			 
+			xplace caption(Location) attrib(mandatory),xhrc3,xhrc4,~
+			xgemp caption(Employee Category) attrib(mandatory) display(ocombo),~
+			xport caption(Unit), xvessel caption(Line) display(hide),xid caption(Card/Finger ID) attrib(mandatory),~
+			xjstat attrib(mandatory),~
+			xkin caption(Gender),xmstat,xdob,xpob,xtypeves,xlower,xyesno,xkinphone,~
+			xcountry caption(Nationality),xheight,xh,xwtgross caption(Weight in KG),xphone width(20),xpresent,xpermanent, xpezip display(hide),~
+			xpephone display(hide),xfax,xmobile caption(Office Mobile),xprphone caption(Personal Mobile),xemail, ~
+			xpassport caption(Passport No.),xdate,xexpiry,xcontact caption(National ID),xrelation,xsuper,xnamesuper,xsppoi,xnamepoi,xlink,xprzip caption(Old ID)
+
+		field xempnation
+			caption Employee Division
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Employee Division'" 
+			
+		end field
+		field xtypeves
+			caption Employee Division
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Employee Division'" 
+			
+		end field
+		field xcountry
+			
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Nationality'" 
+			
+			
+		end field
+		
+		field xempdist
+			caption Employee District
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='District' and xcodealt='"+xtypeves+"'" 
+			//attrib submit
+		end field
+		
+		field xlower
+			caption Employee District
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='District' and xcodealt='"+xtypeves+"'" 
+			//attrib submit
+		end field
+		
+		field xrelation
+			caption Food Subsidy %
+			display ocombo
+			pick "100,75" 
+
+		end field
+		field xplace
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Location'" 
+			attrib submit
+
+		end field
+			field xlevel
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Management Level'" 
+			attrib submit
+
+		end field
+		field xsalute
+			display ocombo
+			pick "Mr.,Ms.,Mrs.,Dr.,Prof."
+
+		end field
+		
+		field xwtgross
+			//display ocombo
+			//pick "select xcode from xcodes where zid='"+#id+"' and xtype='Weight'" 
+			wid 8
+
+		end field
+		
+		field xheight
+			display ocombo
+			caption Height (Feet-Inch)
+			attrib attach
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Feet'" 
+			
+			//event before
+			//	set xheight = 0+xheight
+			//end event
+
+		end field
+		
+		field xh
+			caption Inch
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Inch'" 
+			//event before
+			//	set xh = 0+xh
+			//end event
+
+		end field
+		
+		field xhrc1
+			caption Rank
+			attrib submit
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Rank'" 
+
+		end field
+		field xhrc2
+		caption Sub-Rank
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Sub Rank'" 
+			//pick "select xcode from xcodes where zid='"+#id+"' and xtype='Sub Rank' and xcodealt='"+xhrc1+"'" 
+		end field
+		
+		field xhrc3
+		caption Budget Code
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Budget Code' and xcodealt='"+xdiv+"'" 
+			//event after
+			//	str mysql = "select xcode from xcodes where zid='"+#id+"' and xtype='Budget SubCode' and xcodealt='"+xhrc3+"' and xprops='"+xrank+"'"
+			//	set xhrc4 = #sql(mysql)
+			//	//print mysql
+			//	
+			//end event
+
+		end field
+		
+		field xhrc4
+		caption Budget SubCode
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Budget SubCode' and xcodealt like '%"+xhrc3+"%'" 
+			//
+			//event after
+			//	set bcode=#prop(xprops,"code")
+			//	set dcode=#prop(xprops,"dept")
+			//	
+			//
+			//end event
+
+		end field
+
+		field xfirst
+			caption Employee First Name
+			width 20
+		end field
+	
+		field xsec
+			//display ocombo
+			//pick "select xcode from xcodes where xtype='Section'"
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Section' and xcodealt='"+xrank+"'"
+		end field
+		
+		field xempmstat
+			caption Marital Status
+			//inherits xstatusmar
+			attrib local
+			display ocombo
+			pick "Single,Married,Widow"			
+		end field
+		
+		field xyesno
+			caption Marital Status
+			//attrib local
+			display ocombo
+			pick "Single,Married,Widow"			
+		end field
+		
+		field xempbldgrp
+			caption Blood Group
+			attrib local		
+			display ocombo
+			pick "A+,A-,B+,B-,O+,O-,AB+,AB-"
+		end field
+		field xkinphone
+			caption Blood Group
+			//attrib local		
+			display ocombo
+			pick "A+,A-,B+,B-,O+,O-,AB+,AB-"
+		end field
+		
+		
+		
+        field Portal
+          event before
+            #include eeaccess.include            
+          end event
+          event after
+            call checksuper            
+          end event
+        end field
+		
+		field xrank
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Department' and xcodealt='"+xdiv+"'"
+		end field
+		
+		field xdiv
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Division'"
+		end field
+		
+		field xtitle
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Designation'"
+			//attrib submit
+			//event after
+			//	set xhrc1=#sql("select xcodealt from xcodes where zid='"+#id+"' and xtype='Designation' and xcode='"+xtitle+"'")
+			//end event
+		end field
+		
+		field xmstat
+			caption Religion
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Religion'"
+		end field
+		
+		field xkin
+			display combo
+			pick "Male,Female,Other"
+		end field
+               
+        field xsuper
+          pick list xempnum
+		  attrib attach
+        end field
+		field xsppoi
+			caption Leave Sanction Authority
+          pick list xempnum
+		  attrib attach
+        end field
+		field xnamepoi
+          display const
+          attrib local
+          event after
+            set xnamepoi=hrmst.xfull(" xempnum='"+xsppoi+"' ")
+            
+          end event
+        end field
+		
+        field xnamesuper inherits(xname)
+          display const
+          attrib local
+          event after
+            set xnamesuper=hrmst.xfirst(" xempnum='"+xsuper+"' ")
+            set xnamesuper=xnamesuper+" "+hrmst.xlast(" xempnum='"+xsuper+"' ")
+          end event
+        end field
+               
+				field xlink
+					event after
+						if xlink .eq. "" .and. xempnum .ne. ''
+							set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum+"_Portrait.gif"
+						end if
+					end event
+				end field
+
+        field Show
+          event after
+              //set #field(Update.display) = ""
+              //set #field(xid.display) = "constant"
+          end event
+        end field
+
+        field xjstat
+          event before
+             if xjstat .eq. "On Leave" then
+                set xvessel=""
+              end if
+          end event
+
+        end field
+        field xdate
+           caption Issue Date
+           default ""
+        end field
+
+        field xempnum
+          event after
+            set globals(xempnum)=xempnum
+              set globals(returnpage)="hrmst"
+              set globals(trnfield)="xempnum"
+              set globals(xtypetrn)="Employee Number"
+              set globals(xtrnnum)=xempnum
+              set globals(xcountry)=xcountry
+              set globals(xjstat)=xjstat
+              set globals(xrank)=xrank
+              set globals(xvessel)=xvessel
+              set globals(xsalute)=xslaute
+              set globals(xfirst)=xfirst
+              set globals(xmiddle)=xmiddle
+              set globals(xlast)=xlast
+			  set globals(xtypetrn)="Master Maintenance"
+			  set globals(xtrnnum)=xempnum
+              
+              //print "#consolidate="+#consolidate
+              if xemail .ne. ""
+                //zemail, xrole, xentity, xaccess, zactive
+                set temp=#sql("select zemail from zxroles where zemail='"+xemail+"' and xrole='Employee' and zactive='1' and xentity='"+xempnum+"'")
+                if temp .eq. xemail
+                  set cons=#consolidate
+                  set #consolidate="true"
+                  set temp=#sql("select zemail from zxusers where zemail='"+xemail+"' and zactive='1'")
+                  set #consolidate=cons
+                  //TODO --- Nedd to change zusers to zxusers
+                  if temp .eq. xemail
+                    //set #fields(Portal.display)="disabled"
+                  end if
+                end if
+              else
+                //set #fields(Portal.display)="disabled"
+              end if					
+					end event
+        end field
+        
+        //field xid
+        //  pick hrmstid
+        //  event after
+        //    set #field(Update.display) = "remove"
+        //    set globals(xid)=xid
+        //  end event
+        //end field
+
+
+
+
+        field xcustype
+          display combo
+          pick select xcode from xcodes where xtype='Customer Type'
+        end field
+		
+        field Add
+		event before
+		//  set globals(ErrChk) = ""
+		//  
+		//	if globals(ErrChk) .ne. "1"
+		//		set chk_id = #sql("select xid from hrmst where zid="+#id+" and xid='"+xid+"' and xempnum<>'"+xempnum+"'")
+		//		error  chk_id+"LLLL"
+		//		if #result .eq. "true"
+		//			set globals(ErrChk)="1"
+		//			error "Already have this Card/Finger ID </p>Cannot "+#command+"
+		//		end if
+		//	end if		
+		//set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum+"_Portrait.gif"		
+		end event		  
+		  
+					event after
+						//if xlink .eq. "" .and. xempnum .ne. ''
+							set xlink="docs"+#sep+""+#dir(#id)+#sep+xempnum+"_Portrait.gif"
+                        
+							int i=#sql(int,"update hrmst set xlink='"+xlink+"' where xempnum='"+xempnum+"'")
+                        
+						//end if
+						
+            call checksuper
+
+					end event
+					
+					event after
+							set myqry = "insert into premp (ztime,zid,xempnum,xdateeff,zactive)"
+							set myqry = myqry + " values('"+#time+"','"+#id+"','"+xempnum+"','"+#max+"','1')"
+							set tmpstr = #sql(myqry)
+						
+					end event
+        
+        
+        end field
+        field Update
+					event after
+            call checksuper			
+					end event
+        
+        
+        end field
+        
+			end form
+//******************************************************************************
+method checksuper
+    
+  //supervisor details
+  if xsuper .ne. "" .and. xsuper .ne. "null"
+    set zemail=hrmst.xemail(" xempnum='"+xsuper+"'")
+    if zemail .ne. ""
+      set xrole="Supervisor"
+      set xentity=xsuper
+    
+      buffer zxroles=zxroles(zemail,xrole,xentity)
+      if xrole .ne. zxroles.xrole
+        print "No Supervisory Role for the Supervisor "+xsuper+"("+zemail+") -- Adding Role."
+        buffer zxroles
+        set zxroles.zemail=zemail
+        set zxroles.xrole=xrole
+        set zxroles.xentity=xentity
+        set zxroles.zactive="1"
+        insert zxroles
+      end if
+    end if
+   
+    //what about supervisor's supervisor--authority
+    set authority=hrmst.xsuper(" xempnum='"+xsuper+"'")
+    if authority .ne. "" .and. authority .ne. "null"
+      set zemail=hrmst.xemail(" xempnum='"+authority+"'")
+      if zemail .ne. ""
+        set xrole="Authority"
+        set xentity=authority
+    
+        buffer zxroles=zxroles(zemail,xrole,xentity)
+        if xrole .ne. zxroles.xrole
+          print "No Authority Role for the Sanctioning Authority "+authority+"("+zemail+") -- Adding Role."
+          buffer zxroles
+          set zxroles.zemail=zemail
+          set zxroles.xrole=xrole
+          set zxroles.xentity=xentity
+          set zxroles.zactive="1"
+          insert zxroles
+        end if
+      end if
+    end if
+  end if
+end method
+//***************************************************************************
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        function clicked(b){
+          button=b.value
+//alert("clicked"+button);
+        }
+        function submitit(form){
+//alert("submitit");
+          if (button=="Upload"){
+            button="";
+						var f=form.xfile.value
+						var l=form.xlink.value
+						//alert(f+"*"+l);
+            var i=f.indexOf('.')
+						//alert("I am here")
+						f=f.substring(i,f.length)
+            var i=l.indexOf(".")
+						l=l.substring(i,l.length)
+						//alert(f+"*"+l)
+						if (f.toLowerCase()==l.toLowerCase()){
+							return true;
+						}else{
+							alert("The file extensions for source("+f+") and destination("+l+") does not match. Correct and try again.");
+							return false;
+						}
+						return false
+          }else{
+						button="";
+					}
+        }
+
+        </script>
+     end script
+     method save_commodity
+          set globals(xcommodity)=xcommodity
+          set globals(xqty)=xqty
+          set globals(xunit)=xunit
+       
+     end method
+     method save
+	  set globals(xid)=xid
+            set globals(xempnum)=xempnum
+              set globals(returnpage)="hrmst"
+              set globals(trnfield)="xempnum"
+              set globals(xtypetrn)="Employee Number"
+              set globals(xtrnnum)=xempnum
+              set globals(xcountry)=xcountry
+              set globals(xjstat)=xjstat
+              set globals(xrank)=xrank
+              set globals(xvessel)=xvessel
+              set globals(xsalute)=xslaute
+              set globals(xfirst)=xfirst
+              set globals(xmiddle)=xmiddle
+              set globals(xlast)=xlast
+     end method
+		 method search
+						str s="("
+						if xcountry .ne. ""
+							set s = s+" xcountry = '"+xcountry+"' "
+						end if
+						//if xvessel .ne. ""
+						//	if s .ne. "("
+						//		set s = s + " and "
+						//	end if
+						//	set s = s+" xvessel = '"+xvessel+"' "
+						//end if
+						//if xrank .ne. ""
+						//	if s .ne. "("
+						//		set s = s + " and "
+						//	end if
+						//	set s = s+" xrank = '"+xrank+"' "
+						//end if
+						
+            if xgemp .ne. ""
+							if s .ne. "("
+								set s = s + " and "
+							end if
+							set s = s+" xgemp = '"+xgemp+"' "
+						end if
+						if xrank .ne. ""
+							if s .ne. "("
+								set s = s + " and "
+							end if
+							set s = s+" xrank = '"+xrank+"' "
+						end if
+						if xsec .ne. ""
+							if s .ne. "("
+								set s = s + " and "
+							end if
+							set s = s+" xsec = '"+xsec+"' "
+						end if
+					
+            if xjstat .ne. ""
+							if s .ne. "("
+								set s = s + " and "
+							end if
+							set s = s+" xjstat = '"+xjstat+"' "
+						end if
+
+
+						if s .ne. "("
+							set s = s + ")"
+						else
+							set s = ""
+						end if
+console "s="+s
+
+		 
+		 end method
+
+//****hrbook******************************************************************     
+
+     list hrbook
+        caption "<p class=bl>Book Entries for <font color=red > "+xempnum+"</font><br>"
+        table hrbook
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xcountry,xdocnum,xdate,xplace,xexpiry,xrem
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrbook
+        caption "Book"
+        table hrbook
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xcountry,xdocnum,xdate,xplace,xexpiry,xrem width(50) height(2)
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrbook ENDS*************************************************************     
+     
+//****hrlic******************************************************************     
+
+     list hrlic
+        caption "<p class=bl>Licences for <font color=red > "+xempnum+"</font><br>"
+        table hrlic
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xcountry,xgrade,xdocnum,xdate,xplace,xexpiry,xrem
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrlic
+        caption "Licence"
+        table hrlic
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xcountry,xgrade,xdocnum,xdate,xplace,xexpiry,xrem width(40) height(2)
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrlic ENDS*************************************************************     
+
+//****hrcert******************************************************************     
+
+     list hrcert
+        caption "<p class=bl>Certificates for <font color=red > "+xempnum+"</font><br>"
+        table hrcert
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xcourse,xdocnum,xdate,xexpiry,xissueby
+
+
+//totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrcert
+        caption "Certificates"
+        table hrcert
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xcourse,xdocnum,xdate,xexpiry,xissueby
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrcert ENDS*************************************************************     
+
+//****hrservice******************************************************************     
+
+     list hrservice
+        caption "<p class=bl>Service Details for <font color=red > "+xempnum+"</font><br>"
+        table hrservice
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xowner,xvessel,xtypeves,xdwt,xbhp,xengine,xums,xrank,xdate,xexpiry,xnote
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrservice
+        caption "Service"
+        table hrservice
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xowner,xvessel,xtypeves,xdwt,xbhp,xengine,xums,xrank,xdate,xexpiry,xnote
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrservice ENDS*************************************************************     
+
+//****hrfamily******************************************************************     
+
+     list hrfamily
+        caption "<p class=bl>Family Members for <font color=red > "+xempnum+"</font><br>"
+        table hrfamily
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+       xdesc caption(Relation Type),xrelation ,xname caption(Name),xmobile,xage,xemail 
+		
+		field xsex
+			caption Gender
+		end field
+        //headers none
+      end list
+	form hrfamily
+        caption "Family"
+        table hrfamily
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 3
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow attrib(row 0 10) attrib(search),xdesc caption(Relation Type),xrelation ,xname caption(Name),xmother display(hide),~
+							 xsex caption(Gender) display(hide),xphone display(hide),~
+							 xmobile ,xorg caption(Child Name-1) display(hide),xage,xprearnlv caption(Instute Name-1) display(hide),~
+							 xage1 display(hide),xprmatlv caption(Instute Name-2) display(hide),xnextkin display(hide),xemail,xdob
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+			//if xrelation .ne. "Yes"
+			//
+			//	set #field(xorg.display)="hide"
+			//	set #field(xage.display)="hide"
+			//	set #field(xdesc.display)="hide"
+			//	set #field(xmobile.display)="hide"
+			//	set #field(xprearnlv.display)="hide"
+			//	set #field(xage1.display)="hide"
+			//	set #field(xprmatlv.display)="hide"
+			//end if
+		end event
+        end field
+		
+		field xage
+			width 10
+		end field
+		
+		field xage1
+			width 10
+		end field
+		
+		field xmobile
+				col(3)
+			width 10
+		end field
+		
+		
+		field xprmatlv
+			width 30
+		end field
+		
+		field xdesc
+			//width 30
+			display ocombo
+			pick "Family,Emergency,Nominee"
+		end field
+		
+		
+		field xprearnlv
+			width 30
+		end field
+		
+		
+		field xrelation
+			caption Relation
+			display ocombo
+			pick "Father,Mother,Brother,Sister,Children,Guardian,Spouse"
+			//default "No"
+		end field
+		
+			end form
+
+//****hrfamily ENDS*************************************************************     
+
+//****hrendor******************************************************************     
+
+     list hrendor
+        caption "<p class=bl>Family Members for <font color=red > "+xempnum+"</font><br>"
+        table hrendor
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xendorse,xgrade,xdocnum,xdate,xplace,xexpiry,xrem
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrendor
+        caption "Endorsements"
+        table hrendor
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xendorse,xgrade,xdocnum,xdate,xplace,xexpiry,xrem width(40) height(2)
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrendor ENDS*************************************************************     
+
+//****hrtrain******************************************************************     
+
+     list hrtrain
+        caption "<p class=bl>Family Members for <font color=red > "+xempnum+"</font><br>"
+        table hrtrain
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xorg caption(Institue Name),xtrainer,xtitle,xphone,xdatefrom,xdateto,xcert,xqualify,xgrade,xskill
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrtrain
+        caption "Training"
+        table hrtrain
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 5
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow attrib(row 0 10) attrib(search),xorg caption(Institute Name),xcountry,xtrainer,xtitle caption(Training Title/Topic),xphone display(hide),xdatefrom,xdateto,xcert,xqualify,xgrade,xskill
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+		
+		field xcountry
+			display ocombo
+			pick code Country
+		end field
+			end form
+
+//****hrtrain ENDS*************************************************************     
+
+//****hrvisa******************************************************************     
+
+     list hrvisa
+        caption "<p class=bl>Family Members for <font color=red > "+xempnum+"</font><br>"
+        table hrvisa
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xcountry,xdocnum,xdate,xplace,xexpiry,xrem
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrvisa
+        caption "Visas"
+        table hrvisa
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xcountry,xdocnum,xdate,xplace,xexpiry,xrem width(40) height(2)
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrvisa ENDS*************************************************************     
+
+//****hrmedical******************************************************************     
+
+     list hrmedical
+        caption "<p class=bl>Medical Details for <font color=red > "+xempnum+"</font><br>"
+        table hrmedical
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xcondmed,xvalue,xdatefrom,xdateto,xref
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrmedical
+        caption "Medical"
+        table hrmedical
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 6
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xcondmed,xvalue,xdatefrom,xdateto,xref
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrmedical ENDS*************************************************************     
+
+//****hrtest******************************************************************     
+
+     list hrtest
+        caption "<p class=bl>Testimonials for <font color=red > "+xempnum+"</font><br>"
+        table hrtest
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xdate,xplace,xorg,xissuedby,xlink,xabstract
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrtest
+        caption "Testimonials"
+        table hrtest
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow display(row 0 10) attrib(search),xdate,xplace,xorg,xissuedby,xlink columns(3),xabstract
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+					end event
+        end field
+			end form
+
+//****hrtest ENDS*************************************************************     
+
+//****hrref******************************************************************     
+
+     list hrref
+        caption "<p class=bl>References for <font color=red > "+xempnum+"</font><br>"
+        table hrref
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xname,xorg,xrelation,xdate,xfeedback
+        
+		field xorg
+			caption Organization
+		end field
+      end list
+			form hrref
+        caption "References"
+        table hrref
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow attrib(row 0 10) attrib(search),xname,xorg,xdate display(hide),~
+							 
+							 xrefdesig,xrefphoff,xrefphres,xrefmob,xrefemail,xrefadd display(hide),xrelation,xfeedback
+							 
+							 
+			field xfeedback
+				hight 2
+				weigh 40
+			end field
+			
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+						
+			if xrefdesig .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Designation' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefdesig=#sql(str,mysql)
+			end if
+			
+			if xrefadd .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Address' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefadd=#sql(str,mysql)
+			end if
+			
+			if xrefphoff .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Phone Office' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefphoff=#sql(str,mysql)
+			end if
+			
+			if xrefphres .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Phone Resident' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefphres=#sql(str,mysql)
+			end if
+			
+			if xrefmob .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Mobile' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefmob=#sql(str,mysql)
+			end if
+
+			if xrefemail .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Reference Email' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xrefemail=#sql(str,mysql)
+			end if
+
+					end event
+        end field
+
+	field xorg
+		caption Organization
+	end field
+	
+	field xrefdesig
+		caption Designation
+		attrib local
+		display text
+	end field
+			
+	field xrefadd
+		caption Address
+		inherits xadd
+		attrib local
+		height 2
+	end field
+	
+	field xrefphoff
+		caption Phone(Office)
+		attrib local
+		display text
+	end field
+	
+	field xrefphres
+		caption Phone(Resident)
+		attrib local
+		display text
+	end field
+	
+	field xrefmob
+		caption Phone(Mobile)
+		attrib local
+		display text
+	end field
+	
+	field xrefemail
+		caption Email
+		attrib local
+		display text
+	end field
+
+	field Add
+					event after
+			
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Designation','"+xempnum+"','"+xrow+"','1','','','"+xrefdesig+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefdesig+"' where zid='"+#id+"' and xcontext='Employee Reference Designation' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Address','"+xempnum+"','"+xrow+"','1','','','"+xrefadd+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefadd+"' where zid='"+#id+"' and xcontext='Employee Reference Address' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Phone Office','"+xempnum+"','"+xrow+"','1','','','"+xrefphoff+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefphoff+"' where zid='"+#id+"' and xcontext='Employee Reference Phone Office' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Phone Resident','"+xempnum+"','"+xrow+"','1','','','"+xrefphres+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefphres+"' where zid='"+#id+"' and xcontext='Employee Reference Phone Resident' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+					
+
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Mobile','"+xempnum+"','"+xrow+"','1','','','"+xrefmob+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefmob+"' where zid='"+#id+"' and xcontext='Employee Reference Mobile' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Email','"+xempnum+"','"+xrow+"','1','','','"+xrefemail+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefemail+"' where zid='"+#id+"' and xcontext='Employee Reference Email' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+			
+			end event
+        
+        
+        end field
+        field Update
+					event after
+
+			
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Designation','"+xempnum+"','"+xrow+"','1','','','"+xrefdesig+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefdesig+"' where zid='"+#id+"' and xcontext='Employee Reference Designation' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Address','"+xempnum+"','"+xrow+"','1','','','"+xrefadd+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefadd+"' where zid='"+#id+"' and xcontext='Employee Reference Address' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Phone Office','"+xempnum+"','"+xrow+"','1','','','"+xrefphoff+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefphoff+"' where zid='"+#id+"' and xcontext='Employee Reference Phone Office' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Phone Resident','"+xempnum+"','"+xrow+"','1','','','"+xrefphres+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefphres+"' where zid='"+#id+"' and xcontext='Employee Reference Phone Resident' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+					
+
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Mobile','"+xempnum+"','"+xrow+"','1','','','"+xrefmob+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefmob+"' where zid='"+#id+"' and xcontext='Employee Reference Mobile' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Reference Email','"+xempnum+"','"+xrow+"','1','','','"+xrefemail+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xrefemail+"' where zid='"+#id+"' and xcontext='Employee Reference Email' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+					
+			end event
+        
+        
+        end field
+	
+			end form
+
+//****hrref ENDS*************************************************************     
+
+//****hrwork******************************************************************     
+
+     list hrwork
+        caption "<p class=bl>Work Details of <font color=red > "+xempnum+"</font><br>"
+        table hrwork
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xdatefrom,xdateto,xplace,xorg,xtitle,xfunctions caption(Special Achievements),xspecial caption(Job Resposibility),xaward,xskill
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+			form hrwork
+        caption "Work"
+        table hrwork
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 3
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 xrow attrib(row 0 10;search),xdatefrom,xdateto,xorg caption(Organization Name),xplace caption(Address),xtitle caption(Job Position),~
+							 xspecial columns(5) caption(Job Resposibility),xfunctions columns(5) caption(Special Achievements) wid(80)	,~
+							 xaward columns(5),xskill columns(5)
+
+        field xrow
+          event after
+            set globals(xrow)=xrow
+		  end event
+        end field
+		
+		field xplace
+			weigth 30
+			//higth 20
+		end field
+			end form
+
+//****hrwork ENDS*************************************************************     
+
+
+//****hredu******************************************************************     
+
+     list hredu
+        caption "<p class=bl>Education Details of <font color=red > "+xempnum+"</font><br>"
+        table hredu
+        order xempnum,xrow
+        fixed xempnum
+        rows 10
+        objects  xrow  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xrow=?"), ~
+        xyearq,xorg,xcourse,xdatefrom,xdateto,xdegree,xgrade,xissuedby
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+      end list
+
+		form hredu
+        caption "Education"
+        table hredu
+        order xempnum,xrow
+        fixed xempnum
+        
+        layout 4
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~
+							 //xrow attrib(row 0 10) attrib(search),xyearq,xorg,xcourse,xdatefrom,xdateto,~
+							 //xdegree,xgrade,majorsub,eduboard,xissuedby,xachievement
+							 
+							 xrow attrib(row 0 10;search),xdegree caption(Exam/Course Name) wid(30),xcourse caption(Major Subject/Group),xyearq,xgrade,~
+				 xorg caption(Institute Name),xdatefrom,~
+				 xdateto,xissuedby caption(Certification Authority) wid(20)//,zemail display(hide),xemail display(hide),xrem display(text) wid(30)
+
+        
+		
+		field xgrade
+			caption Result
+			display text
+			pick
+			wid (30)
+			//pick "select xcode from xcodes where zid='"+#id+"' and xtype='CGPA'"
+		end field
+		
+		
+		
+
+		//field xyearq
+		//	caption Passing Year
+		//end field
+		//
+		//field xorg
+		//	caption Institute Name
+		//end field
+		//
+		//field xcourse
+		//		caption Examination
+		//	end field
+		//
+		//field xgrade
+		//	display text
+		//	caption Result
+		//end field
+		
+        field xrow
+          event after
+            set globals(xrow)=xrow
+			if xachievement .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Education Achievement' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set xachievement=#sql(str,mysql)
+			end if
+			if majorsub .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Education Major' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set majorsub=#sql(str,mysql)
+			end if
+			if eduboard .eq. ""
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Education Board' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set eduboard=#sql(str,mysql)
+			end if
+					end event
+        end field
+		
+		field xachievement
+			caption Achievement
+			attrib local		
+			display text
+		end field
+		
+		field majorsub
+			caption Major
+			attrib local		
+			display text
+		end field
+		
+		field eduboard
+			caption Education Board
+			attrib local		
+			display text
+		end field
+		
+		field Add
+					event after
+
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Achievement','"+xempnum+"','"+xrow+"','1','','','"+xachievement+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xachievement+"' where zid='"+#id+"' and xcontext='Employee Education Achievement' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Major','"+xempnum+"','"+xrow+"','1','','','"+majorsub+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+majorsub+"' where zid='"+#id+"' and xcontext='Employee Education Major' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Board','"+xempnum+"','"+xrow+"','1','','','"+eduboard+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+eduboard+"' where zid='"+#id+"' and xcontext='Employee Education Board' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+								
+		
+					end event
+        
+        
+        end field
+        field Update
+					event after
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Achievement','"+xempnum+"','"+xrow+"','1','','','"+xachievement+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xachievement+"' where zid='"+#id+"' and xcontext='Employee Education Achievement' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Major','"+xempnum+"','"+xrow+"','1','','','"+majorsub+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+majorsub+"' where zid='"+#id+"' and xcontext='Employee Education Major' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Education Board','"+xempnum+"','"+xrow+"','1','','','"+eduboard+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+eduboard+"' where zid='"+#id+"' and xcontext='Employee Education Board' and xdocnum='"+xempnum+"' and xdocrow='"+xrow+"' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+					end event
+        
+        
+        end field
+		
+			end form
+	  
+
+//****hredu ENDS*************************************************************     
+
+     form hrdocs
+        //caption "Documents for <span class=br>"+xtrnnum+"</span>"
+        caption "Documents"
+        table cadocs
+        order xtypetrn,xtrnnum,xdoc
+        fixed xtypetrn,xtrnnum
+        layout 4
+        objects ~
+                Clear,Show, ~
+                Add,Update, Delete, Top, Previous, Next, Bottom,*Upload ,~
+                returnpage,trnfield,xdoc width(20), xprefix display(const), xname attrib(local), xlink,zactive,xfile caption(Upload File) attrib(local)
+
+
+        field returnpage
+          attrib local
+          caption Return Page
+          display hide
+          event after
+            set returnpage=globals(returnpage)
+            call getname
+          end event
+        end field
+        field trnfield
+          attrib local
+          caption Transaction Field
+          display hide
+          event after
+            set trnfield=globals(trnfield)
+ console "trnfield="+trnfield
+          end event
+        end field
+
+				field *Upload
+          //embed onclick="clicked(this);"
+
+					event before
+						call makelink
+					end event
+				end field
+        
+				field xlink
+					display const
+				end field
+				
+				field xprefix
+					caption Prefix
+					attrib local
+					event after
+						call getlink
+						call save
+					end event
+				end field
+        
+				field Add
+
+					event before
+						call makelink
+					end event
+				end field
+				field Update
+
+					event before
+						call makelink
+					end event
+				end field
+        
+        
+     end form
+     method getname
+						set xprefix="docs"+#sep+""+#dir(#id)+#sep+xempnum+"_"
+						int len=#length(xprefix)
+            set xname=#sub(xlink,len)
+            
+     
+     end method
+     method makelink
+						set xlink=xprefix+xname
+            set globals(xlink)=xlink
+     
+     end method
+
+	valid valid
+		config
+			set imgtemp = #replace(xlink,"\","/")
+			if xempnum .ne. ""
+				int i=#sql(int,"update hrmst set xlink='"+xlink+"' where xempnum='"+xempnum+"'")
+				
+			end if
+		end config
+	end valid
+	
+	valid validpg
+		config
+			set imgtemp = #replace(xlink,"\","/")
+		end config
+	end valid	
+end page
