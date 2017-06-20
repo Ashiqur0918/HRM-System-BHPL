@@ -1,0 +1,233 @@
+page pratdprocess
+
+    caption "Attendance Posting to Payroll Process"
+    section form one
+	
+    form one
+		layout 1
+		object Process,Show, ~
+				xyear default(#cyear),xper default(#cper),~
+				xempf,xempt
+
+		field xempf
+			pick list xempnum
+			width 10
+		end field
+
+		field xempt
+			pick list xempnum
+			width 10
+		end field
+
+		field Process
+			event before
+			
+				set globals(ErrChk) = ""
+				call lastday
+
+				if globals(ErrChk) .ne. "1"
+					set chkrec = #sql("select xpaydate from prpay where zid='"+#id+"' and xpaydate='"+xdatepay+"'")
+					if #result .ne. "true"
+						set xmonthname = cadate.xmonthname("xyear='"+yr+"' and xper='"+pr+"'")
+						set xremarks="Salary For The Month of "+ xmonthname +" Period: "+pr+" Year: "+yr
+						set myqry = "insert into prpay (ztime,zid,xdatepay,xremarks,zemail,xemail,xyear,xper)"
+						set myqry = myqry + " values('"+#time+"','"+#id+"','"+xdatepay+"','','"+#user+"','','"+xyear+"',~
+									'"+xper+"')"
+						set tmpstr = #sql(myqry)
+					end if
+				end if
+				
+				if globals(ErrChk) .ne. "1"
+					set xprot = prdef.xprot("zid='"+#id+"'")
+					if #result .ne. "true"
+						set globals(ErrChk)="1"
+						error "OT Head Not Created In Payroll Default"
+					end if
+				end if
+				
+				if globals(ErrChk) .ne. "1"
+					set xprbasic = prdef.xprbasic("zid='"+#id+"'")
+					if #result .ne. "true"
+						set globals(ErrChk)="1"
+						error "Basic Head Not Created In Payroll Default"
+					end if
+				end if
+				
+				if globals(ErrChk) .ne. "1"
+					set globals(xempf)=xempf
+					str clist="xempnum,xdiv,xplace"
+					str sql="select "+clist+" from hrmst where zid="+#id+" and xempnum>='"+globals(xempf)+"' and xempnum<='"+xempt+"'"
+					int count=#sqlfill(sql)
+					
+///error count+" "+sql
+					if count > 0
+						int i = 0
+						while i < count
+							array get(i,clist)	
+							set i = i + 1
+							int acuthourwr=0
+							int latecount=0
+							int abscount=0
+							decimal chkothr=0.00
+							int late_abs_rule=0
+							
+							set latecount=0+#sql(int,"select count(xatdstat) from pratd where zid='"+#id+"' and xempnum='"+xempnum+"' and xatdstat='Late' and xyear='"+xyear+"' and xper='"+xper+"'")
+							set abscount=0+#sql(int,"select count(xatdstat) from pratd where zid='"+#id+"' and xempnum='"+xempnum+"' and (xatdstat='Not-Punched' or xatdstat='Absent') and xyear='"+xyear+"' and xper='"+xper+"'")
+							set myqury="select count(xatdstat) from pratd where zid='"+#id+"' and xempnum='"+xempnum+"' and (xatdstat='Annual Leave' or xatdstat='Casual Leave' or xatdstat='Sick Leave') and xyear='"+xyear+"' and xper='"+xper+"'"
+							set lvcount=0+#sql(myqury)
+							print myqury+lvcount
+							set chkothr=0.00+#sql(dec,"select sum(xcappaid) from pratd where zid='"+#id+"' and xempnum='"+xempnum+"' and xyear='"+xyear+"' and xper='"+xper+"'")
+							
+							set chklen =#len(chkothr)
+							//error abscount
+							if chklen==4
+								set hour=#sub(chkothr,0,1)
+								if hour>0
+									compute hour=0+hour*60
+								end if
+								set minit=#sub(chkothr,2,2)
+								set minit=0+minit+hour
+								if minit>60
+									int hourn=minit/60
+									call minitdec
+								end if
+							end if		
+							
+						
+							if chklen==5
+								
+								set hour=#sub(chkothr,0,2)
+								if hour>0
+									compute hour=0+hour*60
+								end if
+							
+								set minit=#sub(chkothr,3,2)
+								set minit=0+minit+hour
+								if minit>60
+									int hourn=minit/60
+									call minitdec
+									
+								end if
+							end if			
+
+							if chklen==6
+							set hour=#sub(chkothr,0,3)
+							if hour>0
+								compute hour=0+hour*60
+							end if
+							
+							set minit=#sub(chkothr,4,2)
+							set minit=0+minit+hour
+								if minit>60
+									int hourn=minit/60
+									call minitdec
+								end if
+							end if			
+							
+							set basic_amt=prpaymentdt.xamount("zid='"+#id+"' and xpaycode='"+xprbasic+"' and xempnum='"+xempnum+"'")							
+							set basic_amt_perday=0.0+basic_amt/208
+							set ot_amt=0.0//+basic_amt_perday*ot_hour*2
+							set ot_amt=0.00+#sql(dec,"select sum(xamount) from pratd where zid='"+#id+"' and xempnum='"+xempnum+"' and xyear='"+xyear+"' and xper='"+xper+"'")
+							set zactive=#sql("select zactive from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+							
+							set late_abs_rule=0+pratdabsent.xdayab("zid='"+#id+"' and xdiv='"+xdiv+"' and xplace='"+xplace+"'")
+							compute lateabs=0+abscount //+(latecount/late_abs_rule)
+							int lateabs=0+lateabs
+							//print xempnum+" ; "+lateabs
+							set shift=premp.xshift("zid='"+#id+"' and xempnum='"+xempnum+"'")
+							if globals(ErrChk) .ne. "1"
+								set xpaydate = xdatepay
+								set checkdate=prmsg.xdatepay("zid='"+#id+"' and xdatepay='"+xpaydate+"' and xempnum='"+xempnum+"'")								
+								///error #result
+								if #result .eq. "true" 
+									str mysql = "update prmsg set xdayab='"+lateabs+"',xnhour='"+acuthourwr+"',zactive='"+zactive+"' where zid="+#id+" and xdatepay='"+xpaydate+"' and xempnum='"+xempnum+"'"
+									set tmpstr = #sql(str,mysql) 
+								//	print #result+" "+mysql
+									if #result .eq. "true"
+										if ot_amt>0
+											set checkotamt=prtrndt.xpaycode("zid='"+#id+"' and xdatepay='"+xpaydate+"' and xempnum='"+xempnum+"' and xpaycode='"+xprot+"'")
+											if #result .ne. "true"																						
+												set myqry = "insert into prtrndt (ztime,zid,xdatepay,xempnum,xpaycode,xamount,zemail,xemail,xtype,xoption,xdateeff)"
+													set myqry = myqry + " values('"+#time+"','"+#id+"','"+xdatepay+"','"+xempnum+"','"+xprot+"','"+ot_amt+"','"+#user+"','',~
+													'','','"+#date+"')"
+												set tmpstr = #sql(myqry)
+											else
+												str mysql = "update prtrndt set xamount='"+ot_amt+"' where zid='"+#id+"' and xdatepay='"+xpaydate+"' and xempnum='"+xempnum+"' and xpaycode='"+xprot+"'"
+												set tmpstr = #sql(str,mysql) 
+											end if
+										end if
+									end if
+								else
+									set myqry = "insert into prmsg (ztime,zid,xdatepay,xempnum,xremarks,xdayab,xdaylv,xnhour,~
+										xgvothour,xnoothour,xresth,xpflag,xadvflag,zemail,xemail,xratev,xday,xdate,~
+										xdaysuspend,xdaysuspenq,xsuspendf,xsuspenqf,xref,zactive)"
+										set myqry = myqry + " values('"+#time+"','"+#id+"','"+xdatepay+"','"+xempnum+"','','"+lateabs+"','"+lvcount+"','"+acuthourwr+"',~
+										"0","0","0",'','Yes','"+#user+"','',"0","0",'"+#date+"',"0","0","0","0",'','"+zactive+"')"
+									set tmpstr = #sql(myqry)
+									
+								//	print #result
+									if #result .eq. "true"
+										if ot_amt>0
+											set myqry = "insert into prtrndt (ztime,zid,xdatepay,xempnum,xpaycode,xamount,zemail,xemail,xtype,xoption,xdateeff)"
+												set myqry = myqry + " values('"+#time+"','"+#id+"','"+xdatepay+"','"+xempnum+"','"+xprot+"','"+ot_amt+"','"+#user+"','',~
+												'','','"+#date+"')"
+											set tmpstr = #sql(myqry)
+										end if
+									end if
+								end if
+							end if							
+							//print xempnum+" "+latecount+" "+shift+" "+ot_hour+" "+ot_amt
+						end while
+					end if				
+					print "<font size=6 color=blue>Attendance Process Completed</font>"
+				end if
+			end event
+		end field
+    end form
+
+     method lastday
+	  	int day = 0
+	  	set salcal = prdef.xprsalcalc("zid='"+#id+"'")
+	  	if #result .ne. "true"
+	  		set globals(ErrChk) = "1"
+	  		error "Payroll Default not defined"
+	  	end if
+
+	  	if globals(ErrChk) .ne. "1"
+			if salcal .eq. "Last Day"
+				if xper .eq. "01" .or. xper .eq. "03" .or. xper .eq. "05" .or. xper .eq. "07" .or. xper .eq. "08" .or. xper .eq. "10" .or. xper .eq. "12"
+					int day = 31
+				else if xper .eq. "1" .or. xper .eq. "3" .or. xper .eq. "5" .or. xper .eq. "7" .or. xper .eq. "8" .or. xper .eq. "10" .or. xper .eq. "12"
+					int day = 31
+				end if
+				if xper .eq. "04" .or. xper .eq. "06" .or. xper .eq. "09" .or. xper .eq. "11"
+					int day = 30
+				else if xper .eq. "4" .or. xper .eq. "6" .or. xper .eq. "9" .or. xper .eq. "11"
+					int day = 30
+				end if
+				if xper .eq. "02"
+					int day = 28
+				else if xper .eq. "2"
+					int day = 28
+				end if
+	          	set prvdate = xyear+"-"+xper+"-01"
+			else if salcal .eq. "Custom"
+	      		set chkday = prdef.xperend("zid='"+#id+"'")
+	      		if chkday == 0 .or. #result .eq. "false"
+      				set globals(ErrChk) = "1"
+      				error "Period ending date not defined in Setup table"
+	      		else
+					int day = prdef.xperend("zid='"+#id+"'")+1
+		          	int prvday = 0+prdef.xperend("zid='"+#id+"'")+1
+	      		end if
+	      		set prvdate = xyear+"-"+prvper+"-"+prvday
+			end if
+
+          	set tmpdate = xyear+"-"+xper+"-"+day
+	
+          	set temp = #days(tmpdate)
+          	set xdatepay=tmpdate//#longtodate(temp)
+
+		end if
+     end method	
+end page
