@@ -1,0 +1,187 @@
+page prmsg
+
+    caption "<span class=bl><font size=+1>Payment Date: <a href=/da/"+#servlet+"?page=prpay&command=Show&xdatepay="+xdatepay+">" +xdatepay+ "</a></span>"
+	sections  form one,list one, script myscript,text top
+
+     text top
+        "<a href=#top title='Back to Top'><font color=blue size=+1><strong>Go Top</strong></font></a>"
+     end text
+
+     list one
+		caption "List of Employee"
+		table (select *,~
+		(select xfull from hrmst where hrmst.zid=prmsg.zid and hrmst.xempnum=prmsg.xempnum) as tmpname , ~
+		(select xtitle from hrmst where hrmst.zid=prmsg.zid and hrmst.xempnum=prmsg.xempnum) as tmpdesig , ~			
+		(select xdiv from hrmst where hrmst.zid=prmsg.zid and hrmst.xempnum=prmsg.xempnum) as tmpdept , ~			
+		(select xjstat from hrmst where hrmst.zid=prmsg.zid and hrmst.xempnum=prmsg.xempnum) as tmpcat ~	
+		from prmsg) as tbl
+        order xdatepay,xempnum
+        fixed xdatepay
+        rows 20
+        objects xempnum attrib(link #servlet+"?page=prmsg&command=Show&xdatepay=?&xempnum=?"),~
+                tmpname,tmpdesig ,tmpdept ,tmpcat
+
+
+        field tmpname
+          storage varchar
+          caption Employee Name
+        end field
+
+        field tmpdept
+          storage varchar
+          caption Department
+        end field
+
+        field tmpcat
+          storage varchar
+          caption Category
+        end field
+
+        field tmpdesig
+          storage varchar
+          caption Title
+        end field
+     end list
+
+     form one
+		valid valid
+        table prmsg
+        order xempnum
+        fixed xdatepay
+        layout 2
+        objects Show,Add,Detail,Clear, Update, Delete,Previous, Next,Return,~
+                 xempnum,xdumname,xdayab,xdaylv,xhours display(const) caption(OT Hour),xnhour display(const) caption(E OT Hour),xdaysuspend,xsuspendf display(hide),~
+				 xdaysuspenq display(hide),xsuspenqf display(hide),~
+				 xgvothour,xnoothour,xadvflag,xpflag display(constant),~
+                 xratev,zemail display(hide),xemail display(hide),xday display(hide),xdate,xref display(const)
+
+          field xempnum
+            Pick list xempnum
+            width 10
+            event after
+              set globals(xempnum)=xempnum
+              set globals(xdumname)=xdumname
+            end event
+          end field
+		  
+		  field xdaysuspend
+			caption Deduction/Planty Days
+		  end field
+
+          field xratev
+            caption Leave Day (w/o Pay)
+            //display const
+          end field
+
+          field xadvflag
+            default "Yes"
+          end field
+          
+          field xdayab
+            //display const
+          end field
+
+          field xdaylv
+            //display const
+            caption Leave Day (with Pay)
+          end field
+          
+          field xday
+            caption Adjustment Day
+          end field
+          
+          field xdate
+            caption Last Salary Processing Date
+            display hide
+          end field
+
+          field xdumname
+            attrib local
+            display constant
+            caption Employee Name 
+          end field
+          
+          field xgvothour
+            caption Overtime Hour(Upto 4 Hour)
+			display hide
+          end field
+          
+          field xnoothour
+            caption Overtime Hour(Over 4 Hour)
+			display hide
+          end field
+
+          embed onsubmit="submitit(this)"
+
+          field add
+            event before
+              set xpflag = ""
+            set zemail=#user
+            set xemail=""
+            end event
+          end field
+
+          field update
+            event before
+              if xpflag .eq. "1"
+                error "Cannot Update<br>already Confirmed"
+              end if
+            set xemail=#user
+            end event
+          end field
+
+          field delete
+            event before
+              if xpflag .eq. "1"
+                error "Cannot Delete<br>already Confirmed"
+              end if
+            end event
+          end field
+
+
+          field Return
+           embed onclick="clicked(this)"
+          end field
+
+          field detail
+            embed onclick="clicked(this)"
+          end field
+
+     end form
+
+	script myscript
+
+		<script language="javascript" type="text/javascript">
+		var detail=" "
+		function clicked(b){
+		if (b.value == 'Detail'){
+		detail="showdtl"
+		}else if(b.value == 'Return'){
+		detail="back"
+		}
+		}
+
+		function submitit(form){
+			if (detail=="back"){
+			form.page.value = "prpay"
+			form.searchbutton.value="Find xdatepay=?"
+			//return false
+			}
+			if (detail=="showdtl"){
+			form.page.value = "prtrndt"
+			form.searchbutton.value = "Find xdatepay=?&xemp=?"
+			}
+		}
+
+		</script>
+	end script
+	
+	valid valid
+		config
+              set xdumname=#sql(str,"select xfirst from hrmst where xempnum='"+xempnum+"'")
+              set globals(xdumname)=xdumname
+			
+		end config
+	end valid
+
+end page
