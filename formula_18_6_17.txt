@@ -1,0 +1,7 @@
+pr_sup_pay_req
+
+select distinct(xtitle) from hrmst
+
+select distinct(xrank) from hrmst
+
+select * from xcodes where xtype='Designation'
