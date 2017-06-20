@@ -1,0 +1,128 @@
+page prlfat
+	
+	caption "Leave Fare Assistance"
+	section form lfat,list lfat
+	//sidebar mylfad
+	
+	list lfat
+		
+		caption "Details"
+		table prlfat
+		order xempnum,xyear
+        //fixed xempnum
+		//objects  xpaycode attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?&xyear=?"),xamount
+		objects xempnum attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?&xyear=?"),xyear,xper,xamount,xdate,xdatepay
+		
+	end list
+	
+	//list mylfad
+	//	
+	//	caption "Details for EMployee:"+xempnum
+	//	table prlfat
+	//	order xempnum,xyear
+    //    fixed xempnum
+	//	//objects  xpaycode attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?&xyear=?"),xamount
+	//	objects xempnum attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?&xyear=?"),xyear,xper,xamount,xdatexyear,xpaer,xdatepay
+	//	
+	//end list
+	
+	form lfat
+		//valid myvalid
+		table prlfat
+		order xempnum,xyear
+		objects Clear,Show,Add,Update,Delete,xempnum,xyear display(cons),xper display(cons),xdate,xdatepay attrib(mandatory),xamount display(cons),xtotamt display(hide),zemail display(hide),xemail display(hide),xrem display(hide),xdesc display(hide)
+		
+		field Add
+			event before
+				set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+				set xamount =0.0+#sql(mysql)
+				set xyear=#sub(xdate,0,4)
+				set xper=#sub(xdate,5,2)
+				set xdesc = "LFA"
+				//error xdatepay
+				if xdatepay .eq. "" .or. xdatepay .eq. "2999-12-31"
+				error "Please select a Payment Date"
+				end if
+			end event
+			event after
+				set globals(ErrChk) = ""
+				 if globals(ErrChk) .ne. "1"
+				set flagpr=#sql(str,"select xpflag from prmsg where zid='"+#id+"' and xdatepay='"+xdatepay+"'")
+		
+				if #result .eq. "true" .and. flagpr .eq. "1"
+					set globals(ErrChk) = "1"
+					error "<font color=red size=++>Final Process Completed Already</font>"
+				end if
+			
+				end if
+		  
+				set nightcode="020"
+				set mysql = "delete from prtrndt where zid='"+#id+"' and xdatepay='"+xdatepay+"' and xempnum='"+xempnum+"' and xpaycode='"+nightcode+"'"
+							set mysql = #sql(mysql)
+							
+				set chkrec = #sql("select xdatepay from prmsg where xdatepay='"+xdatepay+"' and xempnum='"+xempnum+"'")
+				set zactive=#sql("select zactive from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				
+				if #result .ne. "true"
+					set myqry = "insert into prmsg (zid,xdatepay,xempnum,xremarks,xdayab,xdaylv,xnhour,~
+						xgvothour,xnoothour,xresth,xpflag,xadvflag,zemail,xemail,xratev,xday,xdate,~
+						xdaysuspend,xdaysuspenq,xsuspendf,xsuspenqf,xdayspay,xref,xheatday,xnightday,zactive)"
+					set myqry = myqry + " values('"+#id+"','"+xdatepay+"','"+xempnum+"','',"0","0","0",~
+						"0","0","0",'','','"+#user+"','',"0","0",'"+#date+"',"0","0","0","0","0",'',"0","0",'"+zactive+"')"
+					set tmpstr = #sql(myqry)	
+					//print #result +" "+myqry
+									
+				end if
+				
+				if xamount>0.0
+					set myqry = "insert into prtrndt (ztime,zutime,zid,xdatepay,xempnum,xpaycode,xamount,zemail,xemail,xtype,xoption,~
+									xdateeff)"
+					set myqry = myqry + " values('"+#time+"','"+#time+"','"+#id+"','"+xdatepay+"','"+xempnum+"','"+nightcode+"','"+xamount+"',~
+						'"+#user+"','','','','"+#date+"')"	
+					set tmpstr =#sql(myqry)
+
+				end if 	
+							
+			end event
+		end field
+		
+		field xdatepay
+			//caption  Pay Date
+			display ocombo
+			pick "select xdatepay from prpay"
+		end field
+	//	field Process
+	//		event after
+	//		
+	//		buffer prseparation
+	//		set prseparation.xempnum=xempnum
+	//		//print "Done ! !"
+	//		set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+	//		set myamt =0.0+#sql(mysql)
+	//		
+	//		set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+	//		set myyr =0.0+#sql(mysql1)/365
+	//		
+	//		set mynobasic=#round(myyr,0)
+	//		if myyr>1
+	//			set mygamt=0.0+mynobasic*myamt
+	//			
+	//		else 
+	//			set mygamt=0.0
+	//		end if	
+	//		set prseparation.xamt=0.0+mygamt
+	//		
+	//		set prseparation.xsign=1
+	//		set prseparation.xdate=xdateexp
+	//		set prseparation.xdesc="Gratuity"
+	//		
+	//		insert prseparation
+	//		
+	//		//print "Done ! !"
+	//		end event
+	//	end field
+	end form
+	//
+	
+	
+end page
