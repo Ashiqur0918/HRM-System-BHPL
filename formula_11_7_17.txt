@@ -1,0 +1,7 @@
+and xpfflag='No'
+
+select * from pratd where xempnum='BHL-000126' and xdate='2017-04-17'
+
+update pratd set xpfflag='No' where xdate='2017-04-17' and xatdstat like '%Leave%' or xatdstat='Absent'
+
+select count(xempnum) from pratd where xpfflag='Yes' and xdate='2017-04-17' and xatdstat in ('Present' , 'Late') and (select xplace from hrmst where zid=pratd.zid and xempnum=pratd.xempnum)='Gazipur'
