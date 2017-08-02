@@ -1,0 +1,89 @@
+//list atdf
+	//		caption "Shift Change<p>~
+	//			//<button class=bt onclick="submitCommand('updval','imtrn')">Save</button>"
+	//		table (select * ,case when zactive='1'  then '<h3>Selected<h3>' else '' end as mysel,(select xfull from hrmst where zid=premp.zid and xempnum=premp.xempnum) as empname,~
+	//		(select xtitle from hrmst where zid=premp.zid and xempnum=premp.xempnum) as Designation,~
+	//		(select xhrc1 from hrmst where zid=premp.zid and xempnum=premp.xempnum) as Rank,~
+	//		from premp) as tbl
+	//		empty " "
+	//		order xempnum
+	//		//fixed xyear,xper,xday,xshift
+	//		//navigators alpha
+	//		select select
+	//		object xempnum ,~
+	//				empname ,Designation storage(varchar),Rank storage(varchar),~
+	//				mysel caption(Selected)
+	//	
+	//		field empname
+	//			caption Employee Name
+	//			storage varchar
+	//			
+	//		end field
+	//		
+	//		//field xshift
+	//		//	caption Will Have Food
+	//		//	attrib flags xempnum
+	//		//	display radio 5
+	//		//end field
+    //end list
+
+
+//valid fvalid
+	//	//config 
+	//	//	set select = " Location='"+xplace+"' and xdate='"+xdate+"'"
+	//	//end config
+	//	
+	//	before updval
+	//		
+	//		
+	//		str cond="name .sw. "+#char(34)+"xpfflag__"+#char(34)+"
+	//		int ns = #names("xordnum", cond)
+	//		int j = 0
+	//		while j<ns
+	//			str nam = #eval("xordnum["+j+"]")
+	//			int k = #len(nam)
+	//			str myline = #sub(nam,9,10)
+	//			str value = #evalx(nam)
+	//			//str value = #rtrim(value)
+	//			
+	//			
+	//			//print " "+myline+" "+value+" "+mysql+k
+	//			
+	//			str mysql = "update premp set xshift='"+xshift+"' where zactive ='1'"
+	//			set updval = #sql(mysql)
+	//				//print mysql+" "+updval
+	//			
+	//			set j=j+1
+	//		end while
+	//	end before
+	//	
+	//	
+	// end valid
+
+
+//script myscript
+ //
+ //       <script language=javascript type="text/javascript">
+ //       var detail
+ //
+ //       function clicked(b){
+ //         detail="clicked"
+ //       }
+ //       function submitit(form){
+ //         if (detail=="clicked"){
+ //           form.page.value = "imtrn"
+ //         }
+ //       }
+ //       function keeplastkey(){
+ //       document.imtrn.xtempstr1.value=document.imtrn.xitem.value
+ //       document.imtrn.xtempstr2.value=document.imtrn.xwh.value
+ //       }
+ //       </script>
+ //   end script
+ //   \
+
+
+
+ToText({prmsg.xnhour}/60) +":"+ ToText({prmsg.xnhour}%60)
+
+select * from prmsg
