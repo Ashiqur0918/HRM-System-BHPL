@@ -1,0 +1,119 @@
+
+
+page pratdf
+
+    caption "Food Intake Selection"
+    sections form imtrn,list atdf,script myscript
+	
+	list atdf
+		caption "Food Intake Selection<p>~
+		<button class=bt onclick="submitCommand('updval','imtrn')">Save</button>"
+     table (select * ,case when xpfflag='Yes'  then '<h3>Selected<h3>' else '' end as mysel,(select xfull from hrmst where zid=pratd.zid and xempnum=pratd.xempnum) as empname,~
+	 (select xtitle from hrmst where zid=pratd.zid and xempnum=pratd.xempnum) as Designation,~
+	 (select xhrc1 from hrmst where zid=pratd.zid and xempnum=pratd.xempnum) as Rank,~	 
+	 (select xplace from hrmst where zid=pratd.zid and xempnum=pratd.xempnum) as Location ~
+	 from pratd) as tbl
+	 empty " "
+      order xyear,xper,xday,xshift,xempnum
+      //fixed xyear,xper,xday,xshift
+      //navigators alpha
+	  select select
+      object xdate,xempnum ,~
+             empname ,Designation storage(varchar),Rank storage(varchar),Location storage(varchar),~
+             xatdstat,mysel captiion(Selected),xpfflag
+
+      field empname
+        caption Employee Name
+		storage varchar
+		
+      end field
+	  
+	  field xpfflag
+		caption Will Have Food
+		attrib flags xempnum
+		display radio 5
+	  end field
+     end list
+	 
+	 valid fvalid
+		config 
+			set select = " Location='"+xplace+"' and xdate='"+xdate+"'"
+		end config
+		
+		before updval
+			
+			
+			str cond="name .sw. "+#char(34)+"xpfflag__"+#char(34)+"
+			int ns = #names("xordnum", cond)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,9,10)
+				str value = #evalx(nam)
+				//str value = #rtrim(value)
+				
+				
+				//print " "+myline+" "+value+" "+mysql+k
+				
+				str mysql = "update pratd set xpfflag='"+value+"' where xdate='"+xdate+"' and xempnum='"+myline+"'"
+				set updval = #sql(mysql)
+					//print mysql+" "+updval
+				
+				set j=j+1
+			end while
+		end before
+		
+		
+	 end valid
+	 
+
+    form imtrn
+	valid fvalid
+		layout 1
+		objects ~
+      		//xdatefrom default(#d),xplace caption(Location),xfsec,xtsec,xempf,xempt,Process,Show
+			xdate default(#d),xplace,Clear,Refresh,Show,All_Yes
+			
+			field xplace
+			caption Location
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Location'" 
+			attrib submit
+
+		end field
+		
+		field All_Yes
+			event before
+				str mysql = "update pratd set xpfflag='Yes' where xdate='"+xdate+"' and (select xplace from hrmst where zid=pratd.zid and xempnum=pratd.xempnum)='"+xplace+"'"
+				set updval = #sql(mysql)
+			end event
+		end field
+
+		
+      embed onsubmit="submitit(this)"
+    end form
+
+    script myscript
+
+        <script language=javascript type="text/javascript">
+        var detail
+
+        function clicked(b){
+          detail="clicked"
+        }
+        function submitit(form){
+          if (detail=="clicked"){
+            form.page.value = "imtrn"
+          }
+        }
+        function keeplastkey(){
+        document.imtrn.xtempstr1.value=document.imtrn.xitem.value
+        document.imtrn.xtempstr2.value=document.imtrn.xwh.value
+        }
+        </script>
+    end script
+    
+    
+
+end page
