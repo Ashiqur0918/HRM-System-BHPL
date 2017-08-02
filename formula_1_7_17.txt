@@ -1,0 +1,9 @@
+pr_beftn
+
+WhilePrintingRecords;  
+numbervar srno;  
+srno := srno + 1; 
+
+select distinct(xtitle) from hrmst
+
+select * from premp order by xempnum
