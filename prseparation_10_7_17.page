@@ -1,0 +1,241 @@
+page prseparation
+	
+	caption "Final Separation"
+	sidebar list sub
+	section form separation//,list sub
+	
+	valid myvalid
+		config
+			
+			set globals(xempnum)=xempnum
+			set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+			set myamt =0.0+#sql(mysql)
+			
+			set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+			set myyr =0.0+#sql(mysql1)/365
+			
+			set mynobasic=#round(myyr,0)
+			set mygamt=0.0+mynobasic*myamt
+			
+			//set othADDamt=0.0
+			//if myyr>1
+			//	set mynobasic=1
+			//end if
+			//if myyr>=1.5
+			//	set mynobasic=2
+			//end if
+			//if myyr>=2.5
+			//	set mynobasic=3
+			//end if
+			//if myyr>=3
+			//	set mynobasic=myyr		
+			//end if
+			//#round(mynobasic,2)
+			//print "inside conf"+myamt+" "+myyr+" ---- "+mygamt
+		end config
+	end valid
+	
+	form separation
+		valid myvalid
+		table premp
+		order xempnum
+		objects xempnum,xjoindate display(cons),xdateexp,sal,pfamt,lEn,gra,othADDamt,adjSal,adjPF,adjLE,adjGra,adjOther,tot,zactive,Process,Show,Update,Clear
+		
+		
+		field xdateexp
+			caption "Leaving Date"	
+		end field
+		
+		field sal
+			caption "Salary"
+			attrib local 
+			display cons
+		end field
+		
+		field lEn
+			caption "Leave Encashment"
+			attrib local 
+			display cons
+		end field
+		
+		field tot
+			caption "Total Payable"
+			attrib local 
+			display cons
+		end field
+		
+		field gra
+			caption "Gratuity"
+			attrib local 
+			display cons
+		end field
+		
+		field pfamt
+			caption "PF Contribution"
+			attrib local 
+			display cons
+		end field
+		
+		field othADDamt
+			caption "Other Addition"
+			attrib local 
+			display show
+		end field
+		
+		field adjSal
+			caption "Adjustment Salary"
+			attrib local 
+			display show
+		end field
+		
+		field adjPF
+			caption "Adjustment PF"
+			attrib local 
+			display show
+		end field
+		
+		field adjLE
+			caption "Adjustment Leave Encashment"
+			attrib local 
+			display show
+		end field
+		
+		field adjGra
+			caption "Adjustment Gratuity"
+			attrib local 
+			display show
+		end field
+		
+		field adjOther
+			caption "Adjustment Other"
+			attrib local 
+			display show
+		end field
+		
+		field Process
+			
+			event before
+				set mysql="select sum(xtotamt) from prpf where xempnum='"+xempnum+"'"
+				set pfamt =0.0+#sql(mysql)
+				set mydel = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='PF Contribution' ")
+				set myqry = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry = myqry + " values('"+#id+"','"+xempnum+"','"+pfamt+"','1','"+xdateexp+"','PF Contribution','002')"
+				set tmpstr = #sql(myqry)
+				
+				set mysql21="select xamount from practrndt where xpaycode='100' and xempnum='"+xempnum+"' and xdatepay=(select max(xdatepay) from practrndt where xpaycode='100' and xempnum='"+xempnum+"')"
+				set sal =0.0+#sql(mysql21)
+				set mydel21 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Salary' ")
+				set myqry21 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry21 = myqry21 + " values('"+#id+"','"+xempnum+"','"+sal+"','1','"+xdateexp+"','Salary','001')"
+				set tmpstr = #sql(myqry21)
+				
+				set mydel1 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Other Addition' ")
+				set myqry1 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry1 = myqry1 + " values('"+#id+"','"+xempnum+"','"+othADDamt+"','1','"+xdateexp+"','Other Addition','003')"
+				set tmpstr1 = #sql(myqry1)
+				
+				set mydel2 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Adjustment Salary' ")
+				set myqry2 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry2 = myqry2 + " values('"+#id+"','"+xempnum+"','"+adjSal+"','-1','"+xdateexp+"','Adjustment Salary','051')"
+				set tmpstr2 = #sql(myqry2)
+				
+				set mydel3 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Adjustment PF' ")
+				set myqry3 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry3 = myqry3 + " values('"+#id+"','"+xempnum+"','"+adjPF+"','-1','"+xdateexp+"','Adjustment PF','052')"
+				set tmpstr3 = #sql(myqry3)
+				
+				set mydel4 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Adjustment Leave Encashment' ")
+				set myqry4 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry4 = myqry4 + " values('"+#id+"','"+xempnum+"','"+adjLE+"','-1','"+xdateexp+"','Adjustment Leave Encashment','053')"
+				set tmpstr4 = #sql(myqry4)
+				
+				set mydel5 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Adjustment Gratuity' ")
+				set myqry5 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry5 = myqry5 + " values('"+#id+"','"+xempnum+"','"+adjGra+"','-1','"+xdateexp+"','Adjustment Gratuity','054')"
+				set tmpstr5 = #sql(myqry5)
+				
+				set mydel5 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Adjustment Other' ")
+				set myqry6 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry6 = myqry6 + " values('"+#id+"','"+xempnum+"','"+adjOther+"','-1','"+xdateexp+"','Adjustment Other','055')"
+				set tmpstr6 = #sql(myqry6)
+				
+				set mysql77="select xamount from practrndt where xpaycode='001' and xempnum='"+xempnum+"' and xdatepay=(select max(xdatepay) from practrndt where xpaycode='001' and xempnum='"+xempnum+"')"
+				set bas =0.0+#sql(mysql77)
+				set mysql78="select xdaysob from lmstatus where xcodeleave='Annual Leave' and xempnum='"+xempnum+"' and xdateeff=(select max(xdateeff) from lmstatus where xcodeleave='Annual Leave' and xempnum='"+xempnum+"')"
+				set day =0.0+#sql(mysql78)
+				set mysql79="select xleavedue from lmstatus where xcodeleave='Annual Leave' and xempnum='"+xempnum+"' and xdateeff=(select max(xdateeff) from lmstatus where xcodeleave='Annual Leave' and xempnum='"+xempnum+"')"
+				set dayE =0.0+#sql(mysql79)
+				set mysql80="select count(*) from lmtrnday where xcodeleave='Annual Leave' and xempnum='"+xempnum+"' and xsign<>'1' and xstatusleave='3-Sanctioned' and EXTRACT(year FROM "xdate") = (select EXTRACT(year FROM "xdateexp") from premp where xempnum='"+xempnum+"')"
+				//print mysql80
+				set leave =0.0+#sql(mysql80)
+				//print leave
+				set mysql81="select EXTRACT(month FROM "xdateexp") from premp where xempnum='"+xempnum+"'"
+				set expMonth =0.0+#sql(mysql81)
+				set lvAvail=0.0+expMonth*dayE/12
+				set totLeave=0.0+lvAvail+day-leave
+				set lEn=0.0+totLeave*bas/30
+				set mydel82 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Leave Encashment' ")
+				set myqry82 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry82 = myqry82 + " values('"+#id+"','"+xempnum+"','"+lEn+"','1','"+xdateexp+"','Leave Encashment','004')"
+				set tmpstr82 = #sql(myqry82)
+			end event
+			
+			event after
+			
+			buffer prseparation
+			set prseparation.xempnum=xempnum
+			//print "Done ! !"
+			set mydel8265 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Gratuity' ")
+			set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+			set myamt =0.0+#sql(mysql)
+			
+			set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+			set myyr =0.0+#sql(mysql1)/365
+			
+			set mynobasic=#round(myyr,0)
+			if myyr>1
+				set mygamt=0.0+mynobasic*myamt
+				
+			else 
+				set mygamt=0.0
+			end if	
+			set gra=0.0+mygamt
+			set prseparation.xamt=0.0+mygamt
+			
+			set prseparation.xsign=1
+			set prseparation.xdate=xdateexp
+			set prseparation.xdesc="Gratuity"
+			set prseparation.xpaycode="006"
+			
+			insert prseparation
+			
+				set mysql100="select sum(xamt) from prseparation where xempnum='"+xempnum+"' and xsign='1'"
+				set sepAdd =0.0+#sql(mysql100)
+				set mysql101="select sum(xamt) from prseparation where xempnum='"+xempnum+"' and xsign='-1'"
+				set sepDed =0.0+#sql(mysql101)
+				set tot=0.0+sepAdd-sepDed
+				//print tot
+				set mydel100 = #sql("delete from prseparation where xempnum='"+xempnum+"' and zid="+#id+" and xdesc='Total Payable' ")
+				set myqry100 = "insert into prseparation (zid,xempnum,xamt,xsign,xdate,xdesc,xpaycode)"
+				set myqry100 = myqry100 + " values('"+#id+"','"+xempnum+"','"+tot+"','0','"+xdateexp+"','Total Payable','100')"
+				//print myqry100
+				set tmpstr100 = #sql(myqry100)
+			
+			//print "Done ! !"
+			end event
+		end field
+	end form
+	
+	list sub
+		
+		caption "Details"
+		table prseparation
+        order xempnum,xdesc
+        fixed xempnum
+		//objects  xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xempnum=?&xpaycode=?"),xamount
+		objects xempnum ,xamt,xsign,xdate,xdesc
+		//attrib(link #servlet+"?page=prseparation&command=Show&xempnum=?&gra=?&pfamt=?&othADDamt=?&adjSal=?&adjPF=?&adjLE=?&adjGra=?&adjOther=?")
+		
+	end list
+
+end page

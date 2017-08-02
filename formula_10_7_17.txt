@@ -1,0 +1,17 @@
+totpay   (select sum(xamt) from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xsign=1)
+sal      (select xamt from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xpaycode='001')
+pf      (select xamt from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xpaycode='002')
+le      (select xamt from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xpaycode='004')
+gra     (select xamt from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xpaycode='006')
+othr 	(select xamt from prseparation where xempnum=hrmst."xempnum" and zid=zbusiness."zid" and xpaycode='003')
+adjSal 
+adjPF
+
+select * from prseparation where xempnum='BHL-000126' 
+and zid=650210 and xpaycode='001'
+
+select * from prpayhead
+
+select * from premp
+
+select * from hrmst where xrank like '%Admin%'
