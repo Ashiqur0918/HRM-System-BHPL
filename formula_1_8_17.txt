@@ -1,0 +1,19 @@
+tm_iou_form
+
+chk_usage
+
+select * from hrtplanex
+select * from hrtplandt
+select * from hrtplanauth
+
+select * from hrtplanh
+select * from hrtset
+
+select * from gldetail where xaccusage='AP'
+
+select * from gldetail where xvoucher like 'CON%'
+
+select * from gldetailview where xvoucher like 'CON%'
+
+
+select * from casup
