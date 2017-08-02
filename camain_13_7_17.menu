@@ -1,0 +1,168 @@
+//camain.menu
+caption "Main Menu" page 3
+
+//---------------------------------------------------------------------------------------
+option                  |action                                          |modules|models
+//---------------------------------------------------------------------------------------
+-Commons                 |                                                |ca,pd,ss,mg
+//System Administration   |#classPath+"/"+#servlet+"?menu=setup"                   |ca
+System Administration   |#classPath+"/"+#servlet+"?menu=zx"                   |zx
+Cross Application       |#classPath+"/"+#servlet+"?menu=ca"                      |ca
+Portal Administration-MultiRole  |#classPath+"/"+#servlet+"?menu=ss"                      |ss
+//Self Service Portals-Obsolete  |#classPath+"/"+#servlet+"?menu=sp"                       |sp //trade portal, etc
+//Portal Administration   |#classPath+"/"+#servlet+"?menu=px"                      |px
+Product Data Management |#classPath+"/"+#servlet+"?menu=pd"                      |pd
+Configurator            |#classPath+"/"+#servlet+"?menu=cf"                      |cf
+Messaging               |#classPath+"/"+#servlet+"?page=mgmsg&menu=mg"                   |mg
+Application Services               |#classPath+"/"+#servlet+"?page=mgmsg&menu=as"                   |as
+Change Password               |#classPath+"/"+#servlet+"?page=capass"                   |ca
+
+-Accounts                       |                                                |gl,ar,ap
+General Ledger                |#classPath+"/"+#servlet+"?menu=gl"                |gl
+Accounts Receivable                |#classPath+"/"+#servlet+"?menu=ar"                |ar,gl
+Accounts Payable                |#classPath+"/"+#servlet+"?menu=ap"                |ap,gl
+Project Accounting     |#classPath+"/"+#servlet+"?menu=pareports"|gl
+//Cash Management                |#classPath+"/"+#servlet+"?menu=cm"                |cm,gl
+Fixed Assets                |#classPath+"/"+#servlet+"?menu=fa"                |fa
+
+-Distribution                    |                                                |op,ot,po,im,sa,so
+Order Processing        |#classPath+"/"+#servlet+"?menu=op"                      |op
+Point of Sale        |#classPath+"/"+#servlet+"?menu=sx"                      |sx
+Fulfillment             |#classPath+"/"+#servlet+"?menu=ff"                      |ff
+Order Tracking          |#classPath+"/"+#servlet+"?menu=ot"                      |ot
+//Purchasing              |#classPath+"/"+#servlet+"?menu=po"                      |po
+//LC Management           |#classPath+"/"+#servlet+"?menu=lc"                      |lc
+Inventory               |#classPath+"/"+#servlet+"?menu=im"                      |im
+Sales Analysis          |#classPath+"/"+#servlet+"?menu=sa"                      |sa
+Sales Commissions       |#classPath+"/"+#servlet+"?menu=sc"                      |sc
+Engineering Sales       |#classPath+"/"+#servlet+"?menu=en"                      |en
+Space Reservation       |#classPath+"/"+#servlet+"?menu=sr"                      |sr
+OEM Order Management       |#classPath+"/"+#servlet+"?menu=oe"                      |oe
+
+-Supply Chain                    |                                               |po,lc 
+Purchasing              |#classPath+"/"+#servlet+"?menu=po"                      |po
+LC Management           |#classPath+"/"+#servlet+"?menu=lc"                      |lc
+
+-                       |                                                |dp
+Distribution Requirements Planning |#classPath+"/"+#servlet+"?menu=dp"           |dp
+
+
+-CRM                    |                                                |sm,ff,cs,bt,wm,kb
+Salesforce Automation        |#classPath+"/"+#servlet+"?menu=sm"                      |sm
+Customer Support        |#classPath+"/"+#servlet+"?menu=cs&page=cs"                      |cs
+Bugs Tracking           |#classPath+"/"+#servlet+"?menu=bt"                      |bt
+Warranty Maintenance    |#classPath+"/"+#servlet+"?menu=wm"                      |wm
+Knowledge Base   |page=kbhome|kb
+Survey Administration   |#classPath+"/"+#servlet+"?menu=su"                      |su
+Blogs            |page=blhome  |ws
+Digital Asset Management|page=amasset  |ws
+
+-E-Business              |                                                |es,cf,ep,dx,nv,pd
+Web Store                 |#classPath+"/"+#servlet+"?menu=es"                      |es
+E-Procurement           |#classPath+"/"+#servlet+"?menu=ep"                      |ep
+Exchange                |#classPath+"/"+#servlet+"?menu=dx"                      |dx
+//Navigator               |#classPath+"/"+#servlet+"?menu=nv"                      |nv
+E-Permits               |#classPath+"/"+#servlet+"?menu=xp"                      |xp
+E-Employees             |#classPath+"/"+#servlet+"?menu=ee"                      |ee
+
+
+
+-Collaboration            |                                                  |pm
+People Profiles  |page=wsppl |ws
+
+Project Management      |#classPath+"/"+#servlet+"?menu=pm"                      |pm
+Communities      |page=cohome|ws
+Project Management |page=pmhome |ws
+Event Management|page=evhome  |ws
+Document Management|page=dmtrn  |dm
+
+
+-Construction                    |                                |bi,bq
+Building Information Management           |#classPath+"/"+#servlet+"?menu=bi"      |bi
+Bill of Quantities          |#classPath+"/"+#servlet+"?menu=bq"   |bq
+Property Management          |#classPath+"/"+#servlet+"?menu=py"   |py
+
+
+
+
+
+
+-Logistics                    |                                                |wh,lb,tr,cy,so,lp,tm,cc,cn,fd,cc,fi,fe
+//Service Order           |#classPath+"/"+#servlet+"?menu=so"                      |so
+Third-party Logistics           |#classPath+"/"+#servlet+"?menu=tp"                      |tm,cc
+Transportation           |#classPath+"/"+#servlet+"?menu=tm"                      |tp
+Customs Brokerage           |#classPath+"/"+#servlet+"?menu=cc"                      |cc
+Freight Exports|#classPath+"/"+#servlet+"?menu=fe"                      |fe
+Freight Imports|#classPath+"/"+#servlet+"?menu=fi"                      |fi
+Freight Domestic|#classPath+"/"+#servlet+"?menu=fd"                      |fd
+
+
+Logistics BPO          |#classPath+"/"+#servlet+"?menu=lb"                      |lb
+Warehousing            |#classPath+"/"+#servlet+"?menu=wh"                      |wh
+Trip Routing            |#classPath+"/"+#servlet+"?menu=tr"                      |tr
+Container Yard            |#classPath+"/"+#servlet+"?menu=cy"                      |cy
+LPG Depot            |#classPath+"/"+#servlet+"?menu=lp"                      |lp
+Container Management            |#classPath+"/"+#servlet+"?menu=cn"                      |cn
+
+-Human Resources                     |                                                |hr
+Human Resources Database         |#classPath+"/"+#servlet+"?menu=hr"                      |hr
+//Attendance Recording    |#classPath+"/"+#servlet+"?menu=at"                        |at
+Attendance Recording    |#classPath+"/"+#servlet+"?menu=pratd"                        |at
+Leave Management        |#classPath+"/"+#servlet+"?menu=lm"                        |lm
+//Leave Menu			        |#classPath+"/"+#servlet+"?menu=prleave"                        |
+Payroll                 |#classPath+"/"+#servlet+"?menu=pr"                        |pr
+Travel Management     |#classPath+"/"+#servlet+"?menu=cxtplan"                      |cx
+//Travel Management         |#classPath+"/"+#servlet+"?menu=hrtplan"           |
+//Expense Reporting       |#classPath+"/"+#servlet+"?menu=er"                      |er
+//Employee Appraisal      |#classPath+"/"+#servlet+"?menu=ea"                      |ea
+//Incentives Management   |#classPath+"/"+#servlet+"?menu=in"                      |in
+//Time Sheets             |#classPath+"/"+#servlet+"?menu=ts"                      |ts
+//Recruitment             |#classPath+"/"+#servlet+"?menu=re"                      |re
+//Employee Logistics      |#classPath+"/"+#servlet+"?menu=el"                      |el
+//Training                |#classPath+"/"+#servlet+"?menu=el"                      |tn
+-Manufacturing                       |                                                |bm,mo,ms,mp,wc,cp,ps,mt,vm
+Bill of Materials       |#classPath+"/"+#servlet+"?menu=bm"                      |bm
+Production Planning & Control |#classPath+"/"+#servlet+"?menu=pp"                      |pp
+Manufacturing Orders    |#classPath+"/"+#servlet+"?menu=mo"                      |mo
+Master Scheduling       |#classPath+"/"+#servlet+"?menu=ms"                      |ms
+MRP                     |#classPath+"/"+#servlet+"?menu=mp"                      |mp
+Work Centre and Routing |#classPath+"/"+#servlet+"?menu=wc"                      |wc
+Capacity Planning       |#classPath+"/"+#servlet+"?menu=cp"                      |cp
+Production Scheduling   |#classPath+"/"+#servlet+"?menu=ps"                      |ps
+Maintenance             |#classPath+"/"+#servlet+"?menu=mt"                      |mt
+Vehicle Management             |#classPath+"/"+#servlet+"?menu=vms"                      |vm
+
+
+
+-Media              |                                                |ab
+Billboards              |#classPath+"/"+#servlet+"?menu=bb"                      |bb
+Digital Asset Management              |#classPath+"/"+#servlet+"?menu=am"                      |am
+Ad Booking              |#classPath+"/"+#servlet+"?menu=ab"                      |ab
+Classifieds            |#classPath+"/"+#servlet+"?menu=cl"                      |ab,cl
+Ad Portals              |#classPath+"/"+#servlet+"?menu=cl"                      |ab,cl
+Media Planner            |#classPath+"/"+#servlet+"?menu=md"                      |md//md
+Trade Portal            |#classPath+"/"+#servlet+"?menu=td"                      |td//td
+Agency Portal           |#classPath+"/"+#servlet+"?menu=ag"                      |ab//ag
+
+
+-Shipping               |                                                |cr,vp
+Crew Management         |#classPath+"/"+#servlet+"?menu=cr"                    |cr
+Vessel Performance      |#classPath+"/"+#servlet+"?menu=vp"                      |vp
+
+-Healthcare            |                                                  |hc
+Practice Management      |#classPath+"/"+#servlet+"?menu=hc"                      |hc
+
+-Education            |                                                  |em,sb
+Student Database      |#classPath+"/"+#servlet+"?menu=em"                      |em
+Student Billing      |#classPath+"/"+#servlet+"?menu=sb"                      |sb
+-Hospitality            |                                                  |hm
+Hotel Management      |#classPath+"/"+#servlet+"?menu=hm"                      |hm
+-Oil & Gas            |                                                   |og
+Heavy Oil Development Tool          |#classPath+"/"+#servlet+"?menu=og"                         |og
+
+-MLM              |                                                |ab
+Dashboard              |#classPath+"/"+#servlet+"?page=mlmdash"                      |ml
+
+
+//-------------------------------------------------------------------
+
