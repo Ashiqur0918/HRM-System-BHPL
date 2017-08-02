@@ -1,0 +1,21 @@
+ caption(Vendor Name)
+
+
+{pratd.xdate}>={?period} and {pratd.xdate}<={?accPay} and 
+
+select * from xcodes where xtype='Food Vendor'
+
+select count(xpfflag) from pratd where xpfflag='Yes' 
+
+select count(xpfflag) from pratd where zid='"+#id+"' and xdate>='"+xdateeff+"' and xdate<='"+xdateexp+"' and xpfflag='Yes' 
+
+
+select * from hrmst
+
+select xamount from practrndt where xempnum='BHL-000126' and xpaycode='001' and xdatepay=(select max(xdatepay) from practrndt where xempnum='BHL-000126' and xpaycode='001')
+
+select * from hrmst where xrank='Human Resources'
+
+select * from hrpps
+
+select * from lmtrn where xstatusleave='1-Open'
