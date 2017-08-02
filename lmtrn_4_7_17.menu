@@ -1,0 +1,21 @@
+//lmtrn.menu
+caption "Transactions" page
+//-------------------------------------------------------------------
+option                     |action
+//-------------------------------------------------------------------
+Apply                    |#classPath+"/"+#servlet+"?page=lmtrnar&command=clear&mode=Apply -"              |lm
+Recommend                    |#classPath+"/"+#servlet+"?page=lmtrnar&command=clear&mode=Recommend -"              |lm
+//Sanction                    |#classPath+"/"+#servlet+"?page=lmtrn&mode=Sanction -"              |lm
+Sanction                    |#classPath+"/"+#servlet+"?page=lmtrns&command=clear&mode=Sanction -"              |lm
+-
+//Cancel                    |#classPath+"/"+#servlet+"?page=lmtrn&mode=Cancel -"              |lm
+//Encash                    |#classPath+"/"+#servlet+"?page=lmtrn&mode=Encash -"              |lm
+-
+//Credits                    |#classPath+"/"+#servlet+"?page=lmtrn&mode=Credits -"              |lm
+Opening Balances                    |#classPath+"/"+#servlet+"?page=lmtrn&mode=Opening Balance -"              |lm
+-
+//Year-End Process                    |#classPath+"/"+#servlet+"?page=lmyearend"              |lm
+//Calendar                  |#classPath+"/"+#servlet+"?page=cacaluser"                 |
+
+//-------------------------------------------------------------------
+

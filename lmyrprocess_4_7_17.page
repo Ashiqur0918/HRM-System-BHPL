@@ -1,0 +1,57 @@
+page lmyrprocess
+	
+	caption "Leave Year End Process"
+	section form lmyrpr
+	
+	
+	form lmyrpr
+		//valid myvalid
+		table lmstatus
+		order xempnum
+		objects xempnum,xyear,xcodeleave,xgent,xdateeff,xdateexp,xdaysob,xdaysexp,xdayscf,xdaysenc,xdayscr,xdayscan,xdaysreq,xdaysapp,~
+          xleavedue,xnumofper,xwhendue,xtypeyear,xlimitcash,xlimitcf,xlimitres,xcodeat,Process,Show,Update
+		
+		//field Process
+		//	event after
+		//	
+		//	buffer prseparation
+		//	set prseparation.xempnum=xempnum
+		//	//print "Done ! !"
+		//	set mysql="select xamount from prpaymentdt where xempnum='"+xempnum+"' and xpaycode='001'"
+		//	set myamt =0.0+#sql(mysql)
+		//	
+		//	set mysql1="select xdateexp-xjoindate from premp where xempnum='"+xempnum+"'"
+		//	set myyr =0.0+#sql(mysql1)/365
+		//	
+		//	set mynobasic=#round(myyr,0)
+		//	if myyr>1
+		//		set mygamt=0.0+mynobasic*myamt
+		//		
+		//	else 
+		//		set mygamt=0.0
+		//	end if	
+		//	set prseparation.xamt=0.0+mygamt
+		//	
+		//	set prseparation.xsign=1
+		//	set prseparation.xdate=xdateexp
+		//	set prseparation.xdesc="Gratuity"
+		//	
+		//	insert prseparation
+		//	
+		//	//print "Done ! !"
+		//	end event
+		//end field
+	end form
+	
+	//list sub
+	//	
+	//	caption "Details"
+	//	table prseparation
+    //    order xempnum,xdesc
+    //    fixed xempnum
+	//	//objects  xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xempnum=?&xpaycode=?"),xamount
+	//	objects xempnum,xamt,xsign,xdate,xdesc
+	//	
+	//end list
+
+end page

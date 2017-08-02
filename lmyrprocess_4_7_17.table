@@ -1,0 +1,12 @@
+table lmyrprocess
+  caption "Leave Year End Process"
+  columns ztime,zutime,zid,xempnum,xyear,xdate,xcodeleave,xgent,xdateeff,xdateexp,xdaysob,xdaysexp,xdayscf,xdaysenc,xdayscr,xdayscan,xdaysreq,xdaysapp,~
+          xleavedue,xnumofper,xwhendue,xtypeyear,xlimitcash,xlimitcf,xlimitres,xcodeat
+
+
+  primary key zid, xempnum
+  foreign key
+        zid references zbusiness.zid
+        zid,xempnum references hrmst.zid,xempnum
+  end foreign key
+end table
