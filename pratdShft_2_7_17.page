@@ -1,0 +1,88 @@
+page pratdShft
+
+    caption "Shift Change"
+    section form SC,list sc
+	
+	list sc
+		 
+		caption "Details <br>~
+		//<button class=bt onclick="submitCommand('sc')">Save</button>"
+		<button class=bt onclick="submitCommand('updval','SC')">Save</button>"
+		table premp
+		order xempnum//,xshift
+        //fixed xempnum
+		//objects  xpaycode attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?&xyear=?"),xamount
+		objects xempnum,xshift
+		
+		field xshift
+			caption Shift Selection
+			attrib flags xempnum
+			//display radio 5
+			//pick "Y,N"
+			display ocombo
+			pick code Shift
+		end field
+		
+	end list
+	
+	valid scvalid
+		before updval
+			
+			//print "inside"
+			str cond="name .sw. "+#char(34)+"xshift__"+#char(34)+"
+			int ns = #names("xordnum", cond)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,8,10)
+				str value = #evalx(nam)
+				//str value = #rtrim(value)
+				
+				
+				
+				
+				str mysql = "update premp set xshift='"+value+"' where xempnum='"+myline+"'"
+				set updval = #sql(mysql)
+					//print mysql+" "+updval
+					//print " "+myline+" "+value//+" "+mysql+k
+				
+				set j=j+1
+			end while
+		end before
+	end valid
+	
+	
+	
+    form SC
+	valid scvalid
+		layout 1
+		objects ~
+      		//xdatefrom default(#d),xplace caption(Location),xfsec,xtsec,xempf,xempt,Process,Show
+			xshift,Clear,Refresh,Show,All_Yes
+			
+			field xshift
+				caption Shift
+				display ocombo
+				pick "select xcode from xcodes where zid='"+#id+"' and xtype='Shift'" 
+				attrib submit
+
+			end field
+		
+		field All_Yes
+			event before
+				str mysql = "update premp set xshift='"+xshift+"' where zactive ='1'"
+				set updval = #sql(mysql)
+				//print mysql
+
+			end event
+		end field
+
+		
+      embed onsubmit="submitit(this)"
+    end form
+
+ 
+    
+
+end page
