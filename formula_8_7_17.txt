@@ -1,0 +1,8 @@
+select * from prseparation
+
+select sum(xtotamt) from prpf where xempnum='BHL-000126'
+
+select * from prpayhead
+
+select * from practrndt where xpaycode='100' and xempnum='BHL-000002' and xdatepay=(select max(xdatepay) from practrndt where xpaycode='100' and xempnum='BHL-000002')
+and xdatepay>xdatepay
