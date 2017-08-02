@@ -1,0 +1,51 @@
+//Attendance Sub Menu
+//---------------------------------------------------------------------------------------
+caption "Attendance Menu" page
+option                  |action                                          |modules|models
+//---------------------------------------------------------------------------------------
+//Attendance Entry        		|#classPath+"/"+#servlet+"?page=prath"                   |
+Attendance Entry-Supervisor 	|#classPath+"/"+#servlet+"?page=praths"                   |
+-Attendance Process	
+//Attendance Posting(In)      	|#classPath+"/"+#servlet+"?page=prtxtupdn"                |
+//Attendance Posting(Out)     	|#classPath+"/"+#servlet+"?page=prtxtupdnout"                |
+//-All Section 
+//Attendance Posting(In)      	|#classPath+"/"+#servlet+"?page=prtxtupdns"                |
+
+//Attendance Posting(In)_Beta   	|#classPath+"/"+#servlet+"?page=prtxtupdbeta"                |
+
+Attendance Posting (In)      	|#classPath+"/"+#servlet+"?page=prtxtupdnsm"                |
+//Attendance Posting(Out)     	|#classPath+"/"+#servlet+"?page=prtxtupdnouts"                |
+//Attendance Posting(Out)     	|#classPath+"/"+#servlet+"?page=prtxtupdnoutsm"                |
+Attendance Posting (Out)      	|#classPath+"/"+#servlet+"?page=prtxtupdoutvc"                |
+Daily Food Intake Selection				|#classPath+"/"+#servlet+"?page=pratdf"                |
+Update Shift 					|#classPath+"/"+#servlet+"?page=pratdShft"                |
+
+- For Payroll
+Attendance to Payroll Posting 	|#classPath+"/"+#servlet+"?page=pratdprocess"                |
+-Rostering
+Roster Duty Setup		    	|#classPath+"/"+#servlet+"?page=prroster"                |
+Roster Duty 		      		|#classPath+"/"+#servlet+"?page=prrosters"               |
+Roster Duty Edit 		    	|#classPath+"/"+#servlet+"?page=prrostersedit"           |
+
+-General Setup	
+Settings                      |#classPath+"/"+#servlet+"?page=casetup&module=AT"         |
+//Shift Code              		|#classPath+"/"+#servlet+"?page=xcodes(xtype=Shift)"     |
+Default Time Settings   		|#classPath+"/"+#servlet+"?page=pratdt"                  |
+//Absent Days Setup 			|#classPath+"/"+#servlet+"?page=pratdabsent"             |
+Holyday Setup           	|#classPath+"/"+#servlet+"?page=cadate"
+Date Insert For Calender	|#classPath+"/"+#servlet+"?page=cadateup"
+Employee Wise HoliDays Setup	|#classPath+"/"+#servlet+"?page=praholemp"               |
+-Reports
+Attendance Reports				|#classPath+"/"+#servlet+"?menu=pratdreport"             |
+//Attendance Reports Ad			|#classPath+"/"+#servlet+"?menu=pratdreport_admin"       |
+
+//-Reports
+//Daily Attendance Sheet  			|#classPath+"/"+#servlet+"?page=*crystal pratdbyer(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+//Section Wise Daily Attendance Sheet |#classPath+"/"+#servlet+"?page=*crystal pratdbyer_sec(xdate=Date=#d,xsec=Section==text, xempnum=From Employee=0,xempnum=To Employee=z)"
+//Shift Wise Attendance Sheet 		|#classPath+"/"+#servlet+"?page=*crystal pratd_shift(xdate=Date=#d,xshift=Shift CodeStatus==text=list xshift,xempnum=From Employee=0,xempnum=To Employee=z)"
+//
+////Date Wise OT Sheet 				|#classPath+"/"+#servlet+"?page=*crystal pratdbuy(xdate=From Date=#d,xdate=To Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+//Employee Wise Attendance Sheet  	|#classPath+"/"+#servlet+"?page=*crystal pratd_emp(xempnum=From Employee,xdate=From Date=#d,xdate=To Date=#d)"
+//Employee Wise & StatusWise Attendance Sheet  |#classPath+"/"+#servlet+"?page=*crystal pratd_emp_stat(xempnum=From Employee,xdate=From Date=#d,xdate=To Date=#d,xatdstat=Attendance Status==text=list attendance)"
+//Daily Attendance Sheet  			|#classPath+"/"+#servlet+"?page=*crystal pratd(xdate=Date=#d,xempnum=From Employee=0,xempnum=To Employee=z)"
+//Shifting Attendance Sheet  			|#classPath+"/"+#servlet+"?page=*crystal pratdshift1(xdate=Date=#d,xshift=Shift CodeStatus==text=list xshift,xempnum=From Employee=0,xempnum=To Employee=z)"
