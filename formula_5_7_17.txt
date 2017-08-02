@@ -1,0 +1,14 @@
+{pratd.xpfflag}='Yes'
+DreamApps|Advanced ERP|Print Date,Time & Page No.: Print Date | Print Time | Page N of M
+
+
+select distinct(xcode) from xcodes where xtype='Per Unit Food Cost'
+
+select * from hrmst
+
+select * from prpf where xempnum='BHL-000126' 
+and xdate between ('2017-01-01' and '2017-06-31' )
+
+select sum(xtotamt) from prpf where xempnum='BHL-000001' and xdate >='2017-01-01' and xdate <='2017-06-30' 
+
+select * from prpfstatus order by xempnum
