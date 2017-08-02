@@ -1,0 +1,147 @@
+//apreports.menu
+caption "AP Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+-Customized Reports
+Check Usage           |#classPath+"/"+#servlet+"?page=*crystal chk_usage(xcheque=From Cheque No=0,xcheque=To Cheque No=zzz)"
+-Vouchers
+
+Check/Payment Voucher/Advice            |#classPath+"/"+#servlet+"?page=*crystal glpay(xvoucher=From Voucher No=0=text,xvoucher=To Voucher No=zzz=text,~
+                                        xyesno=Print Cheque?)"
+//Check/Payment Voucher/Advice            |#classPath+"/"+#servlet+"?page=*crystal glchqall(xvoucher=From Voucher No=0=text,xvoucher=To Voucher No=zzz=text,xyesno=Print Cheque?)"
+//Check/Payment Voucher-Trade      |#classPath+"/"+#servlet+"?page=*crystal glchq(xvoucher=From Voucher No=0=text,xvoucher=To Voucher No=zzz=text,xyesno=Print Cheque?)"
+//Check/Payment Voucher-Non Trade  |#classPath+"/"+#servlet+"?page=*crystal glchqnon(xvoucher=From Voucher No=0=text,xvoucher=To Voucher No=zzz=text,xyesno=Print Cheque?)"
+
+GRN Matching                      |#classPath+"/"+#servlet+"?page=*crystal glgrn(xsup=From Supplier=0,xsup=To Supplier=zzz,xdate=From Invoice Date,xdate=To Invoice Date)"
+Monthly Purchases By Supplier    |#classPath+"/"+#servlet+"?page=*crystal glsup(xyear=Year=#glyear,xper=Period=#glper,~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")))"
+Monthly Purchases-Details    |#classPath+"/"+#servlet+"?page=*crystal glsupdet(xyear=Year=#glyear,xper=Period=#glper,~
+                             xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")))"
+Approval List By Supplier        |#classPath+"/"+#servlet+"?page=*crystal glappv(xsup=From Supplier=0,xsup=To Supplier=zzz,xdate=Due on)"
+Approval List By Document By Supplier       |#classPath+"/"+#servlet+"?page=*crystal glappvdoc(xsup=Supplier,xvoucher=From Voucher No=0=text,xvoucher=To Voucher No=zzz=text)"
+Monthly Payments List            |#classPath+"/"+#servlet+"?page=*crystal *glpaymon(xyear=Year=#glyear,xper=Period=#glper,~
+                                 xorg caption(From Supplier) display(combo) pick(" select xorg from casup ") default("" ""),~
+                                 xorg caption(To Supplier) display(combo) pick(" select xorg from casup ") default(""Zzz""))"
+
+Monthly Payment By Bank By Cheque No            |#classPath+"/"+#servlet+"?page=*crystal glpaymonbybank(xyear=Year=#glyear,xper=Period=#glper,~
+                                 xorg caption(From Supplier) display(combo) pick(" select xorg from casup ") default("" ""),~
+                                 xorg caption(To Supplier) display(combo) pick(" select xorg from casup ") default(""Zzz""))"
+
+-Allocation
+//Allocation List-AP               |#classPath+"/"+#servlet+"?page=*crystal glapalc(xvoucher=From Document=0=text,xvoucher=To Document=zzz=text)"
+//Monthly Unallocated Payments &amp; Debits     |#classPath+"/"+#servlet+"?page=*crystal glpayunalc(xyear=Year=#glyear,xper=Period=#glper)"
+Allocation List-AP*               |#classPath+"/"+#servlet+"?page=*crystal apalc(~
+                                  p ~
+                                  xvoucher caption(From Document) display(text) default(#sql(""select min(xvoucher) from gldetailview where xaccusage='AP'""),~
+                                  xvoucher caption(To Document) display(text) default(#sql(""select max(xvoucher) from gldetailview where xaccusage='AP'"")),~ 
+							      xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+								  xdate caption(From Date),~
+                                  xdate caption(To Date))"
+Monthly Unallocated Payments &amp; Debits*     |#classPath+"/"+#servlet+"?page=*crystal apunalc(xyear=Year=#glyear,xper=Period=#glper,~
+                                                 xorg caption(From Supplier) display(combo) pick(" select xorg from casup ") default("" ""),~
+                                                 xorg caption(To Supplier) display(combo) pick(" select xorg from casup ") default(""Zzz""))"
+
+-
+<font color=red>Set Statement Date</font>               |#classPath+"/"+#servlet+"?page=castatusap"
+
+-Statements&nbsp;By&nbsp;Invoice&nbsp;Date
+
+
+//Statement of Account-Supplier    |#classPath+"/"+#servlet+"?page=*crystal glstmsup(xsup=From Supplier=0,xsup=To Supplier=zzz,xdate=As On="+castatus.xdate("xtypestatus like 'AP Statement'")+"=const)"
+Statement of Account-Supplier*       |#classPath+"/"+#servlet+"?page=*crystal apstmt(~
+                                  p ~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+-Statements&nbsp;By&nbsp;Due&nbsp;Date
+//Statement of Account-Supplier    |#classPath+"/"+#servlet+"?page=*crystal glstmsupdue(xsup=From Supplier=0,xsup=To Supplier=zzz,xdate=As On="+castatus.xdate("xtypestatus like 'AP Statement'")+"=const)"
+Statement of Account-Supplier*       |#classPath+"/"+#servlet+"?page=*crystal apstmtdue(~
+                                  p ~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+-AP&nbsp;Aging&nbsp;By&nbsp;Invoice&nbsp;Date
+Summary of Aging - Prime*       |#classPath+"/"+#servlet+"?page=*crystal apages(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+Summary of Aging - Base*       |#classPath+"/"+#servlet+"?page=*crystal apagebs(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+Details of Aging - Prime*       |#classPath+"/"+#servlet+"?page=*crystal apage(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+
+Details of Aging - Base*       |#classPath+"/"+#servlet+"?page=*crystal apageb(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+-AP&nbsp;Aging&nbsp;By&nbsp;Due&nbsp;Date
+Summary of Aging - Prime*       |#classPath+"/"+#servlet+"?page=*crystal apagesdue(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+
+Summary of Aging - Base*       |#classPath+"/"+#servlet+"?page=*crystal apagebsdue(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+Details of Aging - Prime*       |#classPath+"/"+#servlet+"?page=*crystal apagedue(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+Details of Aging - by Supplier Name - Prime*       |#classPath+"/"+#servlet+"?page=*crystal apagedueorg(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xorg caption(From Supplier) display(combo) pick(" select upper(xorg) from casup ") default(#sql(""select min(xorg) from casup"")),~
+                                  xorg caption(To Supplier) display(combo) pick(" select upper(xorg) from casup ") default(#sql(""select max(xorg) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+
+Details of Aging - Base*       |#classPath+"/"+#servlet+"?page=*crystal apagebdue(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+                                  xdate caption(As On) display(const) default(castatus.xdate(""xtypestatus like 'AP Statement'""))  )"
+                                 //xyear caption(Year) default(#glyear),xper caption(Period) default(#glper) )"
+
+-AP&nbsp;Subsidiary&nbsp;Ledger
+Monthly*       |#classPath+"/"+#servlet+"?page=*crystal apledbm(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+																 xyear caption(Year) default(#glyear),xper caption(Period) default(#glper) )"
+Annual*       |#classPath+"/"+#servlet+"?page=*crystal apledb(~
+                                  p ~
+                                  xacc caption(Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+																 xyear caption(Year) default(#glyear),xper caption(Up to Period) default(#glper) )"
+Monthly - Base Amount Balance                  |#classPath+"/"+#servlet+"?page=*crystal apledmontc(~
+                                  p ~
+                                  xacc caption(From Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  //xacc caption(To Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+								  xyear caption(Year) default(#glyear),xper caption(From Period) default(#glper))" 
+Annual - Base Amount Balance                  |#classPath+"/"+#servlet+"?page=*crystal apledyrtc(~
+                                  p ~
+                                  xacc caption(From Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+                                  //xacc caption(To Control A/c) display(combo) picklist(select xacc from glmst where xaccusage='AP') default(#sql(""select xacc from glmst where xaccusage='AP' order by xacc"")),~
+								  xsup caption(From Supplier) default(#sql(""select min(xsup) from casup"")),  xsup caption(To Supplier) default(#sql(""select max(xsup) from casup"")),~
+								  xyear caption(Year) default(#glyear))" 
+//-------------------------------------------------------------------
+
