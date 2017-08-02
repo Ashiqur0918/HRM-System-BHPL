@@ -1,0 +1,11 @@
+table prpfinterest
+  caption "Pay PF Interest"
+  columns ztime,zutime,zid,xempnum,xdate,xdateeff,xdateexp,xamt,xpayperc,xpayamt
+
+
+  primary key zid, xempnum,xdateeff
+  foreign key
+        zid references zbusiness.zid
+        zid,xempnum references hrmst.zid,xempnum
+  end foreign key
+end table

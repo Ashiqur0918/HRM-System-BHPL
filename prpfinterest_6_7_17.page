@@ -1,0 +1,72 @@
+page prpfinterest
+	
+	caption "PF Interest"
+	section form pfinterest,list pfinterest
+	
+	valid myvalid
+		config
+			
+			set myfull=hrmst.xfull(xempnum)
+			set mydesig=hrmst.xtitle(xempnum)
+			set myrank=hrmst.xrank(xempnum)
+			set mysec=hrmst.xsec(xempnum)
+			
+		end config
+	end valid
+	
+	form pfinterest
+		valid myvalid
+		table prpfinterest
+		order xempnum
+		objects xempnum attrib(submit),myfull,mydesig,myrank,mysec,xdate,xdateeff,xdateexp,xamt display(cons),xpayperc,xpayamt display(cons),Add,Show,Update,Delete,Clear
+		
+		field myfull
+			caption "Name"
+			attrib local 
+			display cons
+		end field
+		
+		field mydesig
+			caption "Designation"
+			attrib local 
+			display cons
+		end field
+		
+		field myrank
+			caption "Department"
+			attrib local 
+			display cons
+		end field
+		
+		field mysec
+			caption "Section"
+			attrib local 
+			display cons
+		end field
+		
+		field Add
+			event before
+				set mysql="select sum(xtotamt) from prpf where xempnum='"+xempnum+"' and xdate >='"+xdateeff+"' and xdate <='"+xdateexp+"' "
+				print mysql
+				set xamt =0.0+#sql(mysql)
+				
+				set xpayamt=0.0+(xpayperc*xamt/100)
+			end event
+			
+			//event after
+			//end event
+		end field
+	end form
+	
+	list pfinterest
+		
+		caption "Details"
+		table prpfinterest
+        order xempnum
+        //fixed xempnum
+		//objects  xpaycode attrib(link #servlet+"?page=prpaymentdt&command=Show&xempnum=?&xpaycode=?"),xamount
+		objects xempnum attrib(link #servlet+"?page=prpfinterest&command=Show&xempnum=?"),xdateeff,xdateexp,xamt,xpayperc,xpayamt
+		
+	end list
+
+end page

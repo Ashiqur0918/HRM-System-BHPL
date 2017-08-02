@@ -1,0 +1,158 @@
+//prreports.menu
+caption "Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+//-New 
+//Section Wise Salary Statement for Bank Transfer (Worker & Officer)		|#classPath+"/"+#servlet+"?page=*crystal prsalarybnkrnsn(xgbenefit=Benefit Group,xsec=From Section=0=,xsec=To Section=Zzz,xempnum=From Employee=0=,xempnum=To Employee=Zzz=,xper=Month=#cper,xyear=Year=#cyear)"
+//Section Wise Salary sheet Separately for Worker & Officer		   		|#classPath+"/"+#servlet+"?page=*crystal prsalary_sheetsecn(xgbenefit=Benefit Group,xmodepay=Payment Mode,xsec=From Section=0=,xsec=To Section=Zzz=,xempnum=From Employee=0=,xempnum=To Employee=Zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Salary Sheet 					   		|#classPath+"/"+#servlet+"?page=*crystal prsalary_t(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Salary Sheet 					   		|#classPath+"/"+#servlet+"?page=*crystal prsalary_t1(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Section Wise Pay Slip for Worker & Officer		   						|#classPath+"/"+#servlet+"?page=*crystal prpayslip_secn(xgbenefit=Benefit Group,xsec=Section=,xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=Payment Date=)"
+
+Salary Sheet							|#classPath+"/"+#servlet+"?page=*crystal prsalary_t2(~
+											p ~ 
+											xempnum caption(From Employee) default(0),~
+											xempnum caption(To Employee) default(""Zzz""),~
+											xper caption(Month) defult(#cper),~
+											xyear caption(Year) defult(#cyear),~
+											xsec caption(From Section) default(0),~
+											xsec caption(To Section) default(""Zzz""),~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+											xvessel caption(From Line) display(combo) pick("select xvessel from hrmst group by xvessel") default("" ""),~
+											xvessel caption(To Line) display(combo) pick("select xvessel from hrmst group by xvessel") default(""Zzz""))"
+
+Pay Slip for Worker & Officer		   						|#classPath+"/"+#servlet+"?page=*crystal prpayslip(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=Payment Date=)"
+
+-Bonus
+Bonus Report By Employee       	   |#classPath+"/"+#servlet+"?page=*crystal prbonuse(xyear=Year=#cyear,xper=Month=#cper,xempnum=From Employee=0,xempnum=To Employee=zzz)"
+Bonus Report             		   |#classPath+"/"+#servlet+"?page=*crystal prbonus(xyear=Year=#cyear,xper=Month=#cper,xsec=Section)"
+
+
+-Customized
+PF Interest Report 								|#classPath+"/"+#servlet+"?page=*crystal pr_pf_interest(~
+												p ~
+												xh103 caption(Year),~
+												xdate caption(Interest Payment Date) )"
+												
+												
+Lunch Vendor Report 							|#classPath+"/"+#servlet+"?page=*crystal pr_lunch_vendor(~
+												p ~
+												xh103 caption(Lunch Vendor),~
+												xdate caption(From Date) ,~
+												xdate caption(To Date) ,~
+												xh106 caption(Payment Date) display(combo) pick("select distinct(xcode) from xcodes where xtype='Per Unit Food Cost'") default(0))"
+												
+												
+Supplier Payment Request Form 			|#classPath+"/"+#servlet+"?page=*crystal pr_sup_pay_req(~
+												p ~
+												xtitle caption(To) display(combo) pick("select distinct(xtitle) from hrmst") default(0),~
+												xtitle caption(Through) display(combo) pick("select distinct(xtitle) from hrmst") default(0),~
+												xtitle caption(From Designation) display(combo) pick("select distinct(xtitle) from hrmst") default(0),~
+												xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+												xh101 caption(Code),~
+												xh102 caption(Expenditure Type),~
+												xh103 caption(Party Name),~
+												xdate caption(Period),~
+												xh105 caption(Amount Payable),~
+												xh106 caption(Remarks))"
+												
+												
+												
+Department Wise Salary   				|#classPath+"/"+#servlet+"?page=*crystal department_wise_sal(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdiv=From Department=0=,xdiv=To Department=Zzz=)"
+Rank Wise Salary 			|#classPath+"/"+#servlet+"?page=*crystal rank_wise_sal(~
+												p ~
+												xhrc1 caption(From Rank) display(combo) pick("select xcode from xcodes where xtype="'Rank'" ") default(0),~
+												xhrc1 caption(To Rank) display(combo) pick("select xcode from xcodes where xtype="'Rank'" ") default(""Zzz""))"
+
+Employee Monthly Salary(S2B) 							|#classPath+"/"+#servlet+"?page=*crystal pr_s2b_emp_sal	(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=Payment Date)"							
+BEFTN 										|#classPath+"/"+#servlet+"?page=*crystal pr_beftn(xh102=Employee Start Number,xdate=Payment Date, xh101=Debit A/C No, xh201=Payee Email Address)"
+Salary Summary (Three Month)				|#classPath+"/"+#servlet+"?page=*crystal pr_sal_three_month(xdate=Last 3 month of )"
+
+Monthly Salary All Employee 				|#classPath+"/"+#servlet+"?page=*crystal pr_sal_monthly(~
+												p ~
+												xdate caption(Date)  ,~
+												zmessage caption(Remark) )"
+												//display(ocombo) pick("select xdatepay from prpay")
+List of Salary Payment (Through Cheque - Monthly) |#classPath+"/"+#servlet+"?page=*crystal pr_sal_cheque(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=From Date,xdate=To Date,zmessage=Remark)"
+
+
+Tax Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_tax_deduc(xdate=From Date,xdate=To Date)"	
+Lunch Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_lunch_deduc(xdate=From Date,xdate=To Date)"
+Mobile Bill Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_mobile_deduc(xdate=From Date,xdate=To Date)"
+EMI Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_emi_deduc(xdate=From Date,xdate=To Date)"
+
+
+Festival Bonus Summary					|#classPath+"/"+#servlet+"?page=*crystal pr_fest_bns(xdate=From Date,xdate=To Date)"
+Festival Bonus Monthly					|#classPath+"/"+#servlet+"?page=*crystal pr_fest_bns_full(xdate=From Date,xdate=To Date,zmessage=Comment)"
+
+Gratuity Provision Monthly				|#classPath+"/"+#servlet+"?page=*crystal gratuity_probition_monthly(~
+											p ~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+
+
+
+Details Gratuity Report    				|#classPath+"/"+#servlet+"?page=*crystal gratuity_report_detail(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdiv=From Department=0=,xdiv=To Department=Zzz=)"
+
+Department wise Performance Bonus 				|#classPath+"/"+#servlet+"?page=*crystal pr_dept_wise_prpbns(~
+											p ~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+
+
+Grade Wise Performance Bonus			|#classPath+"/"+#servlet+"?page=*crystal grde_wise_performance_bonus (~
+												p ~ 
+												xgrade caption(From Grade) display(combo) pick("select xcode from xcodes where xtype="'Performance Grade'" ") default(0),~
+												xgrade caption(To Grade) display(combo) pick("select xcode from xcodes where xtype="'Performance Grade'" ") default(""Zzz""))"
+
+
+Department Wise Profit Sharing  			|#classPath+"/"+#servlet+"?page=*crystal pr_ppf_sharing(~
+											p ~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+											
+Department Wise PF Report					|#classPath+"/"+#servlet+"?page=*crystal pr_pf_dept(~
+											p ~
+											xempnum caption(From Employee) default(0),~
+											xempnum caption(To Employee) default(""Zzz""),~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+											xdate caption(From Date),~
+											xdate caption(To Date))"
+											
+Employee Wise PF Report 						|#classPath+"/"+#servlet+"?page=*crystal pr_emp_pf(xempnum=Employee No=0=,xdate=From Date,xdate=To Date)"
+
+Department Wise Other Allowance Report 			|#classPath+"/"+#servlet+"?page=*crystal pr_dept_wise_other_allowance(~
+											p ~
+											xempnum caption(From Employee) default(0),~
+											xempnum caption(To Employee) default(""Zzz""),~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+											xdate caption(From Date),~
+											xdate caption(To Date))"
+
+Final Settlement 						|#classPath+"/"+#servlet+"?page=*crystal pr_final_settelment(xempnum=Employee No=0=)"					
+											
+											
+												//Payslip						        |#classPath+"/"+#servlet+"?page=*crystal prpayslip_b(xempnum=From Employee=0,xempnum=To Employee=zzz,xdatepay=Salary Date)"
+//Section_Wise_Payslip					|#classPath+"/"+#servlet+"?page=*crystal prpayslip_b_sec(xsec=Section,xempnum=From Employee=0,xempnum=To Employee=zzz,xdatepay=Salary Date)"
+//Employee Wise Salary Sheet 		   |#classPath+"/"+#servlet+"?page=*crystal prsalary_sheet(xempnum=From Employee=0,xempnum=To Employee=zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Section Wise Salary Sheet 		   |#classPath+"/"+#servlet+"?page=*crystal prsalary_sheetsec(xsec=Section,xempnum=From Employee=0,xempnum=To Employee=zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Section_Wise_Salary_Sheet 		   |#classPath+"/"+#servlet+"?page=*crystal prsalary_b_sheetsec(xsec=Section,xempnum=From Employee=0,xempnum=To Employee=zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Employee Wise Salary Sheet 	   |#classPath+"/"+#servlet+"?page=*crystal prsalary_sheet_emp2(xempnum=From Employee=0,xempnum=To Employee=zzz,xper,xyear)"
+//Department Wise Salary Sheet 	   |#classPath+"/"+#servlet+"?page=*crystal prsalary_sheet_dpt(xdiv=Department,xempnum=From Employee=0,xempnum=To Employee=zzz,xper,xyear)"
+//SBU wise Salary Sheet				|#classPath+"/"+#servlet+"?page=*crystal prcrossal(xdatepay,xdiv=From SBU==text=list xsbu,xdiv=To SBU==text=list xsbu)"
+//Bonus(Bank Transfer)				|#classPath+"/"+#servlet+"?page=*crystal prbonusbnk(xyear=Year=#cyear,xper=Month=#cper,xempcat=From Category==text=list xempcat,xempcat=To Category==text=list xempcat,~
+//											xdiv=From SBU==text=list xsbu,xdiv=To SBU==text=list xsbu,xplace=From Location==text=list xplace,~
+//											xplace=To Location==text=list xplace,xname=Subject=DBBL (Bank Portion) Eid-Ul-Fitr,xdesc=Bank Name=DBBL)"
+//
+//EL Payment Sheet(Bank)			|#classPath+"/"+#servlet+"?page=*crystal prlvencas(xyear=Year=#cyear,xper=Month=#cper,xdiv=From SBU==text=list xsbu,xdiv=To SBU==text=list xsbu,xplace=From Location==text=list xplace,xplace=To Location==text=list xplace)"
+//EL Payment Sheet					|#classPath+"/"+#servlet+"?page=*crystal prlvencasp(xyear=Year=#cyear,xper=Month=#cper,xdiv=From SBU==text=list xsbu,xdiv=To SBU==text=list xsbu,xplace=From Location==text=list xplace,xplace=To Location==text=list xplace)"
+//EL Statement Sheet				|#classPath+"/"+#servlet+"?page=*crystal pr_earnleave(xyear=Year=#cyear)"
+//Employee Wise Provident Fund      |#classPath+"/"+#servlet+"?page=*crystal prpf_emp(xempnum=Employee)"
+//Department Wise Provident Fund    |#classPath+"/"+#servlet+"?page=*crystal prpf_sum(xdiv=From Department,xdiv=To Department)"
+//Employee Wise Salary Sheet 		   |#classPath+"/"+#servlet+"?page=*crystal prsalary_emp(xempnum=From Employee=0,xempnum=To Employee=zzz,xper=Month=#cper,xyear=Year=#cyear)"
+//Salary Sheet				        |#classPath+"/"+#servlet+"?page=*crystal prsalary(xyear=Year=#cyear,xper=Month=#cper)"
+//Bank Salary Sheet       			|#classPath+"/"+#servlet+"?page=*crystal prsalbank(xdiv=From SBU==text=list xsbu,xplace=Location==text=list xplace,xyear=Year,xper=Month)"
