@@ -1,0 +1,131 @@
+page cxtset
+     caption "Travel Expenses Setup"
+     sidebar list one//,list two, text three
+     //sections list one, form one
+     sections form one //, method m1, method m2
+
+
+     list one
+        table hrtset
+        order xrank,xtitle,xzone,xrow
+        //select none
+        //navigators alpha
+        rows 20
+        objects  xzone,xrank,xtitle,xrow attrib(link #servlet+"?page="+page+"&command=Show&xrow=?&xrank=?&xtitle=?&xzone=?"), ~
+                xmodel,xshipmode,xamtdue,xhrc3,xhrc4//,xamtround
+				
+				field xmodel	
+    caption Expense Head
+    //pick select xcur from xcur order by xcur
+	end field
+	
+	field xshipmode	
+    caption Arranged By
+    
+	end field
+	
+	field xhrc3
+		caption Budget Code
+			
+		end field
+		
+		field xhrc4
+		caption Budget SubCode
+			
+
+		end field
+
+
+
+     end list
+
+     form one
+        caption "Travel Expenses Setup"
+        table hrtset
+        order xrank,xtitle,xzone,xrow
+        //select
+        
+        layout 1
+        objects Show, Clear,Add, Update, Delete, Top, Previous, Next, Bottom,"<p>" ,~
+                xrow attrib(row 0 10),xrank,xtitle,xage1,xmodel,xzone,xshipmode,xamtdue,xhrc3,xhrc4,~
+				xamtround display(hide),xpayamt display(hide),zemail display(hide),xemail display(hide)
+	field xage1	
+	display ocombo
+    caption Expense Group
+    pick "select xcode from xcodes where zid='"+#id+"' and xtype='Expense Group'"
+	end field
+	
+	field xmodel	
+	display ocombo
+    caption Expense Head
+    pick "select xcode from xcodes where zid='"+#id+"' and xtype='Expense Head'"
+	end field
+	field xamtdue
+	caption Allocated Amount
+	end field
+	
+	field xhrc3
+		caption Budget Code
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Budget Code'" 
+			event after
+				str mysql = "select xcode from xcodes where zid='"+#id+"' and xtype='Budget SubCode' and xcodealt='"+xhrc3+"' and xprops='"+xrank+"'"
+				set xhrc4 = #sql(mysql)
+				//print mysql
+				
+			end event
+
+		end field
+		
+		field xhrc4
+		caption Budget SubCode
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Budget SubCode' and xcodealt like '%"+xhrc3+"%' and xprops like '%"+xrank+"%'" 
+			//
+			//event after
+			//	set bcode=#prop(xprops,"code")
+			//	set dcode=#prop(xprops,"dept")
+			//	
+			//
+			//end event
+
+		end field
+	
+	field xtitle
+		caption Designation
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Designation'"
+			
+		end field
+		
+		field xrank
+			caption Department
+			display ocombo
+			attrib submit
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Department' "
+		end field
+		
+	
+	field xzone
+		display ocombo
+		pick code Zone
+	end field
+	
+	field xshipmode	
+    caption Arranged By
+    pick "Own,Admin"
+	end field
+	
+	field zemail	
+    display hide
+	end field
+	field zemail	
+    display hide
+	end field
+
+     end form
+
+    
+     
+end page

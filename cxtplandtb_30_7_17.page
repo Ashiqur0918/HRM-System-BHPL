@@ -1,0 +1,286 @@
+
+page cxtplandtb
+
+ layout mylayout 1 1 1 //columns rows  tabrows
+       group details,docs (1,1)
+      script myscript (0,0)
+     end layout
+	 
+	   group details 2 2 "Details" //columns rows caption select
+       form details,list dentry  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   list expd (2, 1)
+		keys "Find xoemordnum=?&xline=?"
+     end group
+#include cadocs.include
+//caption "Bill Submit"
+
+//sidebar list expd
+     //sections list one, form one
+     //sections form details, list  dentry//, method m1, method m2
+
+    list dentry    
+		caption "Approved Travel Plans"
+        table hrtplandt
+        order xoemordnum,xempnum,xline
+        //select "xstatuspermit='Approved'"
+        rows 10
+        objects  xoemordnum,xempnum  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xoemordnum=?&xline=?"),~
+		xline,xfdate ,xtdate ,xzone,xhcfaplace caption(Place of Night Stay),xdescrow caption(Purpose),xheatday caption(Night Stay),xstatuspermit
+		
+		
+      end list
+	  
+	  list expd
+		caption "Bill Update<p>~
+		<button class=bt onclick="submitCommand('updamt','details')">Save</button>"
+        table hrtplanex
+        order xoemordnum,xempnum,xline,xrow
+        fixed xoemordnum,xempnum,xline
+		//empty " "
+        rows 10
+        objects  xline,xrow,xempnum,~
+		xmodel,xshipmode,xamtdue,xpayamt,xrem
+		
+		field xpayamt	
+		caption Bill Amount
+		attrib flags xrow
+		wid 8
+		end field
+		
+		field xrem	
+		Height 2
+		Width 15
+		attrib flags xrow
+		end field
+		
+		
+		field xmodel	
+		caption Expense Head
+		//pick select xcur from xcur order by xcur
+		end field
+	
+		field xshipmode	
+		caption Arranged By
+		end field
+		
+		field xoemordnum
+				display const
+				caption Travel Plan No.
+			
+		end field
+		totals count,"","","","",sum,sum
+		
+      end list
+
+	form details
+		caption "Details"
+		valid dvalid
+        table hrtplandt
+        order xoemordnum,xempnum,xline
+		//select "xstatuspermit='Approved'"
+        //fixed xoemordnum
+        layout 1
+        objects Show, Update, Top, Previous, Next,Clear, Bottom,Bill_Submit,Bill_Recommend,Bill_Approve,~
+			xoemordnum,xempnum,xline,xfdate default(#d),xtdate default(#d),xzone,xhcfaplace caption(Place of Night Stay),xdescrow caption(Purpose),xmyday,~
+			xheatday caption(Night Stay),xrem,xamt caption(Advance Amount),xamtret display(hide),~
+			zemail display(hide),xemail display(hide),xassignee display(hide),xtimesub display(hide),~
+			xapprover display(hide),xtimecom display(hide),xstatuspermit display(const)
+			
+			field xmyday
+				caption Travel Duration
+				attrib local
+				display const
+				storage decimal
+				event after
+					set xmyday = 0.0+xtdate-xfdate
+				end event
+			end field
+			
+			field xamt
+				//default "select sum(xamtdue) from hrtplanex where xempnum='"+xempnum+"' and zid='"+#id+"' and xoemordnum='"+xoemordnum+"'"
+			end field
+			
+			field xoemordnum
+				display const
+				caption Travel Plan No.			
+			end field
+			
+			field xzone
+				display ocombo
+				pick code Zone
+			end field
+			
+			field Bill_Submit
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form					
+					set hrtplandt.xtimesent = #time
+					set hrtplandt.xstatuspermit = "Bill Submitted"
+					set hrtplandt.xamtret = 0.0+#sql("select sum(xpayamt) from hrtplanex xempnum='"+xempnum+"' and zid='"+#id+"' and xoemordnum='"+xoemordnum+"'" and xline='"+xline+"'")
+					update hrtplandt(xoemordnum,xempnum,xline)
+					action Show
+				end event
+			end field
+			
+			field Bill_Approve
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form
+					set hrtplandt.xapprover = #user
+					set hrtplandt.xtimecom = #time
+					set hrtplandt.xstatuspermit = "Bill Approved"
+					update hrtplandt(xoemordnum,xempnum,xline)
+					action Show
+				end event
+			end field
+			
+			field Bill_Recommend
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form
+					set hrtplandt.xapprover = #user
+					set hrtplandt.xtimecom = #time
+					set hrtplandt.xstatuspermit = "Bill Recommended"
+					update hrtplandt(xoemordnum,xempnum,xline)
+					action Show
+				end event
+			end field
+
+		
+
+     end form
+
+    method getexpdet
+		
+		str img_clist="zid,xempnum,xrow,xmodel,xshipmode,xamtdue"
+	str img_sql = "select "+img_clist+" from hrtset where xempnum='"+xempnum+"' and zid='"+#id+"' and xzone='"+xzone+"'"
+
+	//dprint "img_sql="+img_sql
+	int img_count=#sqlfill(img_sql)
+	int img_i=0
+	while img_i < img_count
+		array get(img_i,img_clist)
+		
+		print xrow
+			
+			buffer hrtplanex
+			set hrtplanex.xoemordnum=xoemordnum
+			set hrtplanex.xempnum=xempnum
+			set hrtplanex.xrow=xrow
+			set hrtplanex.xmodel=xmodel
+			set hrtplanex.xshipmode=xshipmode
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+			
+			set hrtplanex.xamtdue=0.0+xamtdue*xmyday
+			//set hrtplanex.zactive="1"
+			insert hrtplanex
+			print #result
+			set img_i=img_i+1
+	end while
+	
+	
+	end method
+
+	 valid dvalid
+	 
+	 before updamt
+			//print "select further"
+			
+			str cond="name .sw. "+#char(34)+"xpayamt__"+#char(34)+"
+			str cond1="name .sw. "+#char(34)+"xrem__"+#char(34)+"
+			int ns = #names("xordnum", cond)
+			int ns1 = #names("xordnum1", cond1)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				str nam1 = #eval("xordnum1["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,9,10)
+				str value = #evalx(nam)
+				set value = 0.00+value
+				str value1 = #evalx(nam1)
+				//str value = #rtrim(value)
+				
+				set myflag = #sql("select xstatuspermit from hrtplandt  where xoemordnum='"+xoemordnum+"' and xempnum='"+xempnum+"' and xline='"+xline+"'")
+				if myflag  .ne. "Approved"
+					error "Not Approved; Cannot Update Data"
+				else
+					str mysql = "update hrtplanex set xpayamt="+value+",xrem='"+value1+"' where xrow="+myline+" and xempnum='"+xempnum+"' and xoemordnum='"+xoemordnum+"' and xline='"+xline+"'"
+					set updval = #sql(mysql)
+				end if
+				//print myflag+" "+myline+" "+value+" "+mysql+xoemordnum+xempnum+" Rem: "+value1
+				
+				set j=j+1
+			end while
+	end before
+	 
+	 before Add
+		
+		set xheatday = 0+#day(xtdate)-#day(xfdate)
+	 end before
+	 
+	 before Delete
+		
+		set deldet=#sql("delete from hrtplanex where xoemordnum='"+xoemordnum+"' and xempnum='"+xempnum+"'")
+	 end before
+	 
+	 after Add,Update
+		call getexpdet
+	 end after
+		
+		config 
+			set globals(xempnum)=xempnum
+			set globals(xline)=xline
+			set header = "<font color=green size=4+>Travel Planning</font><br>"
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+			set #fields(xoemordnum->.display)="const"
+			//print xmyday
+			set mysql = "select sum(xamtdue) from hrtplanex where xempnum='"+xempnum+"' and zid='"+#id+"' and xoemordnum='"+xoemordnum+"'"
+			//print mysql
+			set myqryb1="select xemail from hrtplanauth where xcontext='Bill' and xaction='Bill_Recommend' and xemail='"+#user+"' "
+			set myqryb2="select xemail from hrtplanauth where xcontext='Bill' and xaction='Bill_Approve' and xemail='"+#user+"' "
+			set blrecusr=#sql(myqryb1)
+			set blaprusr=#sql(myqryb2)
+			
+			if xstatuspermit .eq. "Applied"
+				set #fields(Apply.attrib)="disable"
+			end if
+			if xstatuspermit .eq. "Approved"
+				set #fields(Bill_Recommend.attrib)="disable"
+				set #fields(Bill_Approve.attrib)="disable"
+			end if
+			Approved
+			
+			if xstatuspermit .eq. "Bill Submitted"
+				set #fields(Bill_Submit.attrib)="disable"
+				set #fields(Update.attrib)="disable"
+				set #fields(Bill_Approve.attrib)="disable"
+			end if
+			
+			if xstatuspermit .eq. "Bill Recommended"
+				set #fields(Bill_Submit.attrib)="disable"
+				set #fields(Update.attrib)="disable"
+				set #fields(Bill_Recommend.attrib)="disable"
+			end if
+			
+			if xstatuspermit .eq. "Bill Approved"
+				set #fields(Bill_Submit.attrib)="disable"
+				set #fields(Update.attrib)="disable"
+				set #fields(Bill_Recommend.attrib)="disable"
+				set #fields(Bill_Approve.attrib)="disable"
+			end if
+						
+			if blrecusr .eq. ""
+			set #field(Bill_Recommend.display)="disabled"
+			end if
+			if blaprusr .eq. ""
+			set #field(Bill_Approve.display)="disabled"
+			end if
+			
+			set globals(xtypetrn)="TM Bill"
+              set globals(xtrnnum)=xoemordnum+"-"+xline
+		end config
+	 
+	 end valid
+
+end page

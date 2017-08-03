@@ -1,0 +1,13 @@
+product ERP on the Net
+
+table hrtplanex
+  caption "Travel Planning Details"
+  columns ztime,zutime,zid,xoemordnum,xline,xempnum,xrow,xmodel,xshipmode,xamtdue,xamtround,xpayamt,zemail,xemail,xrem
+
+
+  primary key zid, xoemordnum,xline,xrow
+  foreign key
+        zid references zbusiness.zid
+        zid,xoemordnum,xline references hrtplandt.zid,xoemordnum,xline
+  end foreign key
+end table
