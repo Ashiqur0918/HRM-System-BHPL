@@ -1,0 +1,31 @@
+select * from practrndt where xempnum='BHL-000003' and xdatepay='2017-04-21'
+// xpaycode='050' or xpaycode='099' or 
+select xempnum,xpaycode,0.0+xamount from practrndt where xpaycode='099' order by xempnum,xpaycode
+
+select xempnum,xpfflag from pratd where xdate='2017-03-21' and xpfflag='Yes'  order by xempnum
+
+select * from hrmst
+
+select * from lmtrnday where xempnum='BHL-000008' and zid='650210' and xdate='2017-07-19'
+
+select * from  hrpps
+
+select * from prpayhead
+
+select distinct(xexcisecat) from premp
+
+select distinct(xdatepay) from practrndt
+
+select * from practrndt where xpaycode='100' or xpaycode='099' and xdatepay='2017-04-21'
+
+select sum(xamount) from practrndt where xpaycode='084' and xdatepay='2017-04-21'
+
+
+select * from practrndt where xempnum='BHL-000166' and xpaycode>'049' order by xempnum,xpaycode
+
+select sum(xadvance-xreturn-xpayamt) from prloanview where xempnum='BHL-000001'
+
+select * from prloanview where xempnum='BHL-000031'
+
+
+
