@@ -1,0 +1,235 @@
+page cxtplanh
+    caption header
+	
+     layout mylayout 1 1 1 //columns rows  tabrows
+       group plan,details (1,1)
+      script myscript (0,0)
+     end layout
+	 
+	 group plan 2 1 "Plan" //columns rows caption select
+       form plan,list hentry  (1, 1)//(col,row,colspan,rowspan,width,height)
+			 list det (2, 1)
+       keys "Find xoemordnum=?"
+     end group
+	 
+	 #include hrtplandt.include
+	 
+	 group details 2 2 "Details" //columns rows caption select
+       form details,list dentry  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   list expd (2, 1)
+	
+     end group
+	 
+	 
+	//sidebar list det
+	//sections form one, list entry, script myscript, text top
+
+	text hrmst
+		"<img border=0 src='"+xlink+"' height='100' width='100'>"
+	end text
+             
+    list hentry
+        caption "List(s)"
+        //table hrtplanh
+		table (select hrtplanh.*, coalesce( (select  xfull from hrmst where zid=hrtplanh.zid and xemail = hrtplanh.zemail ),'') as fulname ,~//from hrtplanh) tbl
+		'<img style="max-width: 50px" src='||(select xlink from hrmst where zid=hrtplanh.zid and xemail = hrtplanh.zemail )||'></img>' as xtimage from hrtplanh) tbl
+        order xoemordnum
+        rows 5
+        objects xoemordnum attrib(link #servlet+"?page="+page+"&command=Show&xoemordnum=?"),xdesc,xttypepop,xyear,xper,xdept,xflagpos,zemail caption(Added By),~
+		fulname caption(Name),xtimage caption(Image)
+		
+		
+		field xoemordnum
+				caption Travel Planning No.
+				
+			end field
+			
+			
+			field xdesc
+				caption Mode of Travel
+				
+			end field
+			
+			field xflagpos
+				caption Travel Planning Flag
+				
+			end field
+			
+			field xttypepop
+				caption Travel Plan Type
+				
+			end field
+				
+    end list
+	
+    list det 
+		caption "Plan Details"        
+       table hrtplandt
+        order xoemordnum,xempnum
+        fixed xoemordnum
+		empty " "
+        rows 10
+        objects  xempnum  attrib(link #servlet+"?page="+page+"&command=Show&&nexttab=Details&xoemordnum=?&xempnum=?"),~
+			xfdate ,xtdate ,xzone,xhcfaplace,xdescrow caption(Purpose),xheatday caption(Night Stay),xamt
+			
+	  end list
+	
+
+    form plan
+		//command clear
+		caption "Plan"
+		valid valid
+        table hrtplanh
+        order xoemordnum
+        layout 1
+        objects Show,Add,Update,Clear, Top, Previous, Next, Bottom,Delete,Recommend,Approve,~
+				xoemordnum display(trn Travel Planning No),xdate,xdesc,xttypepop,xyear,xper attrib(attach),mypername,xdept,xflagpos,~
+				xrem,zemail display(const) caption(Added By),xemail display(hide)
+				
+				field mypername
+					attrib local
+					display constant
+					event after
+						set mypername = #sql("select xmonthname from cadate where xper='"+xper+"'")
+						//print mypername
+					end event
+				end field
+				
+			field xoemordnum
+				caption Travel Planning No.
+				default "TPLN"
+			end field
+			field xyear
+				display ocombo
+				pick "select xcode from xcodes where zid='"+#id+"' and xtype='Planning Year'"
+			end field
+			
+			field xdesc
+				caption Mode of Travel
+				display ocombo
+				pick "Home, Overseas"
+			end field
+			
+			field xflagpos
+				caption Travel Planning Flag
+				display const
+				event after
+					set globals(xflagpos) = xflagpos
+				end event
+			end field
+			
+			field xttypepop
+				caption Travel Plan Type
+				display ocombo
+				pick "Individual,Combined"
+				event after
+					set globals(xttypepop)=xttypepop
+				end event
+			end field
+			
+			
+			
+			field Add
+				event before
+					set globals(ErrChk) =""					
+					set zemail =#user
+					set xemail =""
+					set xflagpos ="Open"
+				end event
+			end field
+			
+			field Update
+				event before
+					set xemail =#user
+				end event
+			end field
+			
+			
+        
+   end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var but= ""
+        function clicked(b){
+          but="clicked"
+        }
+
+        function exp(b){
+           but ="exp"
+        }
+
+        function ref(b){
+          but = "ref"
+        }
+
+        function docs(b){
+          but = "docs"
+        }
+
+        function submitit(form){
+          if (but=="clicked"){
+            form.page.value = "hrplandt"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="exp"){
+            form.page.value = "hrworkcv"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="ref"){
+            form.page.value = "hrrefcv"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="docs"){
+            form.page.value = "xdocs"
+            form.searchbutton.value = "Top"
+          }
+          }
+         }
+         }
+         }
+
+        </script>
+     end script
+	valid valid
+	
+	before Recommend
+		set xflagpos = "Recommended"
+		action Update
+	end before
+	before Approve
+		set xflagpos = "Approved"
+		action Update
+	end before
+	
+	
+		mendatory xv101
+		config
+			set globals(xoemordnum)=xoemordnum			
+
+			set header = "<font color=green size=4+>Travel Planning</font><br>"
+			//set header=header+"<br><a href='"+#report(hrmanpowerplan.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xdept+"&prompt2="+xnewdept+"' target='_new'>Print</a>"
+			set dtv103=0.0+#sql("select sum(xv103) from hrplandt where zid='"+#id+"' and xwmjobnum='"+xwmjobnum+"' ")
+			//print xv103
+			set no_emp=0.0+dtv103/xv101
+			set no_emp=#round(no_emp,0)
+			
+			
+			if xflagpos .eq. "Recommended"
+				set #field(Recommend.display)="disable"
+			end if
+			if xflagpos .eq. "Open"
+				set #field(Approve.display)="disable"
+			end if
+			if xflagpos .eq. "Approved"
+				set #field(Recommend.display)="disable"
+				set #field(Approve.display)="disable"
+				set #field(Add.display)="disable"
+				set #field(Update.display)="disable"
+				set #field(Delete.display)="disable"
+			end if
+		end config
+	end valid
+     
+end page
