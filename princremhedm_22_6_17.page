@@ -1,0 +1,138 @@
+page princremhedm
+	embed onload="move_caret('one','xempnum')"
+    caption "Increment History ~
+	//<a href='"+#report(princreament.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xempnum+"' target='_new'>Preview</a>"
+    sidebar text one
+	sections form one, list one, script myscript, text top
+	
+
+    text top
+		"<a href=#top title='Back to Top'><font color=blue size=+1><strong>Go Top</strong></font></a>"
+    end text
+
+    list one
+        caption "List of Employee(s)"
+        table (select * , ~
+				(select zactive from premp where zid=hrmst.zid and xempnum=hrmst.xempnum) as zactive ~
+							from hrmst) as  tbl
+        order xempnum
+		//select "zid='"+#id+"' and xdiv='"+xdiv+"' and zactive='1'"
+		select "zid='"+#id+"'  and zactive='1'"
+        rows 5
+        objects xempnum attrib(link #servlet+"?page="+page+"&command=Show&xempnum=?"),~
+                xfull caption(Employee Name),xlast ,xtitle caption(Designation),xdiv display(hide),xsec,zactive
+
+				
+		field xsec
+			caption Section
+		end field
+		
+		field xlast
+			caption Old ID
+		end field
+		
+		field xdiv
+			caption SBU
+		end field
+
+    end list
+
+    form one
+		valid valid
+        table hrmst
+        order xempnum
+        layout 2
+        objects Show,Details,Clear, Top, Previous, Next, Bottom,~
+				xempnum attrib(search),xfirst,xmiddle display(hide),xlast display(hide),xtitle display(const) caption(Designation),~
+				xsec display(const) caption(Department),xdiv display(hide),xlink display(hide)
+		field xempnum
+			event after
+				set globals(xempnum)=xempnum
+				set globals(xfirst)=xfirst
+			end event
+		end field
+		
+		field xdiv
+			caption SBU
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='unit'"
+		end field
+		
+           
+		field xlocation
+			caption Location
+			display const
+		end field
+		
+		field xlink
+			attrib local
+			event after
+				set xlink="docs/x"++""+#id+"/"+xempnum+".gif"
+			end event
+		end field
+           
+		field xfirst
+			width 30
+			display const
+			caption Employee Name
+		end field
+
+		field xlast
+			width 30
+			display const
+			caption Last Name
+		end field
+           
+		field xjoindate
+			caption Date of Joining
+		end field
+		
+		field xsec
+			caption Section
+		end field
+		
+        
+		embed onsubmit="submitit(this)"
+
+		field Details
+			embed onclick="Details(this)"
+		end field
+
+	end form
+
+    //text one
+		//"<object border=0 data=images/"+xempnum+".gif type=""text/images"" height=100% width=100% ></object>"
+//		"<img border=1 src=html/images/"+xempnum+".gif>"
+//		"<p><b>"+xfirst+"</b><br>"                
+//    end text
+
+
+	text one        
+        //"<img border=1 height=150 width=150 src=docs/#id/"+xempnum+".gif>"
+        "<img border=1 height=150 width=150 src='"+xlink+"'"
+        "<p><b>"+xfirst+"</b><br>"
+     end text
+     
+    script myscript
+        <script language="javascript" type="text/javascript">
+        var detail
+        function Details(b)
+        {
+          detail="details"
+        }
+        function submitit(form){
+          if (detail=="details"){
+            form.page.value = "princremdetm"
+            form.searchbutton.value= "clear"
+          }
+         }
+        </script>
+     end script
+	 
+	 valid valid
+		config
+			set xfirst=#sql(str,"select xfull from hrmst where xempnum='"+xempnum+"'")
+            set globals(xfirst)=xfirst
+		end config
+	 end valid
+end page
