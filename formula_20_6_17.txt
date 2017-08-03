@@ -1,0 +1,5 @@
+select xamount from practrndt where xpaycode='012' and xempnum='BHL-000067'
+
+select * from practrndt where xpaycode='012' and xempnum='BHL-000067' and xdatepay=(select max(xdatepay) from practrndt where xpaycode='012' and xempnum='BHL-000067')
+
+select xamount from practrndt where xpaycode='012' 
