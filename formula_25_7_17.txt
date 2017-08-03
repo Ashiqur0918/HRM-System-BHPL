@@ -1,0 +1,23 @@
+select count(*) from hrtplandt where xoemordnum='TPLN000042'
+select xttypepop from hrtplanh where xoemordnum='TPLN000042'
+select * from hrtplanh 
+select * from hrtplanex
+select * from hrtplandt where xoemordnum='TPLN000042'
+select count(*) from hrtplandt
+Insert into hrtplandt (xline, xempnum, xfdate, xtdate, xplace, xzone, xhcfaplace, xdescrow, xheatday, xrem, xamt, xamtret, zemail, xemail, xassignee, xtimesub, xapprover, xtimecom, xstatuspermit, xoemordnum, ztime, zid) values (10, 'BHL-000037', '2017-07-27', '2017-07-30', 'Chittagong', 'A', 'Chittagong', 'Customer', 3, '', 0.00, 0.00, 'asok@dreamapps.com', '', '', '2017-07-24 19:49:26', '', '2017-07-24 19:49:26', '1-Open', 'TPLN000041','2017-07-24 19:50:54.716',650210)
+
+create table hrtplanex(ztime TIMESTAMP , zutime TIMESTAMP , zid INTEGER NOT NULL , xoemordnum VARCHAR (100) NOT NULL , xline INTEGER NOT NULL , xempnum VARCHAR (100) , xrow INTEGER NOT NULL , xmodel VARCHAR (100) , xshipmode VARCHAR (100) , xamtdue DECIMAL (18, 2) , xamtround DECIMAL (18, 2) , xpayamt DECIMAL (18, 2) , zemail VARCHAR (100) , xemail VARCHAR (100) , primary key (zid, xoemordnum,xline,xrow) , foreign key (zid ) references zbusiness( zid) ) 
+
+pr_jv_sal_s2b_bftn
+
+select distinct(xbank) from premp
+
+select * from premp
+
+update pratd set xpfflag='' where xdate='2017-04-18' and xpfflag='Yes'
+
+select * from pratd where xdate='2017-04-18' and xpfflag='Yes' and xempnum='BHL-000153'
+(select xempnum from premp where zactive='0')
+
+select * from hrfood where xempnum='BHL-000153'
+ where xdate='2017-04-18' and xempnum='BHL-000153'
