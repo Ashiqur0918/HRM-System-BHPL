@@ -1,0 +1,222 @@
+//#include hrtplandt.include
+page cxtplandta
+
+caption "I.O.U_Apply"
+
+sidebar list expd
+     //sections list one, form one
+     sections form details, list  dentry//, method m1, method m2
+
+    list dentry    
+		caption "Details"
+        table hrtplandt
+        order xoemordnum,xempnum
+        
+        rows 10
+        objects  xoemordnum,xempnum  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xoemordnum=?"),~
+		xfdate ,xtdate ,xzone,xhcfaplace caption(Place of Night Stay),xdescrow caption(Purpose),xheatday caption(Night Stay),xstatuspermit
+		
+		
+      end list
+	  
+	  list expd
+		caption "Expenses"
+        table hrtplanex
+        order xoemordnum,xempnum,xrow
+        fixed xoemordnum,xempnum
+		//empty " "
+        rows 10
+        objects  xrow,~
+		xmodel,xshipmode,xamtdue
+		
+		field xmodel	
+		caption Expense Head
+		//pick select xcur from xcur order by xcur
+		end field
+	
+		field xshipmode	
+		caption Arranged By
+		end field
+		
+		field xoemordnum
+				display const
+				caption Travel Plan No.
+			
+		end field
+		totals count,"","",sum
+		
+      end list
+
+	form details
+		caption "Details"
+		valid dvalid
+        table hrtplandt
+        order xoemordnum,xempnum
+        //fixed xoemordnum
+        layout 1
+        objects Show, Update, Top, Previous, Next,Clear, Bottom,Apply,Recommend,Approve,~
+			xoemordnum,xempnum,xfdate default(#d),xtdate default(#d),xzone,xhcfaplace caption(Place of Night Stay),xdescrow caption(Purpose),xmyday,~
+			xheatday caption(Night Stay),xrem,xamt caption(Advance Amount),xamtret,~
+			zemail display(hide),xemail display(hide),xassignee display(hide),xtimesub display(hide),~
+			xapprover display(hide),xtimecom display(hide),xstatuspermit display(const)
+			
+			field xmyday
+				caption Travel Duration
+				attrib local
+				display const
+				storage decimal
+				event after
+					set xmyday = 0.0+xtdate-xfdate
+				end event
+			end field
+			
+			field xamtret
+				caption Approved Advance Amount
+				attrib local
+				display const
+			end field
+			
+			field xamt
+				//default "select sum(xamtdue) from hrtplanex where xempnum='"+xempnum+"' and zid='"+#id+"' and xoemordnum='"+xoemordnum+"'"
+			end field
+			
+			field xoemordnum
+				display const
+				caption Travel Plan No.			
+			end field
+			
+			field xzone
+				display ocombo
+				pick code Zone
+			end field
+			
+			field Apply
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form
+					set hrtplandt.xassignee = #user
+					set hrtplandt.xtimesub = #time
+					set hrtplandt.xstatuspermit = "Applied"
+					update hrtplandt(xoemordnum,xempnum)
+					action Show
+				end event
+			end field
+			
+			field Recommend
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form
+					set hrtplandt.xassignee = #user
+					set hrtplandt.xtimesub = #time
+					set hrtplandt.xstatuspermit = "Recommended"
+					update hrtplandt(xoemordnum,xempnum)
+					action Show
+				end event
+			end field
+			
+			field Approve
+				event before
+					buffer hrtplandt					
+					move hrtplandt = #form
+					set hrtplandt.xapprover = #user
+					set hrtplandt.xtimecom = #time
+					set hrtplandt.xstatuspermit = "Approved"
+					update hrtplandt(xoemordnum,xempnum)
+					action Show
+				end event
+			end field
+
+		
+
+     end form
+
+    method getexpdet
+		
+		str img_clist="zid,xempnum,xrow,xmodel,xshipmode,xamtdue"
+	str img_sql = "select "+img_clist+" from hrtset where xempnum='"+xempnum+"' and zid='"+#id+"' and xzone='"+xzone+"'"
+
+	//dprint "img_sql="+img_sql
+	int img_count=#sqlfill(img_sql)
+	int img_i=0
+	while img_i < img_count
+		array get(img_i,img_clist)
+		
+		print xrow
+			
+			buffer hrtplanex
+			set hrtplanex.xoemordnum=xoemordnum
+			set hrtplanex.xempnum=xempnum
+			set hrtplanex.xrow=xrow
+			set hrtplanex.xmodel=xmodel
+			set hrtplanex.xshipmode=xshipmode
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+			
+			set hrtplanex.xamtdue=0.0+xamtdue*xmyday
+			//set hrtplanex.zactive="1"
+			insert hrtplanex
+			print #result
+			set img_i=img_i+1
+	end while
+	
+	
+	end method
+
+	 valid dvalid
+	 
+	 before Add
+		
+		set xheatday = 0+#day(xtdate)-#day(xfdate)
+	 end before
+	 
+	 before Delete
+		
+		set deldet=#sql("delete from hrtplanex where xoemordnum='"+xoemordnum+"' and xempnum='"+xempnum+"'")
+	 end before
+	 
+	 after Add,Update
+		call getexpdet
+	 end after
+		
+		config 
+			set globals(xempnum)=xempnum
+			set header = "<font color=green size=4+>Travel Planning</font><br>"
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+			set #fields(xoemordnum->xrem.display)="const"
+			//print xmyday
+			set mysql = "select sum(xamtdue) from hrtplanex where xempnum='"+xempnum+"' and zid='"+#id+"' and xoemordnum='"+xoemordnum+"'"
+			//print mysql
+			set myqrya1="select xemail from hrtplanauth where xcontext='I.O.U_Apply' and xaction='Recommend' and xemail='"+#user+"' "
+			set myqrya2="select xemail from hrtplanauth where xcontext='I.O.U_Apply' and xaction='Approve' and xemail='"+#user+"' "
+			set aplrecusr=#sql(myqrya1)
+			set aplaprusr=#sql(myqrya2)
+			print myqrya1
+			print myqrya2
+			if xstatuspermit .eq. "Applied"
+				set #fields(Apply.attrib)="disable"
+				set #fields(Approve.attrib)="disable"
+			end if
+			if xstatuspermit .eq. "Recommended"
+				set #fields(Apply.attrib)="disable"
+				set #fields(Recommend.attrib)="disable"
+			end if
+			
+			
+			if xstatuspermit .eq. "Approved"
+				set #fields(Apply.attrib)="disable"
+				set #fields(Update.attrib)="disable"
+				set #fields(Approve.attrib)="disable"
+				set #fields(Recommend.attrib)="disable"
+			end if
+		
+			if aplrecusr .eq. ""
+			set #field(Recommend.display)="disabled"
+			end if
+			if aplaprusr .eq. ""
+			set #field(Approve.display)="disabled"
+			end if
+			
+		end config
+	 
+	 end valid
+
+end page
