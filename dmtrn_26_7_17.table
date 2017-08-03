@@ -1,0 +1,15 @@
+product ERP on the Net
+
+table dmtrn
+  caption "Doc Transaction"
+  columns ztime,zutime,zid,xdate,xempnum,xcodeleave,xtrnleave,xpurpose,xstatusleave,~
+    xrecommendedby,xapprovedby,xcancelreqby,xcancelledby,xnote,xposted,xcarried//,xtechnical,xgeneral
+	
+  primary key zid,xtrnleave
+  
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+  
+  
+end table

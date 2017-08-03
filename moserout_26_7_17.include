@@ -1,0 +1,176 @@
+//moserout.include
+     
+//******************************************************************************************************|
+     group serout 3 1 "Serial Numbers-Out"
+       form serout  (1, 1)//(col,row,colspan,rowspan,width,height)
+       list serout (2,1)
+			 list imseravailwh,imseravailwhun (3, 1)
+       access " xmornum .ne. "+#char(34)+#char(34)+" .and. xrowmor <> 0 .and.  .and. xtypeserial .nsw. "+#char(34)+"0"+#char(34)+" .and. xtypeserial .nsw. "+#char(34)+"2"+#char(34)
+       keys "Top"
+     end group
+
+//******************************************************************************
+     
+
+    list serout
+        caption "Serial Numbers Issued to "+xtypeout+" "+xnumout
+        table imserview
+        order xwh,xitem,xitemext,xtypeout,xnumout,xrowout,xserialnum
+        fixed xwh,xitem,xitemext,xtypeout,xnumout,xrowout
+        rows 10
+        objects ~
+        xserialnum attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xwh=?&xitem=?&xitemext=?&xtypeout=?&xnumout=?&xrowout=?&xserialnum=?")
+				Totals count
+			end list
+
+
+
+     form serout
+        caption "Serial Numbers-Out"
+		 		valid imserout
+		 		//caption "Serial Number Detail Entry"
+        table imser
+        order xitem,xitemext,xtypeout,xnumout,xrowout,xserialnum
+        fixed xitem,xitemext,xtypeout,xnumout,xrowout
+        
+        layout 1
+        objects Clear,Show,Issue, Free, Top, Previous, Next, Bottom,~
+        returnpage attrib(local) display(hidden),trnfield attrib(local) display(hidden),trnrowfield attrib(local) display(hidden),~
+				xserialnum,xtypein,xnumin,xrowin 
+
+				
+				field Issue
+					event before
+						int count=#sql(int,"select count(*) from imserview where xtypeout='"+xtypeout+"' and xnumout='"+xnumout+"' and xrowout="+xrowout)
+						if count == xqtyreq
+							error "<span class=br>Free a Number Before You Issue Another Serout.</span>"+xqtyreq+" "+count
+						end if
+					
+							set newserial=#sql(varchar,"select xserialnum from imserview ~
+									where xitem='"+xitem+'" and xitemext='"+xitemext+'" and xserialnum='"+xserialnum+"' and ~
+									 xwh='"+xwh+"' and xconin='1' and (xtypeout is null or xtypeout='') ")
+							if newserial .ne. xserialnum
+								error "Serial Number "+xserialnum+" is NOT Available - Cannot Reserve"+newserial
+							else
+								str temp=#sql(str,"update imser set xtypeout='"+xtypeout+"', xnumout='"+xnumout+"', xrowout="+xrowout+" where xitem='"+xitem+"' and  xitemext='"+xitemext+'" and xserialnum='"+xserialnum+"' and xtypein='"+xtypein+"' and xnumin='"+xnumin+"' and xrowin="+xrowin)
+								//print "returnpage="+returnpage
+								//if returnpage .eq. "imtdt"
+								if mode .eq. "Transfer"
+									//Print "must transfer to the receiving warehouse"
+									buffer imser
+									set imser.xitem=xitem
+									set imser.xitemext=xitemext
+									set imser.xserialnum=xserialnum
+									//set imser.xwh=globals(xtwh)
+									set imser.xtypein=xtypeout
+									set imser.xnumin=xnumout
+									set imser.xrowin=xrowout
+									
+									insert imser
+									//Print "#result="+#result
+								end if
+							end if
+					end event
+				end field
+				field Free
+					event before
+								//check for receipts first
+								int count=1
+								if mode .eq. "Transfer"
+									str s="delete from imser where xitem='"+xitem+"' and xitemext='"+xitemext+"' and xserialnum='"+xserialnum+"' and xtypein='"+xtypeout+"' and xnumin='"+xnumout+"' and xrowin="+xrowout+" and (xtypeout is null or xtypeout='')"
+									set count=#sql(int,s)
+								end if
+								if count > 0	
+									str s="select count(*) from imserview where xitem='"+xitem+"' and xitemext='"+xitemext+"' and xserialnum='"+xserialnum+"' and xtypein='"+xtypein+"' and xnumin='"+xnumin+"' and xrowin="+xrowin+" and xwh='"+xwh+"'  and (xconout is null or xconout<>'1') ~
+									       and xtypeout='"+globals(xtypeout)+"' and xnumout='"+globals(xnumout)+"' and xrowout="+globals(xrowout)
+									set count=#sql(int,s)
+								end if
+								if count >0	
+									str temp=#sql(str,"update imser set xtypeout='', xnumout='', xrowout=0 where xitem='"+xitem+"' and xitemext='"+xitemext+"' and xserialnum='"+xserialnum+"' and xtypein='"+xtypein+"' and xnumin='"+xnumin+"' and xrowin="+xrowin)
+									if #result .eq. "false"									
+										error "Serial Number "+xserialnum+" is NOT Reserved for this "+xtypeout+" - Cannot Free"
+									end if
+								else
+									error "Cannot Free -- Issued Item Already Used or Confirmed."
+								end if
+						
+					end event
+				end field
+				
+				embed onsubmit="submitit(this)"
+
+        field Return
+          embed onclick="clicked(this)"
+        end field
+
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var detail
+				var result
+
+        function clicked(b){
+						detail=b.value
+        }
+        function submitit(form){
+          //result = 'true'
+					if (detail=="Return"){
+            form.page.value = form.returnpage.value
+            form.searchbutton.value = "Find "+form.trnfield.value+"=?&"+form.trnrowfield.value+"=?"
+          }
+					//return result
+        }
+
+        </script>
+     end script
+
+		 valid imserout
+		 	config
+            set #fields(xwh.display)="constant"
+            set #fields(xtypein->xrowin.display)="constant"
+            
+					
+					set returnpage=globals(returnpage)
+            set trnfield=globals(trnfield)
+            set trnrowfield=globals(trnrowfield)
+			
+						str type
+						str linkavail
+						str clicktoadd="Click to Issue"
+						set linkavail=#servlet+"?page="+page+"&nexttab="+nexttab+"&command=Issue&xitem=?&xitemext=?&xserialnum=?&xtypein=?&xnumin=?&xrowin=?"
+        
+						int count=#sql(int,"select count(*) from imserview where xwh='"+globals(xwh)+"' and xitem='"+globals(xitem)+"' and xitemext='"+globals(xitemext)+"' and xtypeout='"+globals(xtypeout)+"' and xnumout='"+globals(xnumout)+"' and xrowout="+globals(xrowout))
+						if count <> globals(xqtyreq)
+							print "<span class=br>Serial Number Mismatch -- Must Have "+globals(xqtyreq)+" Items</span>"
+							//set #fields(Return.display)="disabled"
+						else
+							set #fields(Issue.display)="disabled"
+						end if
+            if xtypeout .eq. "Transfer Order"
+              
+              str status=imtorstat.xstatustor(" xtornum='"+xnumout+"'")
+            elseif xtypeout .eq. "Delivery Order"
+              str status=opdorstat.xstatusdor(" xdornum='"+xnumout+"'")
+            elseif xtypeout .eq. "Purchase Return"
+              str status=podrnstat.xstatusdrn(" xpodrnnum='"+xnumout+"'")
+            elseif xtypeout .eq. "Manufacturing Order"
+              str status=moordview.xstatusmor(" xmornum='"+xnumout+"'")
+            end if
+            
+            if status .ct. "Confirmed"
+							set #fields(Issue.display)="disabled"
+							set #fields(Free.display)="disabled"
+            
+            end if
+			
+			if status .ct. "Closed"											
+				set #fields(Add->Delete.visibility)="disable"
+			end if
+			
+			end config
+		 
+		 end valid
+
+

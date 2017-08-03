@@ -1,0 +1,21 @@
+method mosergen
+
+print "Serial Number Generated"
+if xloc .eq. "From Components"
+	
+	str serclist="zid,xmornum,xrowout,xitem,xitemext,xqtyprd,xqtycom,xqtyalt"						
+	
+	str sql="select "+serclist+" from moout where ~
+				 xmornum='"+xmornum+"' and xqtycom> 0 and ~
+				 (select xtypeserial from caitem where xitem=moout.xitem and zid='"+#id+"')='1-Mandatory' order by xmornum,xrowout"
+				 
+	int sercount=#sqlfill(sql)
+	int j = 0
+	
+	while j < serclist
+		array get(j,serclist)
+		print xrowout+" "+xqtycom
+		set j=0+j+1
+	end while
+end if
+end method

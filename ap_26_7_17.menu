@@ -1,0 +1,22 @@
+//ap.menu
+caption "Accounts Payable"
+//-------------------------------------------------------------------
+option                  |action
+//-------------------------------------------------------------------
+//Payment Vouchers      |page=glheader
+//Invoices/Credit Notes |page=aptrn
+Payments                |page=appay
+
+Payment Approval        |page=apapp
+Automatic Payment       |page=apauto
+-
+Exchange Gain/Loss      |page=apreal
+//Revaluation             |page=apval
+
+//Reconciliation          |page=gldetbank
+
+Reports                 |menu=apreports |ap,gl,sl
+Cheque Serial 		    |#classPath+"/"+#servlet+"?page=glchqsri&command=clear"
+Settings                |page=casetup&module=AP|ap,gl,sl
+//-------------------------------------------------------------------
+

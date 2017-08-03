@@ -1,0 +1,138 @@
+	
+    //sections form one,list detail, text top, script myscript,~
+    
+	
+	group odt 2 1 "Components"
+       
+	   form odt, list odt (1, 1)
+       //list odtdetail,bom (2, 1)
+       //access " xboqprjid .ne. "+#char(34)+#char(34)+" .or. xboqelemid .ne. "+#char(34)+Wall+#char(34)
+	   access " xmornum .ne. "+#char(34)+#char(34)
+       keys "Top"
+     end group
+
+    
+
+    list odt
+        caption "Component List<br><span class=p>Click on the item description to check stock</span>"
+        table (select *,('<b>'||xitem||'</b>'||xitemext||'<br>'||xdesc||'<br>'||xlong) as xdescdet from moodt) tbl
+		//table moodt
+        fixed xmornum
+        order xmornum,xrowmor
+        //select
+        rows 20
+        objects xrowmor attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xmornum=?&xrowmor=?"), ~
+			xdescdet caption(Item),xbatch,xwh,xloc,xqtyreq,xqtyrel,xqtykit,xflag,xitem attrib(hide) 
+			
+        field xdescdet
+        
+          event after
+
+            string s=xdescdet
+            
+            str item=#encode(xitem)
+            
+            //set s=#format(s,de,3)
+            set xdescdet=" <a href='javascript:void(0);' onclick='showStock("+#char(34)+item+#char(34)+");return false;' >"+s+"</a> "
+
+		  end event
+		 end field
+			
+			
+     end list
+
+   
+
+    form odt
+        valid myvalid
+		//valid access
+		focus xqtyreq
+		caption "Components"
+        table moodt
+        order xmornum,xrowmor
+        fixed xmornum
+		//select "xboqwtyp='odt'"
+        layout -6		
+        objects Add, Show,Clear, Update, Delete, Top, Previous,Next, Bottom,~ 
+			 *block 2 notag,~
+			 xdesc display(const) caption(), xlong display(const) caption(), ~
+			 *end block,~
+             xrowmor attrib(row 0 10;search), xitem, xbatch display(combo) attrib(submit),xqtyreq,xwh,xloc display(combo),~
+				*block 1,~
+				xitemext display(composite sep),~
+				*endblock,~
+			 *block 8 notag,~
+			 xsup ,~
+          xgass,xcost,xstdcost,xqtyrel,xqtykit,xqtyalt,~
+          xflag,~
+		  *end block
+				
+		
+		field Update
+			event before
+			set xdesc = #sql("select xdesc from caitem where xitem='"+xitem+"'")
+				set xlong = #sql("select xlong from caitem where xitem='"+xitem+"'")
+				if xflag .eq. "Exploded"
+					set item = #sql("select xitem from moodt where xmornum='"+globals(xmornum)+"' and xrowmor='"+xrowmor+"'")
+					set itemext = #sql("select xitemext from moodt where xmornum='"+globals(xmornum)+"' and xrowmor='"+xrowmor+"'")
+					set qtyreq = #sql("select xqtyreq from moodt where xmornum='"+globals(xmornum)+"' and xrowmor='"+xrowmor+"'")
+					//print item+ " item "+xitem+" "+ itemext+ "Item ext"+ xitemext+" "+qtyreq+" qty "+xqtyreq
+					if item .eq. xitem .and. itemext .eq. xitemext .and. qtyreq == xqtyreq
+					else
+						set xflag = "Open"
+					end if
+					
+				end if
+			end event
+		end field
+		field Add
+			event before
+			set xdesc = #sql("select xdesc from caitem where xitem='"+xitem+"'")
+				set xlong = #sql("select xlong from caitem where xitem='"+xitem+"'")
+				set xflag = "Open"
+			end event
+		end field
+				
+        //embed onsubmit="submitit(this)"
+        //field Detail
+            //embed onclick="clicked(this)"
+        //end field
+
+    end form
+
+   valid myvalid
+			config
+				
+				if globals(xstatusmor) .ct. "Released" 
+					set #field(Add.display) = "disable"
+					set #field(Update.display) = "disable"
+					set #field(Delete.display) = "disable"
+				end if
+				set #fields(xsup->.display)="const"
+				set #fields(xbatch.pick)="select xbatch from imbatv where xitem='"+xitem+"' and ~	
+					xitemext='"+xitemext+"' and xwh='"+xwh+"' and xqty > 0" 				
+				set #fields(xloc.pick)="select xloc from imbatv where xitem='"+xitem+"' and ~	
+					xitemext='"+xitemext+"' and xbatch='"+xbatch+"' and xwh='"+xwh+"' and xqty > 0" 	
+				set globals(xitem)=xitem
+				set globals(xdesc)=xdesc
+				call cadim
+				set globals(xtypeserial) =caitem.xtypeserial("xitem='"+xitem+"'")  
+				//print 		globals(xtypeserial)+"  ser type"	
+				set globals(xqtyreq) =xqtyreq
+				
+				set globals(xtypeout)="Manufacturing Order"
+				set globals(xnumout)=xmornum
+				set globals(xrowout)=xrowmor
+				
+			end config
+			before Add,Update
+				call cadim
+			end before
+			
+		end valid
+
+
+   
+
+
+\

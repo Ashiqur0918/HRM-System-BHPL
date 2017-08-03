@@ -1,0 +1,130 @@
+page moord
+     caption header
+	 
+     //sidebar list details, list neword,list active, list closed
+     //sections form one, method update_bo, script myscript
+//caption header
+     layout mylayout 1 1 1 //columns rows  tabrows
+       group order,odt,serout,modtserup,out,serup,new,process,complete (1,1)
+       //cuslink,itemlink,
+       script myscript,myserscript,mymodtscript (0,0)
+     end layout
+     
+
+	
+	 
+	
+	 
+	#include moord.include
+	#include moserout.include	
+	#include moserup.include
+	#include opserup.include
+	//#include modtserup.include
+	#include moodt.include
+	#include moodt.include
+	#include moout.include
+
+		 
+	group serup 2 1 "Serial Upload"
+		form serup (1, 1)//(col,row,colspan,rowspan,width,height)
+			 //list serial (2, 1)
+			//access " xmornum .ne. "+#char(34)+#char(34)+" .and. xloc .sw. "+#char(34)+"Fr"+#char(34)//+" .and. xrowout <>0 "//+#char(34)+"2"+#char(34)
+       keys "Top"
+     end group
+	
+	 
+     group new 2 1 "New"
+       list neword  (1, 1)//(col,row,colspan,rowspan,width,height)
+     end group
+     group process 2 1 "Process"
+       list active  (1, 1)//(col,row,colspan,rowspan,width,height)
+     end group
+
+     group complete 2 1 "Completed"
+       list closed  (1, 1)//(col,row,colspan,rowspan,width,height)
+     end group
+     
+	 
+
+
+
+    list neword
+        navigator alpha
+		caption "New MOs"
+        table moordview
+        order xmornum DESC
+        select " (xstatusmor like '%Empty%' or xstatusmor like '%Open%') "
+        rows 5
+        objects ~
+         xmornum attrib(link #servlet+"?page="+page+"&nexttab='order'&command=Show&xmornum=?"), ~
+          xdate,xbomkey,xwh, xwhcomp, xstatusmor
+		
+     end list
+
+
+    list active
+        navigator alpha
+        caption "Active MOs"
+        //table moord
+		table moordview
+        order xmornum DESC
+        //select "xstatusmor = 'Exploded|Released|Kitted' or xstatusmor = 'Open|Released|Kitted|' or xstatusmor = 'Open|Released|Kitted|'"
+		select "xstatusmor not like '%Completed%' and xstatusmor not like '%Empty%' and xstatusmor not like '%Open%'"
+        rows 5
+        objects ~
+         xmornum attrib(link #servlet+"?page="+page+"&nexttab='order'&command=Show&xmornum=?"), ~
+          xdate,xbomkey,xwh, xwhcomp, xstatusmor
+		  
+		  
+     end list
+
+    list closed
+        navigator alpha
+        caption "Completed MOs"
+        table moordview
+        order xmornum DESC
+        select "xstatusmor like '%Completed%'"
+        rows 5
+        objects ~
+         xmornum attrib(link #servlet+"?page="+page+"&nexttab='order'&command=Show&xmornum=?"), ~
+          xdate,xbomkey,xwh, xwhcomp, xstatusmor
+		
+     end list
+
+
+
+    list details
+        caption "Component List"
+        table (select *,('<b>'||xitem||'</b><br><font color=blue>'||xdesc||'</font><br>'||xlong) as xdescdet from moodt) tbl
+        fixed xmornum
+        order xmornum,xrowmor
+        //select
+        rows 5
+        objects xrowmor, xdescdet, ~//xitem, xdesc, xlong, ~
+          xwh, xsup,~
+          xavail,xqtyreq,xqtykit,xqtypor,xqtymor,~
+          xpornum,xrowpor,xgass
+     end list
+   
+	script myscript
+	  <script language="javascript" type="text/javascript">
+        function showStock(a){
+			//alert("a="+a);
+			//alert("b="+b);
+			//alert("c="+c);
+          width=900;
+          if (screen){
+            height=screen.height/2;
+            left=screen.width-2*width;
+          }
+            var url=document.forms[0].action+"?embeddedpage=1&menu=*none*&page=imstk&xitem="+a+"&command=Show";
+            openWindow=window.open(url, "Stock", "toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,center=0,alwaysRaised=yes,resizable=yes,width="+width+",height="+height+",top=0,left="+left);
+            openWindow.focus();
+
+          return false ;
+        }
+        </script>
+     end script
+
+	
+end page

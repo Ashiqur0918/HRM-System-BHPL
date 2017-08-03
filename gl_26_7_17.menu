@@ -1,0 +1,13 @@
+//Accounts.menu
+caption "General Ledger"
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+//Dashboard                   	|#classPath+"/"+#servlet+"?page=gl"
+Transactions                   	|#classPath+"/"+#servlet+"?menu=gltrn"
+Reports                       	|#classPath+"/"+#servlet+"?menu=glreports"
+
+Settings                       	|#classPath+"/"+#servlet+"?menu=glcodes"
+Load Data                       |#classPath+"/"+#servlet+"?menu=glload"
+//-------------------------------------------------------------------
+

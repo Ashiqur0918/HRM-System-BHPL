@@ -1,0 +1,118 @@
+//boqouth1.include
+
+group out 2 1 "Outputs"
+       //form one, list detail,order,text top  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   //form odtinput, list order  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   form out, list out (1, 1)
+       //list outdetail (2, 1)
+       //access " xboqprjid .ne. "+#char(34)+#char(34)+" .or. xboqelemid .ne. "+#char(34)+Wall+#char(34)
+	   //access " xboqprjid .ne. "+#char(34)+#char(34)
+       //keys "Top"
+	   access " xmornum .ne. "+#char(34)+#char(34)
+	   keys "Top"
+     end group
+
+    text top
+        "<a href=#top title='Go Top of this Page'><p>Back To Top</p></a>"
+    end text
+	
+	list out
+        caption " Out Put Items for: "+"<font color=red >"+xmornum+"</font><br><span class=p>Click on the item description to check stock</span>"
+        table (select *,('<b>'||xitem||'</b>'||xitemext||'<br>'||xdesc||'<br>'||xlong) as xdescdet  from moout) tbl
+        order xmornum,xrowout
+        fixed xmornum
+        //select none
+        //navigators alpha
+        rows 20
+        objects xrowout attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xmornum=?&xrowout=?"), ~
+                xdescdet caption(Item),xbatch,xwh,xloc,xqtyprd,xqtycom,xflag,xitem attrib(hide) 
+
+        field xdescdet
+        
+          event after
+
+            string s=xdescdet
+            
+            str item=#encode(xitem)
+            
+            //set s=#format(s,de,3)
+            set xdescdet=" <a href='javascript:void(0);' onclick='showStock("+#char(34)+item+#char(34)+");return false;' >"+s+"</a> "
+
+		  end event
+		 end field
+     end list
+	 
+
+
+    form out
+        valid validout
+		caption "Outputs"
+        table moout
+        order xmornum,xrowout
+        fixed xmornum
+        //select
+        
+        layout -6
+        objects Add,Show,Clear,Update, Delete, Top, Previous, Next, Bottom,~
+			 *block 2 notag,~
+			 xdesc display(const) caption(), xlong display(const) caption(), ~
+			 ~
+			 *end block,~
+             xrowout attrib(row 0 10;search), xitem, xbatch,xqtyprd,xwh,xloc,~
+				*block 1,~
+				xitemext display(composite sep),~
+				*endblock,~
+			 *block 5 notag,~
+			 xcost,xstdcost,xqtycom,xqtyalt,~
+          xflag,~
+		  *end block
+  
+				
+				field update
+			event before
+				set xdesc = #sql("select xdesc from caitem where xitem='"+xitem+"'")
+				set xlong = #sql("select xlong from caitem where xitem='"+xitem+"'")
+				if xflag .eq. "Exploded"
+					set item = #sql("select xitem from moout where xmornum='"+globals(xmornum)+"' and xrowout='"+xrowout+"'")
+					set itemext = #sql("select xitemext from moout where xmornum='"+globals(xmornum)+"' and xrowout='"+xrowout+"'")
+					set qtyreq = #sql("select xqtyprd from moout where xmornum='"+globals(xmornum)+"' and xrowout='"+xrowout+"'")
+					print item+ " item "+xitem+" "+ itemext+ "Item ext"+ xitemext+" "+qtyreq+" qty "+xqtyprd
+					if item .eq. xitem .and. itemext .eq. xitemext .and. qtyreq == xqtyprd
+					else
+						set xflag = "Open"
+					end if
+					
+				end if
+			end event
+		end field
+		
+		field add
+			event before
+			set xdesc = #sql("select xdesc from caitem where xitem='"+xitem+"'")
+				set xlong = #sql("select xlong from caitem where xitem='"+xitem+"'")
+				set xflag = "Open"
+			end event
+		end field
+				
+				//embed onsubmit="submitit(this)"   
+
+    end form
+
+		valid validout
+			config
+				if globals(xstatusmor) .ct. "Released"
+					set #field(Add.display) = "disable"
+					set #field(Update.display) = "disable"
+					set #field(Delete.display) = "disable"
+				end if
+				set #fields(xcost->.display)="const"
+				call cadim
+				set globals(xtypein)="Manufacturing Order"
+				set globals(xnumin)=xmornum
+				set globals(xrowin)=xrowout
+				
+			end config
+			before Add,Update
+				call cadim
+			end before
+		end valid

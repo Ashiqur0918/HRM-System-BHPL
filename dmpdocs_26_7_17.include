@@ -1,0 +1,64 @@
+
+     group pdocs 2 1 "BHL Docs"
+       list pdocs,form pdocs,text cauploaddoc,text docs  (1, 1)//(col,row,colspan,rowspan,width,height)
+       //access " xordernum .ne. "+#char(34)+#char(34)
+       //access " xtypetrn .ne. "+#char(34)+#char(34)+" .and. xtrnnum .ne. "+#char(34)+#char(34)
+	   
+     end group
+
+
+text docs
+  "<iframe src='"+xlink+"' height='600' width='950' ></iframe>"
+
+end text
+  list pdocs
+        caption "<table align=center ><tr><td class=bl>Docs for "+xtypetrn+"<span class=br > "+xtrnnum+"</span> -- Click to View</td></tr></table>"
+        table cadocs
+		//table (select * from cadocs where xtypetrn='DMPD') tbl
+		headers ""
+		columns 10
+        order xtypetrn,xtrnnum,xdoc
+        fixed xtypetrn,xtrnnum
+        rows 50
+        objects  xdoc  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xtypetrn=?&xtrnnum=?&xdoc=?"),~
+                xlink attrib(hide)
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+     end list
+     valid validpdocs
+      preconfig
+		set xtypetrn="DMPD"
+		//set xtrnnum=globals(xtrnleave)
+	
+		set globals(xtypetrn)="DMPD"
+	    //set globals(xtrnnum)=xtrnleave
+	  end preconfig
+	  
+	  
+	  config
+		set xtypetrn="DMPD"
+		//set xtrnnum=globals(xtrnleave)
+		set globals(xtypetrn)="DMPD"
+		//set globals(xtrnnum)=xtrnleave
+		print xtrnnum+globals(xtypetrn)
+      end config
+     
+     end valid
+     form pdocs
+        caption "BHL Docs"
+        command Top
+        valid validpdocs
+        table cadocs
+        order xtypetrn,xtrnnum,xdoc
+        fixed xtypetrn,xtrnnum
+        layout 3
+        objects ~
+                ~
+                Clear,Refresh,Delete,~
+                xdoc width(20) visibility(hide),zactive visibility(hide),~
+                xlink width(50) visibility(hide)
+        
+        
+        
+     end form
+     

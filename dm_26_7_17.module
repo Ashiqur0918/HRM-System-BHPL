@@ -1,0 +1,10 @@
+//lm.module
+module DM
+     caption "Document Management"
+     description "This is useful for Managing Company Documents"
+
+     transactions Leave Number (table:dmtrn:xleavenum;default:DOC-)
+	 
+	 //codes Leave Code,Entitlement Group
+end module
+

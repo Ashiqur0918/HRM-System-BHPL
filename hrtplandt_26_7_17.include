@@ -1,0 +1,273 @@
+//#include hrtplandt.include
+
+
+    list dentry    
+		caption "Details"
+        table hrtplandt
+        order xoemordnum,xline
+        fixed xoemordnum
+        rows 10
+        objects  xline,xempnum  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xempnum=?&xline=?"),~
+		xfdate ,xtdate ,xzone,xhcfaplace,xdescrow caption(Purpose),xheatday caption(Night Stay),zemail caption(Added By)//,xamt
+		
+		
+      end list
+	  
+	  list expd
+		caption "Expenses<p>~
+		<button class=bt onclick="submitCommand('updamt','details')">Save</button>"
+        table hrtplanex
+        order xoemordnum,xline,xrow
+        fixed xoemordnum,xline
+		//empty " "
+        rows 10
+        objects  xrow,~
+		xmodel,xshipmode,xamtdue,xpayamt
+		
+		field xpayamt	
+		caption Bill Amount
+		attrib flags xrow
+		wid 8
+		end field
+		
+		
+		field xmodel	
+		caption Expense Head
+		//pick select xcur from xcur order by xcur
+		end field
+	
+		field xshipmode	
+		caption Arranged By
+		pick "Own,Admin"
+		attrib flags xrow
+		end field
+		
+		field xoemordnum
+				display const
+				caption Travel Plan No.
+			
+		end field
+		totals count,"","",sum,sum
+		
+      end list
+	  
+	  list 111expd
+		caption "Expenses"
+        table hrtplanex
+        order xoemordnum,xline,xrow
+        fixed xoemordnum,xline
+		//empty " "
+        rows 10
+        objects  xrow,~
+		xmodel,xshipmode,xamtdue
+		
+		field xmodel	
+		caption Expense Head
+		//pick select xcur from xcur order by xcur
+		end field
+	
+		field xshipmode	
+		caption Arranged By
+		end field
+		
+		
+      end list
+
+	form details
+		caption "Details"
+		valid dvalid
+        table hrtplandt
+        order xoemordnum,xline
+        fixed xoemordnum
+        layout 1
+        objects Show,Add, Update, Delete, Top, Previous, Next,Clear, Bottom,~//Return,~
+			xline attrib(row 0 10),xempnum attrib(attach),xname,xfdate default(#d),xtdate default(#d),xplace (Place of Travel),xzone,~
+			xhcfaplace caption(Place of Night Stay),xdescrow caption(Purpose),xmyday,~
+			xheatday caption(Night Stay),xrem,xamt display(hide),xamtret display(hide),~
+			zemail display(const) caption(Added By),xemail display(hide),xassignee display(hide),xtimesub display(hide),~
+			xapprover display(hide),xtimecom display(hide),xstatuspermit display(hide)
+			
+			field xline
+				event after
+					set globals(xline) = xline
+				end event
+			end field
+			
+			field xmyday
+				caption Travel Duration
+				attrib local
+				display const
+				storage decimal
+				event after
+					set xmyday = 0.0+xtdate-xfdate
+				end event
+			end field
+			
+			field xname
+				attrib local
+				display const
+				event after
+					set xname = #sql("select xfull from hrmst where xempnum='"+xempnum+"'")
+				end event
+			end field
+			
+			field xhcfaplace
+				attrib submit
+				display ocombo
+				pick code Night Stay
+			end field
+			
+			field xzone
+				//
+				display const
+				//pick code Zone
+				event after
+					set xzone = #sql("select xcodealt from xcodes where zid='"+#id+"' and xtype='Place of Travel' and xcode='"+xplace+"'")
+				end event
+			end field
+			
+			field xplace
+				attrib submit
+				display ocombo
+				caption Place of Travel
+				pick code Place of Travel
+				//pick "select xcode from xcodes where zid='"+#id+"' and xtype='Place of Travel' and xcodealt='"+xzone+"'" 
+			end field
+			
+			
+			
+			
+		
+
+     end form
+
+    method getexpdet
+		set xrank = hrmst.xrank(xempnum)
+		set xtitle = hrmst.xtitle(xempnum)
+		str img_clist="zid,xrank,xtitle,xrow,xmodel,xshipmode,xamtdue"
+	str img_sql = "select "+img_clist+" from hrtset where  zid='"+#id+"' and xzone='"+xzone+"' and xrank='"+xrank+"' and xtitle='"+xtitle+"'"
+
+	//print "img_sql="+img_sql
+	int img_count=#sqlfill(img_sql)
+	int img_i=0
+	while img_i < img_count
+		array get(img_i,img_clist)
+		
+		//print xrow
+			
+			buffer hrtplanex
+			set hrtplanex.xoemordnum=xoemordnum
+			set hrtplanex.xline=xline
+			set hrtplanex.xempnum=xempnum
+			set hrtplanex.xrow=xrow
+			set hrtplanex.xmodel=xmodel
+			set hrtplanex.xshipmode=xshipmode
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+						
+			
+			//set hrtplanex.zactive="1"
+			if xmodel .eq. "Hotel Cost"
+				if xheatday >0	
+					set hrtplanex.xamtdue=0.0+xamtdue*xheatday
+				else 
+					set hrtplanex.xamtdue=0.0
+				end if
+			else
+				set hrtplanex.xamtdue=0.0+xamtdue*xmyday
+			end if
+			
+			if hrtplanex.xamtdue>0
+				insert hrtplanex
+			end if
+			//print #result
+			set img_i=img_i+1
+	end while
+	
+	
+	end method
+
+	 valid dvalid
+	 
+	 before updamt
+			//print "select further"
+			
+			str cond="name .sw. "+#char(34)+"xpayamt__"+#char(34)+"
+			str cond1="name .sw. "+#char(34)+"xshipmode__"+#char(34)+"
+			
+			
+			int ns = #names("xordnum", cond)
+			int ns1 = #names("xordnum1", cond1)
+			int j = 0
+			while j<ns
+				str nam = #eval("xordnum["+j+"]")
+				str nam1 = #eval("xordnum1["+j+"]")
+				int k = #len(nam)
+				str myline = #sub(nam,9,10)
+				str value = #evalx(nam)
+				str value1 = #evalx(nam1)
+				//str value = #rtrim(value)
+				
+				//set myflag = #sql("select xstatuspermit from hrtplandt  where xoemordnum='"+xoemordnum+"' and xempnum='"+xempnum+"'")
+				if value1  .eq. "Admin"
+					set payamt = 0.0
+				else
+					set payamt = value
+					
+				end if
+				str mysql = "update hrtplanex set xpayamt='"+payamt+"',xshipmode='"+value1+"' where xrow="+myline+" and xempnum='"+xempnum+"' and xline ="+xline+" and xoemordnum='"+xoemordnum+"'"
+					set updval = #sql(mysql)
+				//print myflag+" "+myline+" "+value+" "+value1
+				
+				set j=j+1
+			end while
+	end before
+	
+	
+	 
+	 before Add
+		set zemail=#user
+		set xheatday = 0+#day(xtdate)-#day(xfdate)
+		
+		//str mysql = "select xempnum from hrtplandt where xoemordnum='"+xoemordnum+"'"
+		//set mycont = #sql(mysql)
+		
+		if globals(xttypepop) .eq. "Individual"// .and. mycont >0
+			//if mycont .ne. ""
+				str mysql = "select xempnum from hrtplandt where xoemordnum='"+xoemordnum+"' and xempnum<>'"+xempnum+"'"
+				set extemp = #sql(mysql)
+				if extemp .ne. ""
+					error "Cannot Add more than One Employee in an Individual type Travel Plan"
+				end if	
+			//end if
+		end if
+		str mysql = "select xempnum from hrtplandt where xoemordnum='"+xoemordnum+"' and xempnum='"+xempnum+"' and xfdate='"+xfdate+"'"
+		set frmdate = #sql(mysql)
+		if frmdate .ne. ""
+				error "Already On Plan"
+		end if	
+	 end before
+	 
+	 before Delete
+		
+		set deldet=#sql("delete from hrtplanex where xoemordnum='"+xoemordnum+"' and xline='"+xline+"'")
+	 end before
+	 
+	 after Add,Update
+		call getexpdet
+	 end after
+		
+		config 
+			if globals(xflagpos) .ne. "Open"
+				set #field(Add.display)="disable"
+				set #field(Update.display)="disable"
+				set #field(Delete.display)="disable"
+				
+			end if
+			set globals(xempnum)=xempnum
+			set header = "<font color=green size=4+>Travel Planning</font><br>"
+			set xmyday = 0+#day(xtdate)-#day(xfdate)+1
+			//print xmyday
+		end config
+	 
+	 end valid
+

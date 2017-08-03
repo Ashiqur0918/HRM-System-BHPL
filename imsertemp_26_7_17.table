@@ -1,0 +1,15 @@
+product ERP on the Net
+
+table imsertemp
+  caption "Item Serial Temp. Number Table"
+
+  columns ztime, zutime, zid,~
+  xitem,xitemext,xserialnum,~  
+  xtypeout,xnumout,xrowout,xnote
+
+  primary key zid,xserialnum,xnumout
+  
+  
+end table
+
+

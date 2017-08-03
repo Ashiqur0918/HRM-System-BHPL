@@ -1,0 +1,60 @@
+//gl.fields
+//---------------------------------------------------------------------------------------------------------------------
+name       		|caption              			|storage |length|scale|display|hei|w |form|def		|help|doc|det|valid|attrib|font|calc|pick
+//--------------|-------------------------------|--------|------|-----|-------|---|--|----|---------|----|---|---|-----|------|----|----|----
+xfrslnum      	|From Serial Number             |decimal |    20|    0|text   |  1|20|    |   		| 	 | 	 |   |     |      |    |    |
+xtoslnum      	|To Serial Number               |decimal |    20|    0|text   |  1|20|    |   		| 	 |   |   |     |      |    |    |
+xtypeserial   	|Serial Number Type        		|varchar |   100|    0|radio  |	 1| 1|    |"0-None" | 	 |   |   |     |      |    |    |"0-None,1-Mandatory"
+xmethserial   	|Serial Numbering Method		|varchar |   100|    0|radio  |	 1| 1|    |"1-Auto" |    |   |   |     |      |    |    |"0-Manual,1-Auto"
+xpostflag     	|GL Posting Flag                |varchar |   100|    0|text   |  1|20|    |   		|    |   |   |     |      |    |    |
+xmemtype      	|Member Type                    |varchar |   100|    0|text   |  1|30|    |   		|    |   |   |     |      |    |    |
+xsub_sp       	|Special Sub Account            |varchar |    50|    0|text   |  1|20|    |   		|    |   |   |     |      |    |    |list xsub_sp
+
+//Machine
+
+xmtrqnum      |Maintenance Service Order            |varchar |    100|    0|text  |  1|10|    |   |    |   |   |     |      |    |    |list xmtrqnum
+xwtype        |Type of Work                         |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |code Type of Work
+xmaintstat    |Maintenance Status                   |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Partial,Completed,New"
+xplant	   	  |Plant Name           				|varchar |   100|    0|text   	  |  1|40|    |   |    |   |   |     |      |    |    |list xplant
+xparea 	   	  |Plant Area           				|varchar |   100|    0|text   	  |  1|40|    |   |    |   |   |     |      |    |    |list xparea
+xassigntime	  |Assign Time       					|varchar |    20|    0|text   	  |  1|10|    |   |    |   |   |     |      |    |    |
+xfbtime    	  |Feedback Time        				|varchar |    20|    0|text   	  |  1|10|    |   |    |   |   |     |      |    |    |
+xctime     	  |Completion Time      				|varchar |    20|    0|text   	  |  1|10|    |   |    |   |   |     |      |    |    |
+xweekno       |Week of the Year                     |varchar |    100|    0|combo      |  1|2 |    |   |    |   |   |     |      |    |    |"select xweekno from cadate"
+xweeknodm     |Week  Dummy                          |varchar |    100|    0|combo      |  1|2 |    |   |    |   |   |     |      |    |    |"1st,2nd,3rd,4th"
+xmtype        |Machine Usage Area                   |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |code
+xmcatg        |Machine Category                     |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |code
+xsaction      |Service Action                       |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |
+xschtype      |Schedule Type                        |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |"Every Week,Every 2 Weeks,Every Alternate Week"
+xmthour       |Maintenance Hour                     |varchar |    100|    0|combo       |  1|20|    |   |    |   |   |     |      |    |    |code Hour
+xwkhour       |Hour                                 |varchar |    100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+xjobstat      |Status                               |varchar |    100|    0|combo      |  1|20|    |   |    |   |   |     |      |    |    |"Cancelled,Done,Not Done"
+xmtjob	      |Maintenance Job Number               |varchar |    100|    0|trn MT Voucher|1|10|   |   |    |   |   |     |      |    |    |list xmtjob
+xmtjobd	      |Maintenance Job Number Dummy         |varchar |    100|    0|text       |1|10|      |   |    |   |   |     |      |    |    |list xmtjob
+xdaysch       |Daily Schedule                       |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xfrtsch       |Fort-Nightly Schedule                |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xweksch       |Weekly Schedule                      |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xmonsch       |Monthly Schedule                     |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xqrtsch       |Quarterly Schedule                   |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xhyrsch       |Half Yearly Schedule                 |varchar |    100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xyrsch        |Yearly Schedule                      |varchar |   100|    0|radio      |  1|20|    |   |    |   |   |     |      |    |    |"Yes,No"
+xdayrow       |Row                                  |int     |    -1|    0|text       |  1| 4|    |   |    |   |   |     |      |    |    |
+xwekrow       |Row                                  |int     |    -1|    0|text       |  1| 4|    |   |    |   |   |     |      |    |    |
+
+xdesc01       |Description 1                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc02       |Description 2                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc03       |Description 3                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc04       |Description 4                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc05       |Description 5                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc06       |Description 6                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc07       |Description 7                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xdesc08       |Description 8                        |varchar |   100|    0|text       |  1|50|    |   |    |   |   |     |      |    |    |
+xictrnno      |Inter Company Trn No                 |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+dumzid        |Dummy Business Id                    |int     |    -1|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |list idlist
+xicacc        |Inter Company Account                |varchar |   100|    0|text       |  1|25|    |   |    |   |   |     |      |    |    |
+xicsub        |Inter Company Sub-Account            |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+xicdiv        |IC Division                          |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+xicsec        |IC Section                           |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+xicproj       |IC Project                           |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |
+xvmcode       |Vehicle Cost Code                    |varchar |   100|    0|text       |  1|20|    |   |    |   |   |     |      |    |    |//list xpocode
+xamount       |Payment Amount                       |decimal |    20|    2|text       |  1|20|    |   |    |   |   |     |      |    |    |

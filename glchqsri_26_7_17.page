@@ -1,0 +1,308 @@
+page glchqsri
+
+     caption header
+	 //depanded
+	 sidebar list cheqdet, create
+     sections form one,list open, script myscript
+
+    list cheqdet
+        caption "Cheque List Detail<p>~
+		<button class=bt onclick="submitCommand('TreatOrder','one');"  > Value Update</button>"
+        table glchquesr
+        order xfrslnum,xtoslnum,xcheque
+		fixed xfrslnum,xtoslnum
+        rows 10
+        objects xcheque,xsub,xpost,chkstat
+		//,xmemtype
+		
+		//attrib(link #servlet+"?page=glchquesr&command=Show&xfrslnum=?&xtoslnum=?&xcheque=?")
+		   
+		
+		field xcheque
+			caption Cheque No.
+		end field 
+		
+		field chkstat
+			caption Cheque Status
+			attrib local
+			display ocombo
+			pick "Damage,Canceled,Blank"
+			attrib flags xcheque
+		end field
+		
+		field xmemtype
+			caption Type
+		end field 
+		
+		field xsub
+			caption Bank Account
+		end field 
+     end list
+
+	 
+    list open
+        caption "Cheque List"
+        table glchqsri
+        order xfrslnum,xtoslnum 
+		setect "xpostflag=''"		
+        rows 10
+        objects xfrslnum ,xtoslnum attrib(link #servlet+"?page="+page+"&command=Show&xfrslnum=?&xtoslnum=?")
+		   
+		
+		field xfrslnum
+			caption From Cheque
+		end field 
+		
+		field xtoslnum
+			caption To Cheque
+		end field 
+     end list
+
+    list create
+        caption "Cheque List"
+        table glchqsri
+        order xfrslnum,xtoslnum  
+		setect "xpostflag<>''"
+        rows 10
+        objects xfrslnum ,xtoslnum attrib(link #servlet+"?page="+page+"&command=Show&xfrslnum=?&xtoslnum=?")
+		   
+		
+		field xfrslnum
+			caption From Cheque
+		end field 
+		
+		field xtoslnum
+			caption To Cheque
+		end field 
+     end list
+     
+    form one
+     	valid valid,access
+        table glchqsri
+        order xfrslnum,xtoslnum DESC
+        layout 1
+        objects ~
+               Show,Add,Clear, Update,Delete,Next,Create,~ //Detail,
+                xfrslnum,xtoslnum,xacc attrib(attach;submit),accdesc,xsub,subdesc,xpostflag,xmemtype,zemail,xemail
+                        
+		field xfrslnum
+			caption From Cheque
+			event after
+				set globals(xfrslnum)=xfrslnum
+			end event
+		end field 
+		
+		field xtoslnum
+			caption To Cheque
+			event after
+				set globals(xtoslnum)=xtoslnum
+			end event
+		end field 
+		
+		field xpostflag		
+			caption Status
+			display const
+			evenr after
+				set globals(xpostflag)=xpostflag
+			end event
+		end field 
+		
+		field xsub
+			attrib attach;submit
+			pick  list xsub
+			caption Bank Account
+			event after
+				set globals(xsub)=xsub
+			end event
+		end field
+		
+		field subdesc
+			display const
+			attrob local
+		end field 
+		
+		field accdesc
+			display const
+			attrob local
+		end field 
+		
+		field xmemtype
+			default "Payment"
+			display hide
+		end field 
+      
+        field zemail
+        	caption Entry by
+			display const
+        end field 
+
+		field xemail		
+			caption Updated by
+			display const
+		end field 
+		
+		field Add
+			event before
+				set globals(ErrChk)=""
+				
+				if globals(ErrChk) .ne. "1"
+					set postflag=glchqsri.xpostflag("zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum<='"+xtoslnum+"'")
+					if postflag .ne. ""
+						set globals(ErrChk)="1"
+						error "<font color=red size=+1>Already Created Cheque </font>"
+					end if 
+				end if 
+				set zemail=#user
+				set xemail=""
+			end event
+		end field
+
+		field Update
+			event before
+				set globals(ErrChk)=""
+				
+				if globals(ErrChk) .ne. "1"
+					set postflag=glchqsri.xpostflag("zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum<='"+xtoslnum+"'")
+					if postflag .ne. ""
+						set globals(ErrChk)="1"
+						error "<font color=red size=+1>Already Created Cheque </font>"
+					end if 
+				end if 
+				set xemail=#user
+			end event
+		end field
+
+		field Delete
+			event before
+				set globals(ErrChk)=""
+				
+				if globals(ErrChk) .ne. "1"
+					set postflag=glchqsri.xpostflag("zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum<='"+xtoslnum+"'")
+					if postflag .ne. ""
+						set globals(ErrChk)="1"
+						error "<font color=red size=+1>Already Created Cheque </font>"
+					end if 
+				end if 
+			end event
+		end field
+
+		field Create
+			event before
+				set globals(ErrChk)=""
+
+				if globals(ErrChk) .ne. "1"
+					//begin
+					set xqty = 0+xtoslnum-xfrslnum+1
+					set xtoslnum = 0+xfrslnum+xqty-1
+					int count=0
+					if xqty > 0
+						int count = 0
+						while count < xqty
+							set xcheque = xfrslnum+count
+							set count = 0+count+1
+							set myqry = "insert into glchquesr(ztime,zutime,zid,xfrslnum,xtoslnum,xcheque,xpostflag,~
+							xacc,xsub,xmemtype,xpost,zemail,xemail)"
+							set myqry = myqry + " values('"+#time+"','"+#time+"','"+#id+"','"+xfrslnum+"','"+xtoslnum+"','"+xcheque+"','',~
+							'"+xacc+"','"+xsub+"','"+xmemtype+"','','"+#user+"','')"
+							set tmpstr =#sql(myqry)	
+						end while	
+					end if
+
+					if globals(ErrChk) .ne. "1"
+						set mysql="update glchquesr set xpostflag='1' where zid='"+#id+"' and xfrslnum>='"+xfrslnum+"' and xtoslnum<='"+xtoslnum+"'"
+						set updsql=#sql(str,mysql)
+
+						set mysql="update glchqsri set xpostflag='1' where zid='"+#id+"' and xfrslnum>='"+xfrslnum+"' and xtoslnum<='"+xtoslnum+"'"
+						set updsql=#sql(str,mysql)
+						if #result .eq. "true"
+							print "<font color=blue size=4>Create Cheque Serial</font>"
+							//commit
+							action show
+						else 
+							//rollback
+						end if			
+					end if
+				end if								
+			end event
+		end field
+		
+
+        
+        embed onsubmit="submitit(this)"
+        field Details
+          embed onclick="clicked(this)"
+        end field
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        function clicked(b){
+
+          button=b.value
+        }
+        function submitit(form){
+          if (button=="Details"){
+            form.page.value = "pogdt"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+        }
+        </script>
+     end script
+
+     valid valid
+     	config
+			set header = "<font color=green size=4+>Cheque Entry</font><br>"
+			//set xacc="11.03.01.01"
+			set globals(xacc)=xacc
+			set subdesc=glsub.xdesc("zid='"+#id+"' and xacc='"+xacc+"' and xsub='"+xsub+"'")
+			set accdesc=glmst.xdesc("zid='"+#id+"' and xacc='"+xacc+"'")
+			
+			if xpostflag .ne. ""
+				set #field(Add.display)="disable"
+				set #field(Update.display)="disable"
+				set #field(Delete.display)="disable"
+				set #field(Create.display)="disable"
+				set #field(xsub.display)="const"
+			end if 
+     	end config
+		
+		before TreatOrder
+				set globals(ErrChk)=""
+				
+				if globals(ErrChk) .ne. "1"
+					str chcond="name .sw. "+#char(34)+"chkstat__"+#char(34)+"
+					int chns=#names("roword", chcond)
+					//set rowval = #eval("roword")
+					//print rowval
+					int j=0
+					while j < chns
+						str nam1=#eval("roword["+j+"]")
+						
+						int arritem=#sub(nam1,9,25)
+						//print nam1+" "+arritem
+						str value=#eval(nam1)					
+						//str arritem=#sub(nam1,10,20)
+						//str trnitem=#trim(#sub(arritem,0,4))				
+						//print value+" Row: "+xrow+" Proj "+xboqprjid
+						set chkpost = #sql("select xpost from  glchquesr where zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum='"+xtoslnum+"' and xcheque='"+arritem+"'")
+						if chkpost .ne. "Create Voucher"
+						if value .ne. ""
+						if value .ne. "Blank"
+						set updval = #sql("update glchquesr set xpost='"+value+"' where zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum='"+xtoslnum+"' and xcheque='"+arritem+"'")
+						else
+						set updval = #sql("update glchquesr set xpost='' where zid='"+#id+"' and xfrslnum='"+xfrslnum+"' and xtoslnum='"+xtoslnum+"' and xcheque='"+arritem+"'")
+						end if
+						end if
+						end if
+						set j=j+1
+					end while	
+				end if
+			end before
+     end valid
+     
+#include access.valid
+     
+end page

@@ -1,0 +1,15 @@
+page opserup
+     //caption header //"<font color=red>"+mode+"</font> Goods Receipt Note"
+	 caption "Upload DO Serial Number"
+
+     layout mylayout 1 1 1 //columns rows  tabrows
+       //group grn,cost_over,detail,cost_det,serial,docs,open, confirmed, sicreated,matched,bulk (1,1)
+	   group serup (1,1)
+       script myscript,myserscript (0,0)
+     end layout
+		 
+		
+		#include opserup.include
+		
+	
+end page

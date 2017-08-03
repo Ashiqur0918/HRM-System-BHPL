@@ -1,0 +1,192 @@
+
+  text mydummy
+    //"<table width=300px><tr><td>&nbsp;</td></tr></table>"
+	//"<table width=300px><tr><td>&nbsp;</td></tr></table>"
+	"<a href='"+#servlet+"?page=*data+imserup%2Cadd&option=UpLoad+Item+Serial>Save Serial</a>"
+	//http://localhost:8080/da/portal?page=*data+imserup%2Cadd&option=UpLoad+Item+Serial
+  end text	
+  
+  valid serupvalid
+	config
+		set globals(xnameonly) = xnameonly
+		if globals(xwh) .eq. ""
+			set globals(xwh) = cadef.xwh()
+		end if
+		print globals(xnameonly)+" File name"+" WH: "+globals(xwh)
+		set xupload = "<a href='"+#servlet+"?page=*data+imserup%2Cadd&option=UpLoad+Item+Serial&mynumin="+globals(xnumin)+"&mytin="+globals(xtypein)+"&myrowin="+globals(xrowin)+"&myfile="+globals(xnameonly)+"' class='bt' target='New'>Save Serial</a>"
+	end config
+  end valid
+ 		dependent	
+	form serup
+		valid serupvalid
+        layout 3
+				caption "Serial Upload"
+				objects *Upload,xupload,~
+				xfile,xfolder ,xlink width(40),xnameonly display(hide)
+				
+        field xfile
+					embed onblur=setLink()
+					event before
+						//print xfile+" file"
+					end event
+        
+        end field
+		
+		field xupload
+		caption 
+			attrib local;command
+			display const
+		end field 
+		
+		field xnameonly
+			event after
+				if globals(xnameonly) .eq. ""
+					set globals(xnameonly) = xnameonly
+				end if
+				print globals(xnameonly)
+			end event
+		end field
+
+				field xfolder
+					
+					visibility hide
+					caption Default Folder
+					//default "docs/"+#dir(#id)+"/"
+					//default "WEB-INF"+#sep+"data"+#sep+"x"+#id+#sep
+					default "WEB-INF"+#sep+"data"+#sep//+"x"+#id+#sep
+				end field 
+				
+				
+				field xlink
+					visibility hide
+          caption Destination
+					event after
+						set #fields(xfolder.visibility)="hide"
+						//print xlink
+					end event
+				end field
+				
+				
+				
+		field *Upload
+          //embed onclick="clicked(this);"
+          event after
+            int i=#lastindex(xlink,".zip")
+            int len=#len(xlink)
+            comp i=len-i-4
+            if i == 0
+              str res=#unzip(xlink)
+              set #smsg(0)=#smsg(0) + " <span class=bl>and "+res+"</span>"
+            end if
+          end event     
+			
+            embed onclick="setLink();uploadMessage(this); "
+		end field
+		
+			field Save_Serial
+				event before
+					//set myfile = globals(xnameonly)
+					//set mytypein = "Goods Receipt Note"
+					//set mynumin = xgrnnum
+					//format "imser_load", "load"  
+					//print myfile+" ; "+mytypein+" ; "+mynumin
+					set mypath = "WEB-INF"+#sep+"data"+#sep
+					//string log=#db(mode,"false",xname+".data",#id)
+					string log=#db("Load Tables","imserbat",#id,mypath+"IMEI With Box No.csv")
+					print mypath+" "+log
+				end event
+			end field
+
+
+        embed onsubmit="return submitit(this);"
+        //embed onsubmit="submitit(this);"
+				
+			end form
+
+     script myserscript
+        <script LANGUAGE="JavaScript" SRC="html/jquery/jquery-1.2.1.js"></script>
+
+        <script language="javascript" type="text/javascript">
+function uploadMessage(btn){
+    var val=btn.form.xfile.value;
+    val=val.toLowerCase();
+    var len=val.length;
+    var zip=val.lastIndexOf(".zip");
+    zip = len-zip-4;
+    var data=val.lastIndexOf(".data");
+    data = len-data-5;
+    var txt=val.lastIndexOf(".txt");
+    txt = len-txt-4;
+    var csv=val.lastIndexOf(".csv");
+    csv = len-csv-4;
+	var xls=val.lastIndexOf(".xls");
+    xls = len-xls-4;
+	var xlsx=val.lastIndexOf(".xlsx");
+    xlsx = len-xlsx-5;
+
+    if ((zip != 0 )&&(data !=0)&&(txt !=0)&&(xls !=0)&&(xlsx !=0)&&(csv !=0)){
+      alert("Filename must end with .data, .txt, .csv or .zip or xls or xlsx!")
+      return false;
+    }
+    document.getElementsByName('$message$message$')[0].innerText="Please Wait -- Uploading ...";
+    btn.form.searchbutton.value=btn.value;
+    btn.disabled=true;
+    
+    btn.form.submit();
+    return true;
+}
+        
+        //*************
+        var button
+				var filename
+				var i
+				var j
+        function clicked(b){
+          button=b.value
+//alert("clicked"+button);
+        }
+        function setLink(){
+					filename=getName(document.serup.xfile.value)
+					document.serup.xlink.value=document.serup.xfolder.value+filename
+					document.serup.xnameonly.value=filename
+          var index=0;
+          var index=filename.indexOf(".zip");
+          //alert(index);
+          $('input').each(function(n){
+          });
+          
+        }
+
+				function getName(fn){
+          i=fn.lastIndexOf("\\");
+          j=fn.length
+					
+					fn = fn.substring(i+1,j)
+					return fn;
+				}
+        function submitit(form){
+          if (button=="Upload"){
+            button="";
+						var f=form.xfile.value
+						var l=form.xlink.value
+            var i=f.lastIndexOf('.')
+						f=f.substring(i,f.length)
+            var i=l.lastIndexOf(".")
+						l=l.substring(i,l.length)
+            alert("link="+l);
+						if (f.toLowerCase()==l.toLowerCase()){
+							return true;
+						}else{
+							alert("The file extensions for source("+f+") and destination("+l+") does not match. Correct and try again.");
+							return false;
+						}
+						return false
+          }else{
+						button="";
+					}
+          return true;
+        }
+
+        </script>
+     end script
+

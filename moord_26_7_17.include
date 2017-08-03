@@ -1,0 +1,486 @@
+
+
+     group order 2 1 "Order" //columns rows caption select
+       form order (1, 1)//(col,row,colspan,rowspan,width,height)
+	   //list details (2,1)
+       keys "Find xmornum=?"
+	   //keys "Top"
+     end group	
+
+
+
+
+     form order
+		 valid valmoord
+
+
+        table moord
+        order xmornum DESC
+
+        
+        layout 4
+        //objects Clear,Show,Add, Update, Delete, Top, Previous, Next, Bottom,History,*Search,Undo,Explode,Release,Kit,Complete,~//Current Stock,SerialNumbers,~
+		objects Clear,Show,Add, Update, Delete, Top, Previous, Next, Bottom,Undo,Explode,Release,Kit,Complete,~//Current Stock,SerialNumbers,~
+               xmornum display(trn Manufacturing Order) attrib(search),~
+		  xschjob ,xdate,~          
+          xbomkey,xsizelot,~
+          xdiv,xsec,xproj,xwh,xwhcomp,xsup display(hide),~
+          xdatereq display(const),xdatesch display(hide),xdatebom display(const),xdaterel display(const),xdatekit display(const),xdatecom display(const),xdateund display(const),~
+          xstatusmor,xvoucher,xcus display(hide),xorg display(hide),xcur display(const),xexch display(const),~
+					xorddet display(hide),~
+					*block 7 notag,~
+					xloc,xteam,xmember ,xmanager display(const),xmsordnum display(const),xordernum display(const),xroword display(const),~
+					*endblock
+
+field xbomkey
+	pick "select xbomkey from bmkey where zactive = '1' and xbomusage = 'Production'"
+end field
+
+field xloc
+	caption Serial Type
+	display ocombo
+	pick "From Components,Random,No Serial,Manual"
+	event after
+		set globals(xloc)=xloc
+	end event
+end field
+
+field xvoucher
+	attrib local
+	display const
+	caption Voucher
+	event after
+	set xvoucher=glheader.xvoucher(" xdoctype='Manufacturing Order' and xdocnum='"+xmornum+"'")
+	set voudet = 0+#sql("select count(xrowvou) from gldetail where xvoucher='"+xvoucher+"'")
+	if xvoucher .ne. "" 
+		if voudet <=0
+			set xvoucher = xvoucher+" (Undo)"
+		else
+			set xvoucher="<a href='"+#servlet+"?page=gltrn&xvoucher="+xvoucher+"&command=Show&embeddedpage=1' target='Voucher' >"+xvoucher+"</a>"
+		end if
+	end if
+	end event
+end field
+
+        field xmornum
+		//col 3
+         event after
+			set globals(xmornum) = xmornum
+			//set mostat = #sql("")
+			
+			
+         end event
+        end field
+		
+        field Add
+          event before
+            set xcur=#cur
+            set xexch=1
+            set xdate=#date
+	    if xdatedue .lt. xdate
+               set xdatedue = xdate
+            end if
+            //set xstatusmor=#status("xstatusmor",1)
+            set xmember = #user
+            set xteam = #sql(string,"select xteam from cateam where xmember = '"+xmember+"'")
+            set xmanager = #sql(string,"select xmanager from caman where xteam = '"+xteam+"'")
+            //set xsource=#user
+          end event
+        end field
+		
+        field Update
+          event before
+            if xstatusmor .eq. #status("xstatusmor",5)
+              error "Completed Cant not Change"
+            end if
+            set xmanager = #sql(string,"select xmanager from caman where xteam = '"+xteam+"'")
+
+					end event
+        end field
+        embed onsubmit="return submitit(this)"
+
+
+        field Current
+          event before
+            class mo(stock)
+          end event
+        end field
+
+        field History
+          embed onclick="clicked(this)"
+
+        end field
+
+        field *Search
+          embed onclick="clicked(this)"
+
+        end field
+
+        field xstatusmor
+          display constant
+		  attrib local
+          event after
+			//set xstatusmor = moordview.xstatusmor(xmornum)
+			set xstatusmor = #sql("select xstatusmor from moordview where zid='"+#id+"' and xmornum='"+xmornum+"'")
+			set globals(xstatusmor) =xstatusmor
+			//print xstatusmor+" status"
+          end event
+        end field
+
+
+  field Undo
+    event before
+
+	  if xstatusmor .ct. "Completed"
+					set xtypein="Manufacturing Order"
+					set xnumin=xmornum
+					call caautoserial_undo
+		
+		
+		set xvoucher=glheader.xvoucher(" xdoctype='Manufacturing Order' and xdocnum='"+xmornum+"'")
+		call glundo
+		set updcom =#sql("update moout set xqtycom=0 where xmornum='"+xmornum+"'")
+	  elseif xstatusmor .ct. "Kitted"
+		set updkit =#sql("update moodt set xqtykit=0 where xmornum='"+xmornum+"'")
+	  elseif xstatusmor .ct. "Released"
+		set updkit =#sql("update moodt set xqtyrel=0 where xmornum='"+xmornum+"'")
+	  elseif xstatusmor .ct. "Exploded"
+		set delin = #sql("delete from moodt where xmornum='"+xmornum+"' and xflag='Exploded'")
+		set delin = #sql("delete from moout where xmornum='"+xmornum+"' and xflag='Exploded'")
+	  end if
+
+	  
+	  set upddate = #sql("update moord set xdateund = '"+#date+"'")
+	  set #command = "Show"
+    end event
+  end field
+  
+  field Explode
+	event before
+			call moexplode
+			
+	end event
+  end field
+  
+  field Release
+	event before
+		call morelease
+	end event
+  end field
+  
+  field Kit
+	event before
+		
+		//print "Event before"
+		//set updkit = #sql("update moodt set xqtyrel=xqtyreq where zid='"+#id+"' and xmornum='"+xmornum+"'")
+		set xrowmor = 0
+		set mysql  = "select xrowmor from moodt where xmornum='"+xmornum+"' and xrowmor>'"+xrowmor+"' order by xrowmor"
+		set xrowmor = 0+#sql(mysql)
+		while xrowmor>0
+			//print xrowmor
+			//set xitem  = #sql("select xitem from moodt where xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")			
+			//set xitemext  = #sql("select xitemext from moodt where xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")
+			//set xwh  = #sql("select xwh from moodt where xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")
+			//set xqtyrel  = #sql("select xqtyrel from moodt where xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")
+			//set nowqtykit  = #sql("select xqtykit from moodt where xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")
+			buffer moodt=moodt(xmornum,xrowmor)
+			set xitem=moodt.xitem
+			set xitemext=moodt.xitemext
+			set xwh=moodt.xwh
+			set xqtyrel=moodt.xqtyrel
+			set xbatch=moodt.xbatch
+
+			set nowqtykit=moodt.xqtykit
+			
+			
+			
+			//set myqry = "select xavail from imstk where xitem='"+xitem+"' and xitemext='"+xitemext+"' and xwh='"+xwh+"'"
+			set myqry="select sum(xavail) from imbatv where xitem='"+xitem+"' and xitemext='"+xitemext+"' and xwh='"+xwh+"' and xbatch='"+xbatch+"'"
+			set xavail = 0+#sql(myqry)
+			//print myqry+"<br>"+xavail
+			if xavail>=xqtyrel
+				set xqtykit=0.0+xqtyrel
+			else
+				set xqtykit=0.0+xavail
+			end if
+			//print xqtykit
+			if xqtyrel>nowqtykit
+				set updkit = #sql("update moodt set xqtykit='"+xqtykit+"' where zid='"+#id+"' and xmornum='"+xmornum+"' and xrowmor='"+xrowmor+"'")
+			end if
+			
+			set mysql  = "select xrowmor from moodt where xmornum='"+xmornum+"' and xrowmor>'"+xrowmor+"' order by xrowmor"
+			set xrowmor = 0+#sql(mysql)
+			
+		end while
+		set upddate = #sql("update moord set xdatekit='"+#date+"' where zid='"+#id+"' and xmornum='"+xmornum+"'")
+		//print upddate
+	end event
+  end field
+  
+  field Complete
+	event before
+		set updcom = #sql("update moout set xqtycom=xqtyprd where zid='"+#id+"' and xmornum='"+xmornum+"'")
+		set totcompcost = 0.0+#sql("select sum(xstdcost) from moodt where xmornum='"+xmornum+"'")
+		set totoutcost = 0.0+#sql("select sum(xstdcost) from moout where xmornum='"+xmornum+"'")
+		set perunitcost = 0.0+totcompcost/totoutcost
+		set xrowout = 0
+		set mysql = "select xrowout from moout where xmornum='"+xmornum+"' and xrowout>'"+xrowout+"'"
+		set xrowout = #sql(mysql)
+		while xrowout>0
+			set thisrowcost  = 0.0+#sql("select xstdcost from moout where xmornum='"+xmornum+"' and xrowout='"+xrowout+"'")
+			set costrow = 0.0+perunitcost*thisrowcost
+			set updcost = #sql("update moout set xcost='"+costrow+"' where zid='"+#id+"' and xmornum='"+xmornum+"' and xrowout='"+xrowout+"'")
+			//print costrow+" cost row"
+			set mysql = "select xrowout from moout where xmornum='"+xmornum+"' and xrowout>'"+xrowout+"'"
+			set xrowout = #sql(mysql)
+		end while
+		call moconfirm
+	end event
+  end field
+
+        field Details
+          embed onclick="clicked(this)"
+        end field
+        field SerialNumbers
+          embed onclick="clicked(this)"
+        end field
+
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        var result
+        function clicked(b){
+          button=b.value
+        }
+        function submitit(form){
+          result = true
+          if (button=="Details"){
+            form.page.value = "moodt"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+          if (button=="SerialNumbers"){
+            form.page.value = "imserin"
+            form.searchbutton.value = "Top"
+            //return false
+          }
+          if (button=="History"){
+            var link = #servlet+"?page=mohistorymor&menu=*none*&xmornum="+form.xmornum_ONE.value+form.xmornum_TWO.value
+
+            var width = 600
+            var left = 600
+            if (screen){
+              left = screen.width-width
+            }
+            //var param = ""
+            var param = "toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,center=0,alwaysRaised=yes,resizable=yes,width="+width+",top=0,left="+left
+            //alert(param)
+            window.open(link,"History",param)
+            result = false
+          }
+
+            if (button=="Search"){
+              var link = #servlet+"?page=mosearchmor&menu=*none*&zvalue="+form.zvalue.value
+
+              var width = 700
+              var left = 600
+              if (screen){
+                left = screen.width-width
+              }
+              var param = "toolbar=0,location=0,directories=0,status=0,menubar=0,scrollbars=1,center=0,alwaysRaised=yes,resizable=yes,width="+width+",top=0,left="+left
+              window.open(link,"Search",param)
+              result = false
+            }
+
+
+
+
+
+          button = ''
+          return result
+
+        }
+
+        </script>
+     end script
+
+		 method update_bo
+
+		 	str orddet=xorddet
+			set xroword=xroword
+//Print "orddet="+orddet
+
+			if orddet .eq. "enodt"
+                  buffer enodt
+                  move enodt=enodt(xordernum,xroword)
+                  if #result .eq. "true"
+										double newqty=xqtyprd-xqtycom
+										if enodt.xcfsel <= 0
+											set enodt.xcfsel=1.0
+										end if
+										comp newqty=newqty/enodt.xcfsel
+										set enodt.xqtyalc=enodt.xqtyalc+newqty
+										if #result .eq. "true"
+                    	update enodt(xordernum,xroword)
+										end if
+									end if
+			else
+                  buffer opodt
+                  move opodt=opodt(xordernum,xroword)
+                  if #result .eq. "true"
+	                  double newqty=xqtyprd-xqtycom
+										if opodt.xcfsel <= 0
+											set opodt.xcfsel=1.0
+										end if
+										comp newqty=newqty/opodt.xcfsel
+										set opodt.xqtyalc=opodt.xqtyalc+newqty
+										if #result .eq. "true"
+                    	update opodt(xordernum,xroword)
+										end if
+									end if
+			end if									
+		 
+		 
+		 end method
+
+		 valid valmoord
+		 //print "valid"
+		 	mandatory Add,Update,Explode,Release,Kit,Complete;xitem,xbomkey,xsizelot,xwhcomp
+			
+			
+				//Add,Update,Explode,Release,Kit,Complete
+				//str temp=caitem.xitem(xitem)
+				//vtest temp .eq. xitem
+				//vmsg xitem,"Wrong "+#fields(xitem.caption)+" "+xitem
+				//set temp=bmkey.xbomkey(xbomkey)
+				//vtest temp .eq. xbomkey
+				//vmsg xbomkey,"Wrong "+#fields(xbomkey.caption)+" "+xbomkey
+				//set temp=xcodes.xcode(" xtype='Warehouse' and xcode='"+xwhcomp+"' ")
+				//vtest temp .eq. xwhcomp
+				//vmsg xwhcomp,"Wrong "+#fields(xwhcomp.caption)+" "+xwhcomp
+			preconfig
+				//print "ghfhgf"
+			end preconfig			
+			
+		config
+			//print "sdfjskldf"
+          set globals(xmornum)=xmornum
+          set globals(xstate)=#sub(xmornum,0,4)
+            if xmornum .eq. ""
+              set #field(Explode.display) = "hidden"
+              set #field(Release.display) = "hidden"
+              set #field(Kit.display) = "hidden"
+              set #field(Complete.display) = "hidden"
+
+              set #field(Delete.display) = "hidden"
+              set #field(Update.display) = "hidden"
+              //set #field(Show.display) = "hidden"
+            end if
+         set xdesc=caitem.xdesc("xitem='"+xitem+"'")
+
+//--for serial number
+            set tempserial=caitem.xtypeserial("xitem='"+xitem+"'")
+            if tempserial .sw. "1" .or.  tempserial .sw. "3"
+            else
+              set #field(SerialNumbers.display)="disabled"
+            end if
+						
+//-end of serial number
+            //if xstatusmor .eq. #status("xstatusmor",4) .or. xstatusmor .eq. #status("xstatusmor",7)
+              //call checkserial
+            //end if
+            if xstatusmor .ct. "Completed"
+				set #field(Release.display) = "disable"
+                set #field(Kit.display) = "disable"              
+                set #field(Explode.display) = "disable"
+				set #field(Complete.display) = "disable"
+            elseif xstatusmor .ct. "Partially Kitted"
+				set #field(Release.display) = "disable"
+                set #field(Explode.display) = "disable"
+				set #field(Complete.display) = "disable"
+            elseif xstatusmor .ct. "Kitted"
+				set #field(Release.display) = "disable"
+                set #field(Explode.display) = "disable"
+				set #field(Kit.display) = "disable"
+            elseif xstatusmor .ct. "Released"
+				set #field(Release.display) = "disable"
+                set #field(Explode.display) = "disable"
+				set #field(Complete.display) = "disable"
+            elseif xstatusmor .ct. "Exploded"
+                set #field(Kit.display) = "disable"              
+                set #field(Explode.display) = "disable"
+				set #field(Complete.display) = "disable"
+            elseif xstatusmor .ct. "Open"
+                set #field(Kit.display) = "disable"              
+				set #field(Complete.display) = "disable"
+				set #field(Undo.display) = "disable"
+			else
+				set #field(Release.display) = "disable"
+                set #field(Kit.display) = "disable"              
+				set #field(Complete.display) = "disable"
+			end if
+			
+			call getheader
+			
+			end config
+		 end valid
+		 
+		 method checkserial
+     		//FG-Receipt
+            set tempserial=caitem.xtypeserial("xitem='"+xitem+"'")
+            if tempserial .sw. "1" .or.  tempserial .sw. "3"
+              set tempcount=#sql(double,"select count(xserialnum) from imser where xtypein='Manufacturing Order' and xnumin='"+xmornum+"'")
+              set qtyprd=#sql(double,"select xqtyprd from moord where xmornum='"+xmornum+"'")
+              double xtempcount=0.00+tempcount
+              double xqtyprd=0.00+qtyprd
+console "xtempcount="+xtempcount+"*"+xqtyprd
+              if xtempcount<>xqtyprd
+                set tempstr=#sql(int,"update moord set xstatusmor='"+#status("xstatusmor",7)+"' where xmornum='"+xmornum+"'")
+                set xstatusmor=#status("xstatusmor",7)
+              else if xstatusmor .eq. #status("xstatusmor",7)
+                set xstatusmor=#status("xstatusmor",4)
+								set tempstr=#sql(int,"update moord set xstatusmor='"+#status("xstatusmor",4)+"' where xmornum='"+xmornum+"'")
+              end if
+            end if
+						
+		 		//Components-Issue
+		 		int row = 0	
+				set row=#sql(int,"select xrowmor from moodt where zid="+#id+" and xmornum='"+xmornum+"' and xrowmor > "+row+" ~
+				                  and (select xtypeserial from caitem where zid=moodt.zid and xitem=moodt.xitem) like '1%'")
+				while row>0
+              set tempcount=#sql(double,"select count(xserialnum) from imser where xtypeout='Manufacturing Order' and xnumout='"+xmornum+"' and xrowout='"+row+"'")
+              set qtyreq=#sql(double,"select xqtyreq from moodt where xmornum='"+xmornum+"' and xrowmor='"+row+"'")
+              double xtempcount=0.00+tempcount
+              double xqtyreq=0.00+qtyreq
+//console "xtempcount="+xtempcount+"*"+xqtyreq
+              if xtempcount<>xqtyreq
+                set tempstr=#sql(int,"update moord set xstatusmor='"+#status("xstatusmor",7)+"' where xmornum='"+xmornum+"'")
+                set tempstr=#sql(int,"update moodt set xstatusmdt='"+#status("xstatusmor",7)+"' where xmornum='"+xmornum+"' and xrowmor='"+row+"'")
+                set xstatusmor=#status("xstatusmor",7)
+              else if xstatusmor .eq. #status("xstatusmor",7)
+                set xstatusmor=#status("xstatusmor",4)
+								set tempstr=#sql(int,"update moord set xstatusmor='"+#status("xstatusmor",4)+"' where xmornum='"+xmornum+"'")
+                set tempstr=#sql(int,"update moodt set xstatusmdt='"+#status("xstatusmor",4)+"' where xmornum='"+xmornum+"' and xrowmor='"+row+"'")
+              end if
+						
+						set row=#sql(int,"select xrowmor from moodt where zid="+#id+" and xmornum='"+xmornum+"' and xrowmor > "+row+" ~
+				                  and (select xtypeserial from caitem where zid=moodt.zid and xitem=moodt.xitem) like '1%'")
+
+					end while
+						
+		 
+		 end method		 
+
+method getheader
+	if xmornum .eq. ""
+		set header="Manufacturing Order"
+	else
+		set header="Manufacturing Order: ~
+                <a href='"+#report(moord.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xmornum+"&prompt2="+xmornum+"' target='_new'>"+xmornum+"</a>" ~
+				+"<font color=green> "+globals(xstatusmor)+"</font>"
+	end if
+	set globals(header)=header
+end method

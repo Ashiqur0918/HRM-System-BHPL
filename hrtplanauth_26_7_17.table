@@ -1,0 +1,12 @@
+product ERP on the Net
+
+table hrtplanauth
+  caption "Travel Planning Authority"
+  columns ztime,zutime,zid,xrow,xempnum,xemail,xcontext display(text),xaction display(text),zemail
+
+
+  primary key zid, xemail,xempnum,xcontext,xaction
+  foreign key
+        zid references zbusiness.zid
+  end foreign key
+end table

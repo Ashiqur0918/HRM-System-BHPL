@@ -1,0 +1,54 @@
+page hrtplanauth
+	
+	caption "Travel Planning Authority"
+	//sidebar list kuddus
+	section form travel,list kuddus
+	
+	form travel
+		table hrtplanauth
+		order xempnum
+		objects xrow,xempnum,xemail,xcontext display(text),xaction display(text),zemail display(cons),Show,Add,Update,Delete,Clear
+		
+		field xemail
+			inherits zemail	
+			caption "Authority"
+		end field
+		//
+		field zemail
+			caption "Added By"
+			event before
+				set zemail=#user
+			end event
+		end field
+		
+		field xrow
+			event before
+				set xrow=#sql("select count(*)*10 from hrtplanauth")
+			end event
+		end field
+		
+		field xcontext
+			caption "Screen"
+			display combo
+			pick "Plan,Apply,Bill"
+		end field
+		//
+		field xaction
+			caption "Action"
+			display combo
+			pick "Recommend,Approve,Bill_Recommend,Bill_Approve"
+		end field
+		
+	end form
+	
+	list kuddus
+		
+		caption "Details kuddus"
+		table hrtplanauth
+		//order xempnum,xrow
+		objects xrow,xemail
+		
+	end list
+	
+	
+end page

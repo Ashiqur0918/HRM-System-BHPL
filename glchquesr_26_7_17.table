@@ -1,0 +1,15 @@
+product ERPonTheNet
+
+table glchquesr
+
+  caption "Cheque Serial "
+  columns ztime,zutime,zid,xfrslnum,xtoslnum,xcheque,xpostflag,xacc,xsub,xmemtype,xpost,zemail,xemail
+
+  primary key zid,xfrslnum,xtoslnum,xcheque
+  
+  foreign key
+        zid references zbusiness.zid
+		zid,xfrslnum,xtoslnum references glchqsri.zid,xfrslnum,xtoslnum
+  end foreign key
+
+end table

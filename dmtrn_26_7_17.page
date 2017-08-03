@@ -1,0 +1,252 @@
+page dmtrn
+    caption header
+	
+     layout mylayout 1 1 1 //columns rows  tabrows
+       group details,ceomsg,plan,pdocs,dwdocs (1,1)
+       script myscript (0,0)
+     end layout
+	 
+	 group plan 2 1 "BHL Documents Entry" //columns rows caption select
+       form plan,list hdocs  (1, 1)//(col,row,colspan,rowspan,width,height)
+			 list det (2, 1)
+       keys "Find xtrnleave=?"
+     end group
+	 
+	#include dmpdocs.include
+	#include dmdwdocs.include
+	 
+	 group details 2 2 "Vision & Mission" //columns rows caption select
+       form details,text expd1,hrmst  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   //text expd,hrmst (2, 1)
+	   //text hrmst 
+     end group
+	 
+	 group ceomsg 2 2 "CEO's Message" //columns rows caption select
+       form ceomsg,text expd2,hrmst  (1, 1)//(col,row,colspan,rowspan,width,height)
+	   //text expd,hrmst (2, 1)
+	   //text hrmst 
+     end group
+	 
+	 
+	 valid mydetval
+		config
+			set mytext1 = #load("WEB-INF/custom/honda/honda_vision.text")
+			set mytext2 = #load("WEB-INF/custom/honda/honda_ceo_msg.text")
+		end config
+	 
+	 end valid
+	 
+	
+	 form details
+		valid mydetval
+		caption "Vision & Mission"
+		objects Refresh
+	 end form
+	 
+	 form ceomsg
+		valid mydetval
+		caption "CEO's Message"
+		objects Refresh
+	 end form
+	 
+	 
+	//sidebar list det
+	//sections form one, list entry, script myscript, text top
+
+	//text hrmst
+	//	"<a href='baany.html'>Honda</a>"
+	//	//"<img border=0 src='"+xlink+"' height='100' width='100'>"
+	//end text
+	
+	text expd1 
+	""+mytext1+""
+    end text
+	
+	text expd2
+  ""+mytext2+""
+	end text         
+			 
+    list hdocs
+	caption "Document Entries"
+	table dmtrn
+	order xtrnleave,xdate
+	//fixed xtrnleave
+	objects xdate,xtrnleave attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xtrnleave=?&xdate=?"),xstatusleave,xrecommendedby,xapprovedby
+			field xtrnleave
+				caption Document Entry No
+				display text
+			end field
+			field xstatusleave
+				caption Document Status
+				display const
+			end field
+			
+			field xrecommendedby
+				caption Document Created By
+				display const
+			end field
+			
+			field xapprovedby
+				caption Document Published By
+				display const
+			end field
+	
+	end list
+
+    form plan
+		//command clear
+		caption "BHL Documents Entry"
+		valid valid
+        table dmtrn
+        order xtrnleave
+        layout 1
+        objects Show,Add,Update,Clear, Top, Previous, Next, Bottom,Delete,Publish,Undo,~
+				xdate,xempnum display(hide),xcodeleave display(hide),xtrnleave,xpurpose,xnote,xstatusleave,~
+    xrecommendedby,xapprovedby,xcancelreqby display(hide),xcancelledby display(hide),xposted display(hide),xcarried display(hide)
+				
+			field xtrnleave
+				caption Document Entry No
+				display text
+			end field
+        
+		
+			field xstatusleave
+				caption Document Status
+				display const
+			end field
+			
+			field xrecommendedby
+				caption Document Created By
+				display const
+			end field
+			
+			field xapprovedby
+				caption Document Published By
+				display const
+			end field
+			
+			field Add
+				event before
+				set xrecommendedby=#user
+				set xstatusleave="Open"
+				//set xapprovedby=#user
+				end event
+			end field
+			field Publish
+				event before
+				set xstatusleave="Published"
+				set xapprovedby=#user
+				action Update
+				end event
+			end field
+			field Undo
+				event before
+				set xstatusleave="Open"
+				action Update
+				end event
+			end field
+			field Delete
+				event before
+				set xtypetrn="DM"
+				set xtrnnum=xtrnleave
+				set mytrn=cadocs.xtrnnum(xtypetrn,xtrnnum)
+				//print mytrn
+				if mytrn .eq. xtrnnum
+				error "Documents are tagged with this Documents Entry Number"
+				end if
+				end event
+			end field
+   end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var but= ""
+        function clicked(b){
+          but="clicked"
+        }
+
+        function exp(b){
+           but ="exp"
+        }
+
+        function ref(b){
+          but = "ref"
+        }
+
+        function docs(b){
+          but = "docs"
+        }
+
+        function submitit(form){
+          if (but=="clicked"){
+            form.page.value = "hrplandt"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="exp"){
+            form.page.value = "hrworkcv"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="ref"){
+            form.page.value = "hrrefcv"
+            form.searchbutton.value = "Top"
+          }else{
+          if (but=="docs"){
+            form.page.value = "xdocs"
+            form.searchbutton.value = "Top"
+          }
+          }
+         }
+         }
+         }
+
+        </script>
+     end script
+	valid valid
+	
+	//before Recommend
+	//	set xflagpos = "Recommended"
+	//	action Update
+	//end before
+	before Publish
+		set xflagpos = "Published"
+		action Update
+	end before
+	
+	
+		mendatory xv101
+		config
+			set globals(xoemordnum)=xoemordnum			
+
+			set header = "<font color=green size=4+>Document Management</font><br>"
+			//set header=header+"<br><a href='"+#report(hrmanpowerplan.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xdept+"&prompt2="+xnewdept+"' target='_new'>Print</a>"
+			set dtv103=0.0+#sql("select sum(xv103) from hrplandt where zid='"+#id+"' and xwmjobnum='"+xwmjobnum+"' ")
+			//print xv103
+			set no_emp=0.0+dtv103/xv101
+			set no_emp=#round(no_emp,0)
+			
+			
+			if xflagpos .eq. "Recommended"
+				set #field(Recommend.display)="disable"
+			end if
+			if xflagpos .eq. "Open"
+				set #field(Approve.display)="disable"
+			end if
+			//print xstatusleave
+			if xstatusleave	.eq. "Published"
+				//set #field(Recommend.display)="disable"
+				set #field(Publish.display)="disable"
+				set #field(Add.display)="disable"
+				set #field(Update.display)="disable"
+				set #field(Delete.display)="disable"
+
+			end if
+			//set globals(xtrnleave)=xtrnleave
+			//set globals(xtypetrn)="DM"
+			set globals(xtrnnum)=xtrnleave
+			//set globals(xdocrow)=0
+			
+		end config
+	end valid
+     
+end page

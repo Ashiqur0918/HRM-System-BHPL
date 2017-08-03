@@ -1,0 +1,61 @@
+
+     group dwdocs 2 1 "Downloadable Forms"
+       list dwdocs,form dwdocs,text cauploaddoc,text docs  (1, 1)//(col,row,colspan,rowspan,width,height)
+       //access " xordernum .ne. "+#char(34)+#char(34)
+       //access " xtypetrn .ne. "+#char(34)+#char(34)+" .and. xtrnnum .ne. "+#char(34)+#char(34)
+	   
+     end group
+
+
+text docs
+  "<iframe src='"+xlink+"' height='600' width='950' ></iframe>"
+
+end text
+  list dwdocs
+        caption "<table align=center ><tr><td class=bl>Docs for "+xtypetrn+"<span class=br > "+xtrnnum+"</span> -- Click to View</td></tr></table>"
+        table cadocs
+		//table (select * from cadocs where xtypetrn='DMDF' order by xtypetrn,xtrnnum,xdoc) tbl
+		headers ""
+		columns 10
+        order xtypetrn,xtrnnum,xdoc
+        fixed xtypetrn,xtrnnum
+        rows 50
+        objects  xdoc  attrib(link #servlet+"?page="+page+"&nexttab="+nexttab+"&command=Show&xtypetrn=?&xtrnnum=?&xdoc=?"), ~
+                xlink attrib(hide)
+        //totals "","Totals","","","","",sum,sum
+        //headers none
+     end list
+     valid validdwdocs
+      preconfig
+		set globals(xtypetrn)="DMDF"
+		//set xtrnnum=globals(xtrnleave)
+	 
+	  end preconfig
+	  
+	  
+	  config
+		set globals(xtypetrn)="DMDF"
+		//set xtrnnum=globals(xtrnleave)
+		print xtrnnum+globals(xtypetrn)
+      end config
+     
+     end valid
+     form dwdocs
+        caption "Downloadable Forms"
+        command Top
+        valid validdwdocs
+        table cadocs
+        order xtypetrn,xtrnnum,xdoc
+		//select (xtypetrn='DMDF')
+        fixed xtypetrn,xtrnnum
+        layout 3
+        objects ~
+                ~
+                Clear,Refresh,Delete,~
+                xdoc width(20) visibility(hide),zactive visibility(hide),~
+                xlink width(50) visibility(hide)
+        
+        
+        
+     end form
+     

@@ -1,0 +1,41 @@
+format opserup
+  file myfile
+  //file serial.csv
+  table imsertemp
+  //dataformat "xlsx"
+  fdelimiter ,
+  rdelimiter \r\n
+  skip 1
+
+
+
+  columns xitem,xitemext,xserialnum
+	
+  event before
+	//print "Format called: "+" "+myfile
+	set imsertemp.zid = #id	
+	set imsertemp.ztime = #d	
+	set imsertemp.xtypeout = "Manufacturing Order"
+	set imsertemp.xnumout = mynumout
+	
+	print mynumout+" mynumout "+imsertemp.xnumout+"  item "+xitem
+	if imsertemp.xserialnum .eq. "" 
+			int bcount=bcount+1
+			error "Skipping Blank Record "+bcount
+		elseif imsertemp.xserialnum .eq. lastcus
+			int dcount=dcount+1
+      error "Skipping Duplicates "+cacus.xcus+" lastcus="+lastcus+" -- "+dcount+" record"
+
+    end if    
+
+    set lastcus=imsertemp.xserialnum
+	
+	
+	//print imsertemp.zid+" item: "+imsertemp.xitem+" Ext: "+imsertemp.xitemext+" Serial: "+imsertemp.xserialnum+"  Num in: "+mynumin+" Type in: "+imsertemp.xtypein+" row in: "+imsertemp.xrowin
+	
+  end event
+  
+
+end format
+
+
