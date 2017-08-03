@@ -1,0 +1,77 @@
+page hrfoodrate
+     caption header
+     sidebar list one//,list two, text three
+     sections form one ,method chk_access
+
+	list one
+        table xcodes
+        order xtype,xcode
+        select "(xtype='Food Vendor')"
+        
+        rows 20
+        objects  xtype , xcode attrib(link #servlet+"?page="+page+"&command=Show&xtype=?&xcode=?"), ~
+                xprops caption(Rate End Date),xcodealt caption(Rate),xdescdet caption(Vendor Name)
+
+
+     end list
+     
+
+     form one
+        //caption "Designation(s)"
+		valid valid
+        table xcodes
+        order xtype,xcode
+        select "xtype='Food Vendor'"
+        layout 1
+        objects Show, Add, Update, Delete, Top, Previous, Next, Bottom,~
+                xtype display(const),xcode,xprops,xdescdet,xcodealt,xteam display(hide),zactive display(hide)
+
+		field xdescdet
+			inherits xhrc1
+			caption Vendor Name
+			//display ocombo
+			//pick "select distict(xdate) from pratd"
+		end field
+		
+		field xcode
+			
+			//display ocombo
+			//pick "select distict(xdate) from pratd"
+			//inherits xdateeff
+			caption Rate Start Date (YYYY-MM-DD)
+		end field
+		
+		field xprops
+			//display ocombo
+			//pick "select distict(xdate) from pratd"
+			inherits xdateexp
+			caption Rate End Date
+		end field
+		
+		field xtype
+			event before
+				set xtype="Food Vendor"
+			end event
+		end field 
+		
+		field xcodealt
+			caption Rate			
+			storage decimal
+			wid 10
+		end field
+
+end form
+     
+	 valid valid
+     	config
+			set globals(pkey)=xtype+" "+xcode
+			
+			set header = "<font color=green size=4+>Per Unit Food Cost</font><br>"
+		
+     	end config
+     end valid
+
+#include access.valid
+	
+	 
+end page

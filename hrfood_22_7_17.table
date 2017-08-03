@@ -1,0 +1,11 @@
+table hrfood
+  caption "Food Process"
+  columns ztime,zutime,zid,xempnum,xamt,xsign,xdate,xdesc,xlong,xpaycode
+
+
+  primary key zid, xempnum,xdate
+  foreign key
+        zid references zbusiness.zid
+        zid,xempnum references hrmst.zid,xempnum
+  end foreign key
+end table

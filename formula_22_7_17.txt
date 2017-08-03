@@ -1,0 +1,30 @@
+select * from hrpps where zid='650210' and xempnum='BHL-000001'
+--select * from pratd where zid='650210' and xempnum='BHL-000166' and (xatdstat='Not-Punched' or xatdstat='Absent') and xdate>='2017-03-21' and xdate<='2017-04-20' 
+--select * from practrndt where xempnum='BHL-000165'
+
+insert into hrpps (ztime,zid,xyear,xper,xdate,xempnum,xpflag,zemail,xrem,xhours,xmaxpay,xfdate,xtdate,xrow,xamount,xotflag) select '2017-07-22 16:31:27','650210',0,0,'2017-07-13',xempnum,'','asok@dreamapps.com','',0,0,'2017-07-22','2017-07-22','5', (select xamount from prpaymentdt where zid=premp.zid and xempnum=premp.xempnum and xpaycode='001'),'Festival Bonus Payable' from premp where zid='650210' and (select zactive from hrmst where zid=premp.zid and xempnum=premp.xempnum)='1'
+
+insert into hrfood (ztime,zutime,zid,xdate,xempnum,xpaycode,xamt,xsign) values('2017-07-22 20:42:27','2017-07-22 20:42:27','650210','2017-04-21','BHL-000182','084','0.0',75.0)
+
+
+insert into practrndt (ztime,zutime,zid,xdatepay,xempnum,xpaycode,xamount,zemail,xemail,xtype,xoption,xdateeff) values('2017-07-22 20:52:03','2017-07-22 20:52:03','650210','2017-04-21','BHL-000005','084','55.0','asok@dreamapps.com','','','','2017-07-22')
+
+delete from practrndt where zid='650210' and xdatepay='2017-04-21' and xempnum='BHL-000005' and xpaycode='084'
+
+select * from practrndt where xpaycode='084' order by xempnum
+
+select * from hrfood order by xempnum
+select count(xpfflag) from pratd where xpfflag='Yes' 
+
+select * from pratd where xpfflag='Yes' and xdate between '2017-03-21' and '2017-03-31'
+select count(xpfflag) from pratd where xpfflag='Yes' and xdate between '2017-03-21' and '2017-03-31'
+
+select xdate,xpfflag from pratd where xpfflag='Yes' and xdate between '2017-04-01' and '2017-04-20'
+select count(xpfflag) from pratd where xpfflag='Yes' and xdate between '2017-04-01' and '2017-04-20'
+
+select * from pratd where xdate='2017-03-21' and xempnum='BHL-000165' and xpfflag='Yes'  order by xempnum
+	 	
+copy gldetail from 'C:\tomcat\webapps\da\WEB-INF\data\x650210\OB.csv' with csv header
+
+select * from gldetail where xvoucher='OB--000001'
+delete from gldetail where xvoucher='JV--000001'
