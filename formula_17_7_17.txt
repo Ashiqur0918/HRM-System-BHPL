@@ -1,0 +1,18 @@
+{@drCR}="Dr." and {premp.xexcisecat}="Associate"
+
+{@drCR}="Cr." and {premp.xexcisecat}="Cleaner"
+
+pr_jv_sal
+
+select * from prpayhead
+
+select distinct(xexcisecat) from premp
+
+select distinct(xdatepay) from practrndt
+
+
+select sum(xamount) from practrndt where xpaycode='100' or xpaycode='099' and xdatepay='2017-04-21'
+
+select sum(xamount) from practrndt where xpaycode='099' and xdatepay='2017-04-21'
+
+select * from practrndt where xamount<0 and xdatepay='2017-04-21'
