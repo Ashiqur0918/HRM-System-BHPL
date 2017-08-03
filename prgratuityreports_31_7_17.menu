@@ -1,0 +1,22 @@
+//prreports.menu
+caption "Gratuity Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+
+Gratuity Provision Monthly				|#classPath+"/"+#servlet+"?page=*crystal gratuity_probition_monthly(~
+											p ~
+											xtypecat caption(From Budget Name) display(combo) pick("select distinct(xtypecat) from hrmst ") default(0),~
+											xtypecat caption(To Budget Name) display(combo) pick("select distinct(xtypecat) from hrmst") default(""Zzz""))"
+
+
+
+Details Gratuity Report    				|#classPath+"/"+#servlet+"?page=*crystal gratuity_report_detail(~
+											p ~
+											xempnum caption(From Employee) default(0),~
+											xempnum caption(To Employee) default(""Zzz""),~
+											xtypecat caption(From Budget Name) display(combo) pick("select distinct(xtypecat) from hrmst ") default(0),~
+											xtypecat caption(To Budget Name) display(combo) pick("select distinct(xtypecat) from hrmst") default(""Zzz""))"
+											

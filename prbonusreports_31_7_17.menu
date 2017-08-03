@@ -1,0 +1,39 @@
+//prreports.menu
+caption "Bonus Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+Festival Bonus JV 								 |#classPath+"/"+#servlet+"?page=*crystal pr_jv_fest(~
+													p ~
+											xdate caption(Payment Date))"
+								
+
+											
+
+
+
+Festival Bonus Summary					|#classPath+"/"+#servlet+"?page=*crystal pr_fest_bns(xdate=From Date,xdate=To Date)"
+Festival Bonus Monthly					|#classPath+"/"+#servlet+"?page=*crystal pr_fest_bns_full(xdate=From Date,xdate=To Date,zmessage=Comment)"
+
+
+
+Department wise Performance Bonus 				|#classPath+"/"+#servlet+"?page=*crystal pr_dept_wise_prpbns(~
+											p ~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+
+
+Grade Wise Performance Bonus			|#classPath+"/"+#servlet+"?page=*crystal grde_wise_performance_bonus (~
+												p ~ 
+												xgrade caption(From Grade) display(combo) pick("select xcode from xcodes where xtype="'Performance Grade'" ") default(0),~
+												xgrade caption(To Grade) display(combo) pick("select xcode from xcodes where xtype="'Performance Grade'" ") default(""Zzz""))"
+
+
+Department Wise Profit Sharing  			|#classPath+"/"+#servlet+"?page=*crystal pr_ppf_sharing(~
+											p ~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""))"
+											
+

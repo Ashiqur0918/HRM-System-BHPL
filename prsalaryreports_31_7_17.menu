@@ -1,0 +1,33 @@
+//prreports.menu
+caption "Salary Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+
+Salary Summary (Three Month)				|#classPath+"/"+#servlet+"?page=*crystal pr_sal_three_month(xdate=Last 3 month of )"
+
+Monthly Salary All Employee 				|#classPath+"/"+#servlet+"?page=*crystal pr_sal_monthly(~
+												p ~
+												xdate caption(Date)  ,~
+												zmessage caption(Remark) )"
+												//display(ocombo) pick("select xdatepay from prpay")
+List of Salary Payment (Through Cheque - Monthly) |#classPath+"/"+#servlet+"?page=*crystal pr_sal_cheque(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=From Date,xdate=To Date,zmessage=Remark)"
+
+Salary JV 										 |#classPath+"/"+#servlet+"?page=*crystal pr_jv_sal(~
+													p ~
+											xdate caption(Payment Date))"
+//Salary JV Bank Wise										 |#classPath+"/"+#servlet+"?page=*crystal pr_jv_sal_s2b_bftn(~
+//													p ~
+//											xdate caption(Payment Date))"
+Salary JV Bank Wise										 |#classPath+"/"+#servlet+"?page=*crystal pr_jv_sal_bftn_s2b_cash(~
+													p ~
+											xdate caption(Payment Date))"
+											
+Department Wise Salary   				|#classPath+"/"+#servlet+"?page=*crystal department_wise_sal(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdiv=From Department=0=,xdiv=To Department=Zzz=)"
+Rank Wise Salary 			|#classPath+"/"+#servlet+"?page=*crystal rank_wise_sal(~
+												p ~
+												xhrc1 caption(From Rank) display(combo) pick("select xcode from xcodes where xtype="'Rank'" ") default(0),~
+												xhrc1 caption(To Rank) display(combo) pick("select xcode from xcodes where xtype="'Rank'" ") default(""Zzz""))"
+

@@ -1,0 +1,22 @@
+//prreports.menu
+caption "PF Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+PF Interest Report 								|#classPath+"/"+#servlet+"?page=*crystal pr_pf_interest(~
+												p ~
+												xh103 caption(Year),~
+												xdate caption(Interest Payment Date) )"
+Department Wise PF Report					|#classPath+"/"+#servlet+"?page=*crystal pr_pf_dept(~
+											p ~
+											xempnum caption(From Employee) default(0),~
+											xempnum caption(To Employee) default(""Zzz""),~
+											xrank caption(From Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(0),~
+											xrank caption(To Department) display(combo) pick("select xcode from xcodes where xtype="'Department'" ") default(""Zzz""),~
+											xdate caption(From Date),~
+											xdate caption(To Date))"
+											
+Employee Wise PF Report 						|#classPath+"/"+#servlet+"?page=*crystal pr_emp_pf(xempnum=Employee No=0=,xdate=From Date,xdate=To Date)"
+
+
+												

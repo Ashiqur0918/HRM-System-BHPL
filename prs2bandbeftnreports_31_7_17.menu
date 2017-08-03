@@ -1,0 +1,12 @@
+//prreports.menu
+caption "S2B and BEFTN Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+
+Employee Monthly Salary(S2B) 							|#classPath+"/"+#servlet+"?page=*crystal pr_s2b_emp_sal	(xempnum=From Employee=0=,xempnum=To Employee=Zzz,xdate=Payment Date)"							
+BEFTN 										|#classPath+"/"+#servlet+"?page=*crystal pr_beftn(xh102=Employee Start Number,xdate=Payment Date, xh101=Debit A/C No, xh201=Payee Email Address)"
+
+

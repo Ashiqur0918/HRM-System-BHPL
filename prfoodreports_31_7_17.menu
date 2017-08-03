@@ -1,0 +1,24 @@
+//prreports.menu
+caption "Food Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+
+Allocation of Food Cost 						 |#classPath+"/"+#servlet+"?page=*crystal pr_jv_food_company(~
+													p ~
+											xdate caption(Payment Date))"
+											
+Food JV 								 		|#classPath+"/"+#servlet+"?page=*crystal pr_jv_staff_food(~
+													p ~
+											xdate caption(Payment Date))"
+Lunch Vendor Report 							|#classPath+"/"+#servlet+"?page=*crystal pr_lunch_vendor(~
+												p ~
+												xh103 caption(Lunch Vendor) display(combo) pick("select distinct(xdescdet) from xcodes where xtype='Food Vendor'") default(0),~
+												xdate caption(From Date) ,~
+												xdate caption(To Date) ,~
+												xh106 caption(Payment Date) display(combo) pick("select distinct(xcode) from xcodes where xtype='Food Vendor'") default(0))"
+												
+												
+											

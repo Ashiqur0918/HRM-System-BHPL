@@ -1,0 +1,24 @@
+//cxtplan.menu
+caption "Travel Management" page
+//-------------------------------------------------------------------
+option                           |action
+//-------------------------------------------------------------------
+-Settings
+Settings                      |#classPath+"/"+#servlet+"?page=casetup&module=cx"  
+Travel Expenses Setup               |#classPath+"/"+#servlet+"?page=cxtset"               |cx 
+TM Authority Settings 			|#classPath+"/"+#servlet+"?page=hrtplanauth"  
+-Transactions
+Travel Planning               |#classPath+"/"+#servlet+"?page=cxtplanh"                   |cx
+I.O.U_Apply			               |#classPath+"/"+#servlet+"?page=cxtplandta"                |cx
+Bill			               |#classPath+"/"+#servlet+"?page=cxtplandtb"                |cx
+//Calendar               |#classPath+"/"+#servlet+"?page=cacal"                   		  |cx
+-Reports
+//Travel Expense Report (Advance vs Actual)		|#classPath+"/"+#servlet+"?page=*crystal hrtplandt(xdate=From Date,xdate=To Date,xempnum=From Employee=0,xempnum=To Employee=Zz)"
+//Travel Expense Report (Advance)		|#classPath+"/"+#servlet+"?page=*crystal hrtplandtadv(xdate=From Date,xdate=To Date,xempnum=From Employee=0,xempnum=To Employee=Zz)"
+//Travel Expense Report (Actual)		|#classPath+"/"+#servlet+"?page=*crystal hrtplanact(xdate=From Date,xdate=To Date,xempnum=From Employee=0,xempnum=To Employee=Zz)"
+
+Travel Expense Report (Advance vs Actual)		|#classPath+"/"+#servlet+"?page=*crystal tm_adv_act(xempnum=Employee ID=0,xdate=From Date,xdate=To Date)"
+Travel Expense Report (Actual)		|#classPath+"/"+#servlet+"?page=*crystal tm_act(xempnum=Employee ID=0,xdate=From Date,xdate=To Date)"
+Travel Expense Report (Advance)		|#classPath+"/"+#servlet+"?page=*crystal tm_adv(xempnum=Employee ID=0,xdate=From Date,xdate=To Date)"
+Department Wise Business Trip Plan |#classPath+"/"+#servlet+"?page=*crystal hrtplandt1.rpt(xdate=From Date,xdate=To Date,xdept=From Dept=0,xdept=To Dept=Zzz,xempnum=From Employee=0,xempnum=To Employee=Zz)"
+Monthly Travel Plan	|#classPath+"/"+#servlet+"?page=*crystal hrtplandt2.rpt(xdate=From Date,xdate=To Date,xdept=From Dept=0,xdept=To Dept=Zzz,xempnum=From Employee=0,xempnum=To Employee=Zz)"

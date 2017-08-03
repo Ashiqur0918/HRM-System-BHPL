@@ -1,0 +1,11 @@
+//prreports.menu
+caption "Deduction Reports" page 3
+//-------------------------------------------------------------------
+option                           |action
+
+//-Customized
+
+Tax Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_tax_deduc(xdate=From Date,xdate=To Date)"	
+Lunch Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_lunch_deduc(xdate=From Date,xdate=To Date)"
+Mobile Bill Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_mobile_deduc(xdate=From Date,xdate=To Date)"
+EMI Deduction (Month Wise)				|#classPath+"/"+#servlet+"?page=*crystal pr_emi_deduc(xdate=From Date,xdate=To Date)"
