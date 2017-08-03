@@ -1,0 +1,330 @@
+page princremdetm
+	embed onload="move_caret('one','xamount')"
+	caption header
+    
+    sections form one, list one, script myscript
+
+    list one
+		table princrement
+		order xempnum,xincno
+		fixed xempnum
+		rows 60
+		objects xincno attrib(link #servlet+"?page=princremdetm&command=Show&xincno=?"),~
+				xamount,xtotamt,xdate,xref,xnewdesig,xlocation
+
+	
+		
+		field xamount
+			caption Increment Amount
+		end field
+		
+		field xtotamt
+			caption Revised Gross Salary
+		end field
+		
+		field xdate
+			caption Increment Effective Date
+		end field
+
+		field xref
+			caption Increment Letter Reference
+		end field
+       
+		field xlocation
+			caption New Location
+		end field
+
+	end list
+
+    form one
+		valid valid
+        table princrement
+        order xempnum,xincno
+        fixed xempnum
+        layout 1
+        objects Add, Show, Clear, Update, Next,Previous,Delete,Top,Bottom,Confirm,Return,~//
+                xincno attrib(row 0 1),xtype,xamt,xamount,xtotamt,xdate,xref,xremarks,~
+                zemail display(hide),xemail display(hide),dum1,xsites,xdiv,xnewdept,xsec,xnewdesig,xlocation,xpostflag 
+
+		field xincno
+			event after
+				set globals(xincno)=xincno
+				if xpostflag .ne. ""
+					set #field(Add.display) = "disable"
+					set #field(Update.display) = "disable"
+					set #field(Delete.display) = "disable"
+					set #field(Confirm.display) = "disable"
+				end if 
+			end event
+		end field
+		
+		field xtype
+			caption Increment Type
+			attrib mandatory
+			display ocombo
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Increment Type'"
+		end field
+		
+		field xdiv
+			caption New Division
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Division'"
+	   end field
+
+		field xnewdept
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Department'"
+	   end field
+	   
+	   field xsec
+			caption New Section
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Section'"
+	   end field
+	   
+	   field xnewdesig
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Designation'"
+			display ocombo
+			
+			width 20
+	   end field
+
+	   field xlocation
+			pick "select xcode from xcodes where zid='"+#id+"' and xtype='Location'"
+	   end field		
+       
+		field xpostflag
+			caption Confirmation Status
+			display const
+		end field
+       
+		field dum1
+			caption
+			display const
+			col 3
+			attrib local
+			event after
+				set dum1 = "<font color=red>__________________________________________ Promotional Information __________________________________________</font>"
+			end event
+		end field
+       
+		field xamount
+			caption Increment Amount
+		end field
+       
+		field xsites
+			caption Promotional Status
+			display combo
+			attrib submit
+			pick "Yes,No"
+			default "No"
+			event after
+				if xsites .ne. "Yes"
+					set #field(xnewdesig.display)="hide"
+					set #field(xdiv.display)="hide"
+					set #field(xnewdept.display)="hide"
+					set #field(xsec.display)="hide"
+					set #field(xlocation.display)="hide"
+				end if
+			end event
+		end field
+		
+		field xamt
+			caption Present Gross Salary
+			attrib local
+			display const
+			event after
+				set mysql="select xdtwotax from premp where xempnum='"+globals(xempnum)+"'"
+				set xamt=0.0+#sql(mysql)
+			end event
+		end field
+
+		field xtotamt
+			caption Revised Gross Salary
+		end field
+       
+		field xlocation
+			caption New Location
+		end field
+
+		field xdate
+			caption Increment Effective Date
+		end field
+
+		field xref
+			caption Increment Letter Reference
+		end field
+
+		field xremarks
+			caption Comments
+			width 75
+			height 2
+		end field
+
+		field Confirm
+			event before
+			   if xpostflag .ne. ""
+				  set globals(ErrChk)="1"
+				  error "Already Confirmed</p>Cannot "+#command
+			   else if xsites .eq. "Yes"
+					str mysql = "update hrmst set xplace = '"+xlocation+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+					
+					str mysql = "update hrmst set xdiv = '"+xdiv+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+
+					str mysql = "update hrmst set xrank = '"+xnewdept+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+					
+					str mysql = "update hrmst set xsec = '"+xsec+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+					
+					str mysql = "update hrmst set xtitle = '"+xnewdesig+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+				
+					str mysql = "update premp set xdtwotax = '"+xtotamt+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+
+					str mysql = "update princrement set xpostflag='Confirmed' where xempnum='"+xempnum+"' and xincno='"+globals(xincno)+"' "
+					set updval = #sql(str,mysql)
+
+					action show
+				else
+			   
+					str mysql = "update premp set xdtwotax = '"+xtotamt+"' where xempnum='"+xempnum+"'"
+					set updval = #sql(str,mysql)
+
+					str mysql = "update princrement set xpostflag='Confirmed' where xempnum='"+xempnum+"' and xincno='"+globals(xincno)+"' "
+					set updval = #sql(str,mysql)
+					action show
+				end if
+//create Pay Package
+					if globals(ErrChk) .ne. "1"
+						set xpaycode=""
+						set gross_amt = #sql(decimal,"select xdtwotax from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+						set xempcat = #sql(str,"select xjstat from hrmst where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				
+						set mysql = "select xpaycode from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode>'"+globals(xpaycode)+"' order by zid,xcat"
+						set globals(xpaycode) = #sql(str,mysql)
+
+						while #result .eq. "true" .and. globals(xpaycode) .ne. ""                
+							set amt_percent=#sql(decimal,"select xpercent from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode='"+globals(xpaycode)+"'")
+							compute amt = 0.00+(gross_amt*amt_percent)/100
+							set paycode=#sql(decimal,"select xpaycode from prpaymentdt where zid='"+#id+"' and xempnum='"+xempnum+"' and xpaycode='"+globals(xpaycode)+"'")
+							if #result .ne. "true"
+								set myqry = "insert into prpaymentdt (zid,xempnum,xpaycode,xamount,zemail,xemail)"
+								set myqry = myqry + " values('"+#id+"','"+xempnum+"','"+globals(xpaycode)+"','"+amt+"','"+#user+"','')"
+								set tmpstr =#sql(myqry)
+							else
+								str mysql = "update prpaymentdt set xamount='"+amt+"' where zid='"+#id+"' and xpaycode='"+globals(xpaycode)+"' and xempnum='"+xempnum+"'"
+								set tmpstr = #sql(str,mysql)
+							end if
+
+							set mysql = "select xpaycode from prsalslab where zid='"+#id+"' and xcat='"+xempcat+"' and xpaycode>'"+globals(xpaycode)+"' order by zid,xcat"
+							set globals(xpaycode) = #sql(str,mysql)
+						end while
+					end if
+				end if	
+				action show
+            end event
+        end field
+
+		field add
+			event before
+				set zemail=#user
+				set xemail=""
+				set xpostflag = ""
+				set cur_gross=#sql(str,"select xdtwotax from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				set xtotamt=0.0+cur_gross+xamount
+				set joindate=#sql(str,"select xjoindate from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+				set job_length=0+#days(xdate)-#days(joindate)+1
+				if job_length < 365
+					if globals(mode) .eq. "hr"
+						set globals(ErrChk)="1"
+						error "He is not eligible for Salary Revise/ Increment/ Promotion. Job length is "+job_length+ "Days"
+					end if
+				end if
+				
+			end event
+			 
+		end field
+
+		field Update
+			event before
+				set globals(ErrChk)=""
+				if xpostflag .ne. ""
+					set globals(ErrChk)="1"
+					error "Already Confirmed</p>Cannot "+#command
+				end if
+
+				if xincno .ne. globals(xincno)
+					set globals(ErrChk)="1"
+					error "Record pointer mismatch</p>Cannot "+#command
+				else
+					set xemail=#user
+					set cur_gross=#sql(str,"select xdtwotax from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+					set xtotamt=0.0+cur_gross+xamount
+					set joindate=#sql(str,"select xjoindate from premp where zid='"+#id+"' and xempnum='"+xempnum+"'")
+					set job_length=0+#days(xdate)-#days(joindate)+1
+					if job_length < 365
+						if globals(mode) .eq. "hr"
+							set globals(ErrChk)="1"
+							error "He is not eligible for Salary Revise/ Increment/ Promotion. Job length is "+job_length+ "Days"
+						end if
+					end if					
+				end if
+			end event
+		end field
+       
+		field Delete
+			event before
+				if xpostflag .ne. ""
+					set globals(ErrChk)="1"
+					error "Already Confirmed</p>Cannot "+#command
+				end if
+			end event
+		end field
+
+
+		embed onsubmit="submitit(this)"
+		field Return
+			embed onclick="clicked(this)"
+		end field
+
+	end form
+
+     script myscript
+        <script language="javascript" type="text/javascript">
+        var detail
+
+        function clicked(b)
+        {
+          detail="back"
+        }
+        function submitit(form)
+        {
+          if (detail=="back")
+          {
+            form.page.value = "princremhedm"
+            form.searchbutton.value= "Find xempnum=?"
+          }
+        }
+
+        </script>
+     end script
+	 valid valid
+		config
+			set header ="<span class=bl>Increment History of Employee <a href=/da/"+#servlet+"?page=princremhedm&command=Show&xempnum="+xempnum+">" +xempnum+ "</a></span>"+" ("+xfirst+")<br>"
+			set xfirst=#sql(str,"select xfull from hrmst where xempnum='"+xempnum+"'")
+		//	set header ="<span class=bl>Increment History of Employee <a href=/da/"+#servlet+"?page=princremhed&command=Show&xempnum="+xempnum+">" +xempnum+ "</a></span>"+" ("+globals(xname)+")<br>"
+			if xpostflag .eq. "Confirmed" .and. xsites .ne. "Yes"
+				//set header=header+" <a href='"+#report(princrementdt.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xempnum+"&prompt2="+xincno+"' target='_new'>Print</a>"
+			else if xpostflag .eq. "Confirmed" .and. xsites .eq. "Yes"
+				//set header=header+" <a href='"+#report(prpromosion.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xempnum+"&prompt2="+xincno+"' target='_new'>Print</a>"
+			end if
+			if xpostflag .eq. "Confirmed"
+				set #field(Delete.display)="disable"
+				set #field(Update.display)="disable"				
+				set #field(Confirm.display)="disable"				
+				set #field(xtype->.display)="const"				
+			end if
+		end config
+	 end valid
+end page
