@@ -1,0 +1,11 @@
+pr_jv_food_company
+
+select * from hrmst
+
+select sum(xamt) from hrfood where xempnum in ('BHL-000006','BHL-000007','BHL-000017','BHL-000021','BHL-000048','BHL-000060','BHL-000063','BHL-000095','BHL-000096','BHL-000102','BHL-000117','BHL-000124','BHL-000176','BHL-000181')
+(select xempnum from hrmst where xtypecat='Sales' order by xempnum)
+
+pr_jv_staff_food
+
+select sum(xamt*xsign/100) from hrfood
+select * from hrfood

@@ -1,0 +1,553 @@
+page lmtrnar
+     caption header+"<br>"+details
+
+     layout mylayout 2 2  //columns rows
+       form trn  (1, 1) //(col,row,colspan,rowspan,width,height)
+       //form trn  (1, 2) //(col,row,colspan,rowspan,width,height)
+	   //list lmstatus,
+       list trn (2,1)
+		list empview (2,1)
+       script myscript (0, 0)
+     end layout
+     
+     list empview
+		caption "Application(s) List"
+		table (select zid,xempnum,xdate,xcodeleave,xtrnleave,xdaysreq,xstatusleave,(select xsuper from hrmst where hrmst.zid=lmtrn.zid and hrmst.xempnum=lmtrn.xempnum) as xsuper from lmtrn) as tbl
+		order xempnum,xdate,xcodeleave,xtrnleave desc
+		select "xsuper='"+supervisor+"'"
+		objects  xempnum,xdate,xcodeleave,xtrnleave attrib(link #servlet+"?page="+page+"&mode="+mode+"&command=Show&xempnum=?&xdate=?&xcodeleave=?&xtrnleave=?"), ~
+                xdaysreq,xstatusleave//,xapproved
+	 end list
+     
+     list trn
+        caption "Applications"
+        //table (select prrate.*,prcode.xtyperatepay from prrate,prcode where prrate.zid=prcode.zid and prrate.xcodepay=prcode.xcodepay) as tbl
+        table lmtrn
+        order xempnum,xdate,xcodeleave,xtrnleave desc
+        fixed xempnum
+        //select select
+        //navigators alpha
+        //rows 20
+        objects  xdate,xcodeleave,xtrnleave attrib(link #servlet+"?page="+page+"&command=Show&xempnum="+xempnum+"&xdate=?&xcodeleave=?&xtrnleave=?"), ~
+                xdaysreq,xstatusleave//,xapproved
+
+                field xrate
+                  caption Pay Rate
+                end field
+
+        //totals "","Totals","","","","",sum,sum
+
+        //headers none
+     end list
+     
+     form trn
+        command Clear
+        valid valid
+        caption "Leave"
+        table lmtrn
+        order xempnum,xdate,xcodeleave,xtrnleave desc
+        //select select
+        nonav
+        //fixed xempnum
+        
+        layout 2
+        objects ~
+                ~
+                Apply,Deny,Recommend,Sanction,Cancel,Undo,*next,Clear,Add, Update, Delete, Show,~
+                xempnum attrib(search;submit),xdiv display(hide),xsec,xtitle,xjstat,xempcurwrk display(hide),~
+                
+                xdatefromreq ,xdatetoreq,~
+				xcodeleave attrib(mandatory;submit) caption(Type/Days),xdaysreq,~
+                xlvtype,xpurpose,xphone,xlocation,xnote columns(3) width(50),xpadd,~
+                xtrnleave display(const),xdate display(const),xsign display(const),~
+                xdateto display(const),xdateapply display(const),~
+                xdateapd display(const),xstatusleave display(const),xrecommendedby display(const),~
+                xapprovedby display(const),xcancelreqby display(const),~
+                xcancelledby display(const),xposted display(const),xcarried display(const)//,~
+                //xrecommended display(const),xapproved display(const),xdenied display(const)
+                
+
+        embed onsubmit="submitit(this)"
+        field Return
+          embed onclick="clicked(this)"
+        end field
+		
+		field xdate
+			event after
+				set empleavedoc=xempnum+"|"+#sub(xdate,0,10)+"|"+xcodeleave+"|"+xtrnleave			
+				if xpadd .eq. ""
+					set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Leave Address' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+					set xpadd=#sql(str,mysql)
+				end if
+				if xlvtype .eq. ""
+					set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Leave Type' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+					set xlvtype=#sql(str,mysql)
+				end if
+				set globals(xdatestr)="Date("+#sub(xdate,0,4)+","+#sub(xdate,5,2)+","+#sub(xdate,8,2)+")"
+				
+				set mysql="select xvalue from cadet where zid='"+#id+"' and xcontext='Employee Current Work Place' and xdocnum='"+xempnum+"' and xdocrow='0' and xseq='1'"
+				set xempcurwrk=#sql(str,mysql)
+				
+				set xdiv=hrmst.xdiv(xempnum)
+				set xsec=hrmst.xrank(xempnum)
+				set xtitle=hrmst.xtitle(xempnum)
+				set xjstat=hrmst.xjstat(xempnum)
+				
+
+			end event
+		end field
+			
+		field undo
+		event before
+		set xstatusleave="1-Open"
+		Action update
+		print "Done"
+		end event
+		end field
+		
+		field xphone
+			attrib local
+			display const
+			event after
+				set xphone=hrmst.xmobile(xempnum)
+			end event
+		end field
+		
+		field xpadd
+			inherits xrem
+			attrib local
+			width 50
+			col 3
+			caption Address While on Leave
+		end field
+		
+		field xlvtype
+			caption Leave Type
+			attrib local
+			display combo
+			pick "Leave with Full Pay,Leave without Pay,Special Leave with Full Pay"
+		end field
+		
+		field xdiv
+			captioin SBU
+			attrib local
+			display const
+		end field
+		
+		field xtitle
+			captioin Designation
+			attrib local
+			display const
+		end field
+
+
+		field xjstat
+			captioin Job Status
+			attrib local
+			display const
+		end field
+		
+		
+		field xsec
+			captioin Department
+			attrib local
+			display const
+		end field
+		
+		field xlocation
+			caption Other Phone
+			attrib local		
+			display text
+			pick
+		end field
+		
+		field xempcurwrk
+			caption Current Work Location
+			attrib local		
+			display const
+		end field
+		
+		field xpurpose
+			display ocombo
+			pick "Family affair,Personal,Others,Sickness"
+		end field
+		
+		field Add
+					event after
+			
+				set empleavedoc=xempnum+"|"+#sub(xdate,0,10)+"|"+xcodeleave+"|"+xtrnleave
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Leave Address','"+empleavedoc+"','0','1','','','"+xpadd+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xpadd+"' where zid='"+#id+"' and xcontext='Employee Leave Address' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Leave Type','"+empleavedoc+"','0','1','','','"+xlvtype+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xlvtype+"' where zid='"+#id+"' and xcontext='Employee Leave Type' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+				set updsql=#sql(str,mysql)
+								
+											
+					end event
+        
+        
+        end field
+		
+        field Update
+			event before
+
+			end event
+					event after
+
+				set empleavedoc=xempnum+"|"+#sub(xdate,0,10)+"|"+xcodeleave+"|"+xtrnleave
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Leave Address','"+empleavedoc+"','0','1','','','"+xpadd+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xpadd+"' where zid='"+#id+"' and xcontext='Employee Leave Address' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+				set updsql=#sql(str,mysql)
+				
+				set mysql="insert into cadet(ztime,zid,xcontext,xdocnum,xdocrow,xseq,xclass,xname,xvalue)"
+				set mysql= mysql+ " values('"+#time+"','"+#id+"','Employee Leave Type','"+empleavedoc+"','0','1','','','"+xlvtype+"')"
+				set insql=#sql(str,mysql)
+			
+				set mysql="update cadet set xvalue='"+xlvtype+"' where zid='"+#id+"' and xcontext='Employee Leave Type' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+				set updsql=#sql(str,mysql)
+
+			end event
+        end field
+		
+     end form
+
+     script myscript
+
+        <script language="javascript" type="text/javascript">
+        var button
+        function clicked(b){
+
+          button=b.value
+        }
+        function submitit(form){
+          if (button=="Return"){
+            form.page.value = "lmemp"
+            form.searchbutton.value = "Find xempnum=?&xdateeff=?"
+            //return false
+          }
+        }
+
+        </script>
+        
+    end script
+    valid valid
+      mandatory Apply,Add,Update,Recommend,Sanction,Deny,Cancel;~
+        xcodeleave      
+      
+      config
+		set supervisor=hrmst.xempnum("zid='"+#id+"' and xemail='"+#user+"'")		
+
+        //set xdate=xdatefromreq
+        set #fields(xtrnleave->.display)="const"
+        set #fields(Apply.display)="disabled"
+        //"Opening Balance(+),Credits(+),Cancellation(+),Carry Forward(-),Encashment(-),Consumption(-),Expiration(-)"
+        //"1-Open,2-Recommended,3-Sanctioned,4-Requested for Cancellation,D-Denied"
+        
+        //**mode**************************************************************
+        if mode .sw. "Open"
+          set #fields(xdatefromreq->.display)="const"
+          set xtrnleave="Opening Balance(+)"
+
+          set #fields(Deny->Cancel.display)="disabled"
+          set select = " xtrnleave='"+xtrnleave+"'"
+          
+        elseif mode .sw. "Apply"
+          set xtrnleave="Consumption(-)"
+          set #fields(Deny->Cancel.display)="disabled"
+          set #fields(Apply.display)=""
+          set #fields(Add.display)="disabled"
+		  set #list(empview.attrib)="hide"
+
+          set select = " xtrnleave='"+xtrnleave+"'"
+		  int days=#days(xdatetoreq)-#days(xdatefromreq)+1
+		  set xdaysreq=0+ days
+		  set #fields(Add.display)="disabled"
+          
+        elseif mode .sw. "Credit"
+          set xtrnleave="Credits(+)"
+          set #fields(Deny->Cancel.display)="disabled"
+          set select = " xtrnleave='"+xtrnleave+"'"
+          
+        elseif mode .sw. "Cancel"
+          //set xtrnleave="Cancellation(+)"
+          set xtrnleave="Consumption(+)"
+          set #fields(Deny->Sanction.display)="disabled"
+          set select = " xtrnleave='"+xtrnleave+"' and xstatusleave ilike '3%' "
+          set #field(xnote.caption)="Reason of Cancel"
+        elseif mode .sw. "Encash"
+          set xtrnleave="Encashment(-)"
+          set #fields(Deny->Cancel.display)="disabled"
+          set select = " xtrnleave='"+xtrnleave+"'"
+          
+        elseif mode .sw. "Recommend"
+          set xtrnleave="Consumption(-)"
+          set #fields(Sanction->Cancel.display)="disabled"
+          set #fields(Add->Delete.display)="disabled"
+          
+          set select = " xtrnleave='"+xtrnleave+"' and ((xstatusleave ilike '1%') or (xstatusleave ilike 'D%'))"
+        elseif mode .sw. "Sanction"
+          set xtrnleave="Consumption(-)"
+          set #fields(Recommend.display)="disabled"
+          set #fields(Cancel.display)="disabled"
+          set #fields(Add->Delete.display)="disabled"
+          
+          set select = " xtrnleave='"+xtrnleave+"' and ((xstatusleave ilike '2%') or (xstatusleave ilike 'D%'))"
+        else
+          error "Unsupported Mode: "+mode
+        end if
+        set xsign=#arg(xtrnleave)+"1"
+
+
+        //**globals
+        if xempnum .eq. ""
+          set #fields(Apply->Delete.display)="disabled"
+        else
+          str temp=hrmst.xempnum(xempnum)
+          if temp .ne. xempnum
+            
+            print "<span class=br>Wrong Employee Number: "+xempnum+"</span>"
+          end if
+        end if
+
+//year        
+        if xdate .eq. ""
+          set xdate=#date
+        end if
+
+//print "xdate="+xdate
+            str sep=#sub(xdate,4,1)
+            if sep .ne. "-"
+              set xdate=#sub(xdate,6,4)+"-"+#sub(xdate,3,2)+"-"+#sub(xdate,0,2)
+            end if
+
+      str gent=lmemp.xgent(xempnum)
+      console "gent="+gent
+      int xyear=lmyear.xyear(" xdateeff <= '"+xdate+"' and xdateexp >= '"+xdate+"' and xgent = '"+gent+"'")
+
+            //set xyear=#sub(xdate,0,4)
+            set globals(xyear)=xyear
+//print "xyear="+xyear
+//year end        
+        
+        set globals(xtrnleave)=xtrnleave
+        set globals(xsign)=xsign
+
+        set globals(mode)=mode
+        set globals(select)=select
+        set globals(xempnum)=xempnum
+        set globals(xdate)=xdate
+        set globals(xcodeleave)=xcodeleave
+        set globals(xgent)=lmemp.xgent(xempnum)
+        
+        set #fields(xcodeleave.picklist)="select xcodeleave from lmstatus where xempnum='"+xempnum+"'"
+        call lmcalc            
+        
+        str header=mode+" Leave"
+        
+        if xempnum .ne. ""
+          set header=header+" for <font color=red>"+hrmst.xfirst(xempnum)+" "+hrmst.xmiddle(xempnum)+" "+hrmst.xlast(xempnum)+"</font> ("+xempnum+")" ~
+		  "<a href='"+#report(lmtrn.rpt)+"&promptonrefresh=y&prompt0="+#id+"&prompt1="+xempnum+"&prompt2="+globals(xdatestr)+"&prompt3="+xcodeleave+"&prompt4="+xtrnleave+"' target='_new'>Print</a>"
+        end if
+        set globals(header)=header
+        
+        //print "select: "+select
+		
+		print xstatusleave
+		if xstatusleave .ne. "1-Open"
+          
+          set #fields(Deny.display)="disabled"
+          set #fields(Recommend.display)="disabled"
+		end if  
+      end config
+      
+      before Recommend
+        buffer lmtrn=#form
+        set lmtrn.xstatusleave=#status("xstatusleave",2)
+        set lmtrn.xrecommendedby=#user
+        update lmtrn(xdate,xempnum,xcodeleave,xtrnleave)
+		set empleavedoc=xempnum+"|"+#sub(xdate,0,10)+"|"+xcodeleave+"|"+xtrnleave
+		set mysql="update cadet set xvalue='"+xlvtype+"' where zid='"+#id+"' and xcontext='Employee Leave Type' and xdocnum='"+empleavedoc+"' and xdocrow='0' and xseq='1'"
+		set updsql=#sql(str,mysql)
+		
+		set super =hrmst.xsuper("xempnum='"+xempnum+"'")
+		set supername =" "+hrmst.xfull("xempnum='"+super+"'")
+		set target =hrmst.xsppoi("xempnum='"+xempnum+"'")
+		set target =hrmst.xemail("xempnum='"+target+"'")
+		set supervisor=hrmst.xempnum("zid='"+#id+"' and xemail='"+#user+"'")		
+		str msg
+          text "lmrecommend.email","string msg"
+          mail from=#sysuser;;to=target;;sub="Leave Application by "+hrmst.xfull(xempnum)+" "+hrmst.xtitle(xempnum)+" ("+xempnum+")" ;;message=msg		
+        action Clear
+		print "Recommend Successfully"
+		print "target="+target
+		print msg+" :msg"
+      end before
+      before Deny
+        buffer lmtrn=#form
+        set lmtrn.xstatusleave=#status("xstatusleave","D")
+        set lmtrn.xapprovedby=#user
+        update lmtrn(xdate,xempnum,xcodeleave,xtrnleave)
+        action Show
+		set targetcc=lmroute.xcriteria("zid='"+#user+"'")
+		set msg="Leave Deny for "+xcodeleave+" Leave for "+xdaysreq+" day(s) from "+#format(xdatefromreq,date)+" to "+#format(xdatetoreq,date)+"."
+		mail from=#sysuser;;to=targetcc;;sub="Leave Deny For "+hrmst.xfirst(xempnum)+" "+hrmst.xlast(xempnum)+" ("+xempnum+")" ;;message=msg
+		print "Leave Deny"
+      end before
+      before Sanction
+        buffer lmtrn=#form
+        set lmtrn.xstatusleave=#status("xstatusleave",3)
+        set lmtrn.xapprovedby=#user
+        update lmtrn(xdate,xempnum,xcodeleave,xtrnleave)
+		set xdatedue =""
+		set mysql = "select xdatedue from lmtrnday where xempnum='"+xempnum+"' and xdatedue>='"+xdatefromreq+"' and xdatedue<='"+xdatetoreq+"' and xdatedue>'"+xdatedue+"' order by xdatedue"
+		set xdatedue = #sql(mysql)
+		while xdatedue .ne. ""
+		
+			set mysql1 = "select xempnum from pratd where xdate='"+xdatedue+"' xempnum='"+xempnum+"'"
+			set extatd = #sql(mysql1)
+			
+			if extatd .ne. ""
+			
+				set mysql2 = "select xlvtype from pratd where xdatedue='"+xdatedue+"' xempnum='"+xempnum+"'"
+				set lvstat = #sql(mysql2)
+			
+			
+				set updsql="update pratd set xatdstat='"+lvstat+"' where zid='"+#id+"' xdatedue='"+xdatedue+"' xempnum='"+xempnum+"'"
+				set updsql1=#sql(str,updsql)
+			end if
+		
+			set mysql = "select xdatedue from lmtrnday where xempnum='"+xempnum+"' and xdatedue>='"+xdatefromreq+"' and xdatedue<='"+xdatetoreq+"' and xdatedue>'"+xdatedue+"' order by xdatedue"
+			set xdatedue = #sql(mysql)
+		end while
+        action Clear
+		set targetcc=lmroute.xcriteria("zid='"+#user+"'")
+		set msg="Leave Saction for "+xcodeleave+" Leave for "+xdaysreq+" day(s) from "+#format(xdatefromreq,date)+" to "+#format(xdatetoreq,date)+"."
+		mail from=#sysuser;;to=targetcc;;sub="Leave Sanction For "+hrmst.xfirst(xempnum)+" "+hrmst.xlast(xempnum)+" ("+xempnum+")" ;;message=msg
+		action clear
+		print "Sanction Successfully"
+      end before
+      
+      after Add,Apply
+        if mode .sw. "Apply"
+          //print "here i am"
+          str source=xempnum
+          str target=""
+          //print "source="+source
+          call lmroute
+          //print "target="+target
+        
+          set target=hrmst.xemail("xempnum='"+target+"'")
+		  set targetcc=hrmst.xsuper("xempnum='"+target+"'")
+          //print "target="+target
+    
+          buffer lmtrn=#form
+          set lmtrn.xrecommendedby=target        
+          update lmtrn(xdate,xempnum,xcodeleave,xtrnleave)
+
+          str msg
+          text "lmapply.email","string msg"
+          mail from=#sysuser;;to=target;;cc=targetcc;;sub="Leave Application by "+hrmst.xfull(xempnum)+" ("+xempnum+")" ;;message=msg
+		 // action clear
+		  print "Apply Successfully"
+        end if
+      end after
+      
+      
+      before Apply,Add
+        set #command="Add"
+        #include lmadd.include
+        
+      end before
+      after Clear
+        set xempnum=globals(xempnum)
+        set xdatefromreq=#date
+        set xdate=#date
+        
+      end after
+    end valid
+	
+	
+	method lmchkdt
+		//print "method called"
+	
+	int i=0
+		set xdatedue=xdatefromreq
+		while i < xdaysreq
+		
+		
+			
+				set mysql2 = "select xcodeleave from lmtrnday where xdatedue='"+xdatedue+"' and xempnum='"+xempnum+"'"
+				set lvstat = #sql(mysql2)
+				if 	lvstat .ne. ""
+					error "Already on Leave"
+				end if
+		print "inside while "+mysql2+" "+lvstat+" "+xdatedue
+			set mysql = "select xdatedue from lmtrnday where xempnum='"+xempnum+"' and xdatedue>='"+xdatefromreq+"' and xdatedue<='"+xdatetoreq+"' and xdatedue>'"+xdatedue+"' order by xdatedue"
+			set xdatedue = #sql(mysql)
+			set i = 0+i+1
+		end while
+	end method
+	
+	
+  method lmcalc
+    if xcodeleave .ne. ""
+      double avail=20
+      buffer lmemp=lmemp(xempnum)
+      set xgent=lmemp.xgent
+      buffer lmform=lmform(xgent,xcodeleave)
+      buffer lmstatus=lmstatus(xempnum,xcodeleave)
+      //xleavedue,xnumofper,xwhendue,xtypeyear,xlimitcash,xlimitcf,xlimitres,xcodeat
+      str dateeff=lmemp.xdateeff
+      str typeyear=lmform.xtypeyear
+      str whendue=lmform.xwhendue
+      double leavedue=lmform.xleavedue
+      double numofper=lmform.xnumofper
+      set date=xdate
+      set codeleave=xcodeleave
+      
+      //print "informdateeff="+lmemp.xdateeff+"*"+dateeff
+console "MAINTHING"  
+      //set date=#date
+
+      #include lmcalc.include
+console "MAINTHING ENDS"      
+
+      //print "due="+due+"*earned="+earned+"*xnumofper="+lmform.xnumofper
+            set xdaysearned=earned
+            comp xdaysob=lmstatus.xdaysob+bf
+            //comp xdaysaccum=earned+xdaysob-xdaysexp-xdayscf-xdaysenc+xdayscr+xdayscan-xdaysreq-xdaysapp
+            comp xdaysaccum=earned+xdaysob-lmstatus.xdaysenc+lmstatus.xdayscr+lmstatus.xdayscan-lmstatus.xdaysreq-lmstatus.xdaysapp
+            comp xdaysavail=xdaysaccum-lmstatus.xlimitres
+
+            set xdaysearned=#round(xdaysearned,2)
+            set xdaysaccum=#round(xdaysaccum,2)
+            set xdaysavail=#round(xdaysavail,2)
+
+      //set xdaysearned=earned
+      //comp xdaysaccum=earned+lmstatus.xdaysob-lmstatus.xdaysexp-lmstatus.xdayscf-lmstatus.xdaysenc+lmstatus.xdayscr+lmstatus.xdayscan-lmstatus.xdaysreq-lmstatus.xdaysapp
+      //comp xdaysavail=xdaysaccum-lmform.xlimitres
+
+      str details =  "<table width=100%><tr class=bl>~
+        <td bgcolor=#dddddd><font color=green>Leave Code: </font></td><td bgcolor=#ccccff>"+xcodeleave+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Days Earned: </font></td><td bgcolor=#ccccff>"+xdaysearned+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Accumulated: </font></td><td bgcolor=#ccccff>"+xdaysaccum+"</td> ~
+        <td bgcolor=#dddddd><font color=green>Available: </font></td><td bgcolor=#ccccff>"+xdaysavail+"</td> ~
+        </tr></table>"
+    end if
+  end method
+    
+end page
+
