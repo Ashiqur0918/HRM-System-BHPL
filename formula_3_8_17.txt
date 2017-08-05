@@ -1,0 +1,4 @@
+select xhrc3 from hrtset where zid= and xrank= and xtitle= and xmodel=
+
+xhrc3
+select xoemordnum from hrtplandt
