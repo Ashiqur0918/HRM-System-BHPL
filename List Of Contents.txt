@@ -1,0 +1,8 @@
+1. Department Wise Employee List -> hremplstdw
+2. Job Status Wise Employee List -> hrempjstw
+3. Section Wise Employee List -> hrempsecw
+4. Gender Wise Employee List -> hrempgdw
+5. Supervisors' List -> hrempsvw
+6. Supervisor Wise Employee List -> hrempsvdt
+7. Religion Wise Employee List -> hremprlw
+8. Report Menu (Employee List Drill Down) -> hrreport

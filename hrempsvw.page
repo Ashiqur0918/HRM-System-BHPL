@@ -1,0 +1,76 @@
+page hrempsvw
+
+     caption "Supervisors' List"
+     sections form one,text mytext, script myscript
+
+      text mytext
+
+		 "<h3>Supervisors' List</h3>"	
+
+		 s
+     end text
+
+	 valid valid
+		config
+			str sql88=#sql(varchar,"select zorg from zbusiness where zid ='"+#id+"'")
+			str sqll=#sql("select count(*) from hrmst where xsppoi>='"+xstr05+"'  and xsppoi<= '"+xstr06+"'  and zid ='"+#id+"' and xempnum in (select xempnum from premp where zactive='1' and zid='"+#id+"')")
+			str s = ""
+			str s =s+"<button  id='printbutton' type='button' class='bt' onclick='printData()' >Print</button>"
+			str s =s+"<table class='mytable' border='1' id='printTable' bgcolor=#f5f5f7 >"
+			str s = s+"<thead><tr><td colspan="3" align="center" height="55"><font size="4"><b>"+sql88+"</font><br>Supervisors' List<br>Total No. of Employees: "+sqll+"</td></tr></thead>"
+			str s = s+"<thead><tr bgcolor="#ccc8ce"><td align="center"><b> Employee No</td><td align="center"><b> Employee Name</td><td align="center"><b> Department</td></tr></<thead><tbody>"
+
+			str clist1="xsppoi"
+			str sql1="select "+clist1+" from hrmst where ~
+						xsppoi>='"+xstr05+"'  and xsppoi<= '"+xstr06+"'  and zid ='"+#id+"' and xempnum in (select xempnum from premp where zactive='1' and zid='"+#id+"') group by xsppoi order by xsppoi"
+			//print sql1
+			int count1=#sqlfill(sql1)
+			int j = 0
+
+			while j < count1
+				array get(j,clist1)
+				str sql11=#sql(varchar,"select xfull from hrmst where xempnum='"+xsppoi+"' and zid ='"+#id+"' ")
+				str sql111=#sql(varchar,"select xrank from hrmst where xempnum='"+xsppoi+"' and zid ='"+#id+"' ")
+				//print sql11
+				str s = s+"<tr><td>"+"<a href=portal?page=hrempsvdt&command=Show&xstr05="+xsppoi+" target="_blank">"+xsppoi+"</td><td>"+sql11+"</td><td>"+sql111+"</td></tr>"
+				set j = j + 1
+
+			end while
+			 str s =s+"</td></tr></tbody></table>"
+
+			str s=s+"<style> ~
+
+			.mytable ~
+			{border-collapse:collapse; ~
+			cellspacing: 1; ~
+			cellpadding: 1; ~			
+			} ~
+			#barcode {font-weight: normal; font-style: normal; line-height:normal; sans-serif; font-size: 12pt} ~
+			</style>"
+
+			end config
+	 end valid
+
+    form one
+        valid valid
+        layout 1
+        objects Show,Clear,Refresh,~
+                              // xstr03 inherits(xsppoi) caption(Supervisor)
+							   xstr05 inherits(xempnum) caption(From Employee) default(0),~
+                               xstr06 inherits(xempnum) caption(To Employee) default("z")
+ 
+  end form
+    script myscript
+		<script language="javascript" type="text/javascript">
+			function printData()
+				{
+				var divToPrint=document.getElementById("printTable");
+				newWin= window.open("");
+				newWin.document.write(divToPrint.outerHTML);
+				newWin.print();
+				newWin.close();
+				}
+		</script>
+	end script
+
+end page
